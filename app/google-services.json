@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1023843485306",
+    "project_id": "wire-f40c5",
+    "storage_bucket": "wire-f40c5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1023843485306:android:3a1adf4978d7b520caddc3",
+        "android_client_info": {
+          "package_name": "com.example.wire"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1023843485306-hbfp5igenvjcug5pqmhro2mmql5g82bl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wire",
+            "certificate_hash": "409da3939a4c0494ca9e07dd54b88b76a12a0510"
+          }
+        },
+        {
+          "client_id": "1023843485306-01dnbend2qeheqk7d9m1tlkp9ddpoo4b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuSqe92dsxdlVBc2zGAPHglUEmLGVzOrY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1023843485306-01dnbend2qeheqk7d9m1tlkp9ddpoo4b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
