@@ -2,6 +2,8 @@ package com.example.wire.feature.auth.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.wire.core.datastore.preferences.UserPreferencesDataStore
+import com.example.wire.core.ui.util.WireBiometricManager
 import com.example.wire.feature.auth.domain.usecase.CreateAccountUseCase
 import com.example.wire.feature.auth.domain.usecase.ForgotPasswordUseCase
 import com.example.wire.feature.auth.domain.usecase.LoginUseCase
@@ -23,7 +25,9 @@ class AuthViewModel @Inject constructor(
     private val createAccountUseCase: CreateAccountUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
-    private val forgotPasswordUseCase: ForgotPasswordUseCase
+    private val forgotPasswordUseCase: ForgotPasswordUseCase,
+    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val wireBiometricManager: WireBiometricManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -31,6 +35,8 @@ class AuthViewModel @Inject constructor(
 
     init {
         observeAuthState()
+        checkBiometricAvailability()
+        observeBiometricPreference()
     }
 
     fun onEvent(event: AuthUiEvent) {
@@ -46,8 +52,44 @@ class AuthViewModel @Inject constructor(
             AuthUiEvent.ForgotPasswordClicked -> sendPasswordReset()
 
             AuthUiEvent.ErrorDismissed -> _uiState.update { it.copy(errorMessage = null) }
+            AuthUiEvent.BiometricLoginClicked -> _uiState.update { it.copy(showBiometricPrompt = true) }
+            AuthUiEvent.EnableBiometricClicked -> enableBiometric()
+            AuthUiEvent.BiometricAuthSucceeded -> onBiometricSuccess()
+            is AuthUiEvent.BiometricAuthFailed -> _uiState.update {
+                it.copy(errorMessage = event.reason, showBiometricPrompt = false)
+            }
+
+           // else -> {}
         }
     }
+    private fun checkBiometricAvailability() {
+        _uiState.update {
+            it.copy(isBiometricAvailable = wireBiometricManager.isBiometricAvailable())
+        }
+    }
+    private fun observeBiometricPreference() {
+        viewModelScope.launch {
+            userPreferencesDataStore.isBiometricEnabled.collect { enabled ->
+                _uiState.update { it.copy(isBiometricEnabled = enabled) }
+            }
+        }
+    }
+
+    private fun enableBiometric() {
+        viewModelScope.launch {
+            userPreferencesDataStore.setBiometricEnabled(true)
+            _uiState.update { it.copy(isBiometricEnabled = true) }
+        }
+    }
+    private fun onBiometricSuccess() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(
+                showBiometricPrompt = false,
+                isLoggedIn = true
+            )}
+        }
+    }
+
 
     private fun login() {
         viewModelScope.launch {
@@ -62,6 +104,8 @@ class AuthViewModel @Inject constructor(
 
             result.fold(
                 onSuccess = { authUser ->
+                    userPreferencesDataStore.setLoggedIn(true)
+                    userPreferencesDataStore.setSavedEmail(_uiState.value.email)
                     syncUserWithBackend(authUser.token)
                     _uiState.update {
                         it.copy(isLoading = false, isLoggedIn = true)
