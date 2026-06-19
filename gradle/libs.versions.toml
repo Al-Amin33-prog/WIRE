@@ -39,6 +39,7 @@ archCoreTesting             = "2.2.0"
 googleServices              = "4.4.2"
 firebaseCrashlytics         = "3.0.2"
 foundationLayout = "1.11.2"
+datastoreCore = "1.2.1"
 
 [libraries]
 # ── AndroidX ──────────────────────────────────────────────────
@@ -122,6 +123,7 @@ turbine                             = { group = "app.cash.turbine", name = "turb
 coroutines-test                     = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 arch-core-testing                   = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
+androidx-datastore-core = { group = "androidx.datastore", name = "datastore-core", version.ref = "datastoreCore" }
 
 [bundles]
 compose                     = [

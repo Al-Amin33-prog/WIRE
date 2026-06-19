@@ -83,9 +83,10 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.datastore.preferences) // Fixed: Changed from datastore-core to datastore-preferences
     ksp(libs.hilt.compiler)
 
-    // Networking (This fixes the "red lines" for okhttp and Interceptor)
+    // Networking
     implementation(libs.bundles.networking)
 
     // Firebase

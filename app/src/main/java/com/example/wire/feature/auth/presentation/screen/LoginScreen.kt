@@ -35,7 +35,27 @@ fun LoginScreen(
     onNavigateToForgotPassword: () -> Unit,
     onLoginSuccess: () -> Unit
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+    LaunchedEffect(uiState.showBiometricPrompt) {
+        if (uiState.showBiometricPrompt) {
+            val activity = context as FragmentActivity
+            WireBiometricManager(context).showBiometricPrompt(
+                activity = activity,
+                onSuccess = {
+                    viewModel.onEvent(AuthUiEvent.BiometricAuthSucceeded)
+                },
+                onError = { reason ->
+                    viewModel.onEvent(AuthUiEvent.BiometricAuthFailed(reason))
+                },
+                onFailed = {
+                    viewModel.onEvent(
+                        AuthUiEvent.BiometricAuthFailed("Biometric not recognised")
+                    )
+                }
+            )
+        }
+    }
 
     LaunchedEffect(uiState.isLoggedIn) {
         if (uiState.isLoggedIn) onLoginSuccess()
@@ -114,6 +134,22 @@ fun LoginScreen(
                 CircularProgressIndicator(modifier = Modifier.size(20.dp))
             } else {
                 Text("Sign In")
+            }
+        }
+        if (uiState.isBiometricAvailable && uiState.isBiometricEnabled) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedButton(
+                onClick = { viewModel.onEvent(AuthUiEvent.BiometricLoginClicked) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Fingerprint,
+                    contentDescription = "Biometric login",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Sign in with Biometric")
             }
         }
 
