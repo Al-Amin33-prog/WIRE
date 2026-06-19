@@ -8,5 +8,8 @@ data class AuthUiState(
     val isLoading: Boolean = false,
     val isLoggedIn: Boolean = false,
     val errorMessage: String? = null,
-    val isPasswordResetEmailSent: Boolean = false
+    val isPasswordResetEmailSent: Boolean = false,
+    val isBiometricAvailable: Boolean = false,
+    val isBiometricEnabled: Boolean = false,
+    val showBiometricPrompt: Boolean = false
 )
