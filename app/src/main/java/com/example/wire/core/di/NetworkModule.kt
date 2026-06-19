@@ -1,6 +1,6 @@
 package com.example.wire.core.di
 
-import com.example.wire.core.network.interceptors.AuthInterceptor
+import com.example.wire.core.network.inrerceptors.AuthInterceptor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
