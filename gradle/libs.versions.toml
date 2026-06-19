@@ -38,6 +38,7 @@ coroutinesTest              = "1.8.1"
 archCoreTesting             = "2.2.0"
 googleServices              = "4.4.2"
 firebaseCrashlytics         = "3.0.2"
+foundationLayout = "1.11.2"
 
 [libraries]
 # ── AndroidX ──────────────────────────────────────────────────
@@ -48,6 +49,7 @@ androidx-activity-compose           = { group = "androidx.activity", name = "act
 androidx-splash-screen              = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashScreen" }
 androidx-appcompat                  = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material                            = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
 
 # ── Compose ───────────────────────────────────────────────────
 androidx-compose-bom                = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -119,6 +121,7 @@ mockk-android                       = { group = "io.mockk", name = "mockk-androi
 turbine                             = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 coroutines-test                     = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 arch-core-testing                   = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 
 [bundles]
 compose                     = [

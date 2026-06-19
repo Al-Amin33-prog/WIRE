@@ -49,6 +49,9 @@ dependencies {
     // AndroidX
     implementation(libs.androidx.core.ktx)
 
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+
     // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
