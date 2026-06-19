@@ -1,4 +1,4 @@
-package com.example.wire.core.network.inrerceptors
+package com.example.wire.core.network.interceptors
 
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.runBlocking
