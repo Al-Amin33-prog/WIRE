@@ -1,33 +1,24 @@
 package com.example.wire.app
+
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.fragment.app.FragmentActivity
+import com.example.wire.core.ui.util.LocalFragmentActivity
+import dagger.hilt.android.AndroidEntryPoint
 
-
-class MainActivity : androidx.activity.ComponentActivity() {
+@AndroidEntryPoint
+class MainActivity : FragmentActivity() { // Changed to FragmentActivity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Greeting("Android")
+            // This "provides" the activity to all screens in your app
+            CompositionLocalProvider(LocalFragmentActivity provides this) {
+                // Your AppNavHost or Root Screen here
+                Greeting("Android") 
+            }
         }
-
-
     }
 }
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text("Hello $name!",
-        modifier = modifier)
-
-}
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview(){
-    Greeting("Android")
-}
-
