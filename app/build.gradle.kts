@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.splash.screen)
+    implementation(libs.biometric) // Added for BiometricManager
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
@@ -83,7 +84,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.compose.foundation.layout)
-    implementation(libs.datastore.preferences) // Fixed: Changed from datastore-core to datastore-preferences
+    implementation(libs.datastore.preferences)
     ksp(libs.hilt.compiler)
 
     // Networking

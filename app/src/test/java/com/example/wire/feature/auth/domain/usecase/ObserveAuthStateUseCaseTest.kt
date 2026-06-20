@@ -18,7 +18,7 @@ class ObserveAuthStateUseCaseTest {
 
     @Test
     fun `invoke returns flow of user from repository`() = runBlocking {
-        val user = AuthUser(uid = "123", email = "test@example.com", displayName = "Test", token = "token")
+        val user = AuthUser(uid = "123", email = "test@example.com", displayName = "Test", token = "token", isEmailVerified = false)
         every { repository.observeAuthState() } returns flowOf(user)
 
         val result = useCase(Unit).first()
