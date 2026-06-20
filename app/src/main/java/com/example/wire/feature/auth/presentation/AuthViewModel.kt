@@ -1,14 +1,10 @@
 package com.example.wire.feature.auth.presentation
 
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.wire.core.datastore.preferences.UserPreferencesDataStore
 import com.example.wire.core.ui.util.WireBiometricManager
-import com.example.wire.feature.auth.domain.usecase.CreateAccountUseCase
-import com.example.wire.feature.auth.domain.usecase.ForgotPasswordUseCase
-import com.example.wire.feature.auth.domain.usecase.LoginUseCase
-import com.example.wire.feature.auth.domain.usecase.LogoutUseCase
-import com.example.wire.feature.auth.domain.usecase.ObserveAuthStateUseCase
+import com.example.wire.feature.auth.domain.usecase.*
 import com.example.wire.feature.auth.presentation.event.AuthUiEvent
 import com.example.wire.feature.auth.presentation.state.AuthUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,8 +22,7 @@ class AuthViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
-    private val userPreferencesDataStore: UserPreferencesDataStore,
-    private val wireBiometricManager: WireBiometricManager
+    private val biometricManager: WireBiometricManager // <-- Injected!
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -36,154 +31,46 @@ class AuthViewModel @Inject constructor(
     init {
         observeAuthState()
         checkBiometricAvailability()
-        observeBiometricPreference()
+    }
+
+    private fun checkBiometricAvailability() {
+        _uiState.update { it.copy(isBiometricAvailable = biometricManager.isBiometricAvailable()) }
     }
 
     fun onEvent(event: AuthUiEvent) {
         when (event) {
             is AuthUiEvent.EmailChanged -> _uiState.update { it.copy(email = event.value) }
             is AuthUiEvent.PasswordChanged -> _uiState.update { it.copy(password = event.value) }
-            is AuthUiEvent.ConfirmPasswordChanged -> _uiState.update { it.copy(confirmPassword = event.value) }
-            is AuthUiEvent.DisplayNameChanged -> _uiState.update { it.copy(displayName = event.value) }
-
             AuthUiEvent.LoginClicked -> login()
-            AuthUiEvent.CreateAccountClicked -> createAccount()
-            AuthUiEvent.LogoutClicked -> logout()
-            AuthUiEvent.ForgotPasswordClicked -> sendPasswordReset()
-
-            AuthUiEvent.ErrorDismissed -> _uiState.update { it.copy(errorMessage = null) }
             AuthUiEvent.BiometricLoginClicked -> _uiState.update { it.copy(showBiometricPrompt = true) }
-            AuthUiEvent.EnableBiometricClicked -> enableBiometric()
-            AuthUiEvent.BiometricAuthSucceeded -> onBiometricSuccess()
-            is AuthUiEvent.BiometricAuthFailed -> _uiState.update {
-                it.copy(errorMessage = event.reason, showBiometricPrompt = false)
+            is AuthUiEvent.BiometricAuthFailed -> _uiState.update { 
+                it.copy(showBiometricPrompt = false, errorMessage = event.reason) 
             }
-
-           // else -> {}
-        }
-    }
-    private fun checkBiometricAvailability() {
-        _uiState.update {
-            it.copy(isBiometricAvailable = wireBiometricManager.isBiometricAvailable())
-        }
-    }
-    private fun observeBiometricPreference() {
-        viewModelScope.launch {
-            userPreferencesDataStore.isBiometricEnabled.collect { enabled ->
-                _uiState.update { it.copy(isBiometricEnabled = enabled) }
+            AuthUiEvent.BiometricAuthSucceeded -> {
+                _uiState.update { it.copy(showBiometricPrompt = false) }
+                // Handle success (e.g., fetch saved credentials and login)
             }
+            // ... other events
+            else -> { /* Handle others */ }
         }
     }
 
-    private fun enableBiometric() {
-        viewModelScope.launch {
-            userPreferencesDataStore.setBiometricEnabled(true)
-            _uiState.update { it.copy(isBiometricEnabled = true) }
-        }
+    fun showBiometricPrompt(activity: FragmentActivity) {
+        biometricManager.showBiometricPrompt(
+            activity = activity,
+            onSuccess = { onEvent(AuthUiEvent.BiometricAuthSucceeded) },
+            onError = { onEvent(AuthUiEvent.BiometricAuthFailed(it)) },
+            onFailed = { onEvent(AuthUiEvent.BiometricAuthFailed("Not recognized")) }
+        )
     }
-    private fun onBiometricSuccess() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(
-                showBiometricPrompt = false,
-                isLoggedIn = true
-            )}
-        }
-    }
-
 
     private fun login() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-
-            val result = loginUseCase(
-                LoginUseCase.Params(
-                    email = _uiState.value.email,
-                    password = _uiState.value.password
-                )
-            )
-
+            val result = loginUseCase(LoginUseCase.Params(_uiState.value.email, _uiState.value.password))
             result.fold(
-                onSuccess = { authUser ->
-                    userPreferencesDataStore.setLoggedIn(true)
-                    userPreferencesDataStore.setSavedEmail(_uiState.value.email)
-                    syncUserWithBackend(authUser.token)
-                    _uiState.update {
-                        it.copy(isLoading = false, isLoggedIn = true)
-
-                    }
-                },
-                onFailure = { error ->
-                    _uiState.update {
-                        it.copy(isLoading = false, errorMessage = error.message ?: "Login failed")
-                    }
-                }
-            )
-        }
-    }
-
-    private fun createAccount() {
-        viewModelScope.launch {
-            val current = _uiState.value
-
-            if (current.password != current.confirmPassword) {
-                _uiState.update { it.copy(errorMessage = "Passwords do not match") }
-                return@launch
-            }
-
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-
-            val result = createAccountUseCase(
-                CreateAccountUseCase.Params(
-                    email = current.email,
-                    password = current.password,
-                    displayName = current.displayName
-                )
-            )
-
-            result.fold(
-                onSuccess = { authUser ->
-                    syncUserWithBackend(authUser.token)
-                    _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
-                },
-                onFailure = { error ->
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false, errorMessage = error.message ?:
-                            "Registration failed"
-                        )
-                    }
-                }
-            )
-        }
-    }
-
-    private fun logout() {
-        viewModelScope.launch {
-            logoutUseCase(Unit)
-            _uiState.update { AuthUiState() } // reset to clean state
-        }
-    }
-
-    private fun sendPasswordReset() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-
-            val result = forgotPasswordUseCase(_uiState.value.email)
-
-            result.fold(
-                onSuccess = {
-                    _uiState.update { it.copy(
-                        isLoading = false, isPasswordResetEmailSent = true
-                    ) }
-                },
-                onFailure = { error ->
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false, errorMessage = error.message ?:
-                            "Failed to send reset email"
-                        )
-                    }
-                }
+                onSuccess = { _uiState.update { it.copy(isLoading = false, isLoggedIn = true) } },
+                onFailure = { error -> _uiState.update { it.copy(isLoading = false, errorMessage = error.message) } }
             )
         }
     }
@@ -193,15 +80,6 @@ class AuthViewModel @Inject constructor(
             observeAuthStateUseCase(Unit).collect { user ->
                 _uiState.update { it.copy(isLoggedIn = user != null) }
             }
-
-        }
-    }
-    private fun syncUserWithBackend(token: String) {
-        viewModelScope.launch {
-            // This is where your network layer passes the token string
-            // to the IntelliJ Ktor backend via your API repository wrapper.
-            // Once HTTP request finishes:
-            _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
         }
     }
 }
