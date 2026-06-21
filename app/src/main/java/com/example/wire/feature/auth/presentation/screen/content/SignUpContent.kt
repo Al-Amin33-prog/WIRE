@@ -16,15 +16,16 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.wire.R
 import com.example.wire.feature.auth.presentation.event.AuthUiEvent
 import com.example.wire.feature.auth.presentation.state.AuthUiState
 
@@ -44,7 +45,7 @@ fun SignUpContent(
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "Create Account",
+            text = stringResource(R.string.signup_create_account),
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -54,7 +55,7 @@ fun SignUpContent(
         OutlinedTextField(
             value = uiState.displayName,
             onValueChange = { onEvent(AuthUiEvent.DisplayNameChanged(it)) },
-            label = { Text("Full Name") },
+            label = { Text(stringResource(R.string.signup_full_name)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
@@ -64,27 +65,27 @@ fun SignUpContent(
         OutlinedTextField(
             value = uiState.email,
             onValueChange = { onEvent(AuthUiEvent.EmailChanged(it)) },
-            label = { Text("Email") },
+            label = { Text(stringResource(R.string.login_email_label)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
 
         Spacer(modifier = Modifier.height(12.dp))
-        // Example of the field to add in SignUpContent.kt
+
         OutlinedTextField(
             value = uiState.phone,
             onValueChange = { onEvent(AuthUiEvent.OnPhoneChange(it)) },
-            label = { Text("Phone Number") },
+            label = { Text(stringResource(R.string.signup_phone_number)) },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-          //  leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) }
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
         )
+
         Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
             value = uiState.password,
             onValueChange = { onEvent(AuthUiEvent.PasswordChanged(it)) },
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.login_password_label)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             visualTransformation = PasswordVisualTransformation()
@@ -95,7 +96,7 @@ fun SignUpContent(
         OutlinedTextField(
             value = uiState.confirmPassword,
             onValueChange = { onEvent(AuthUiEvent.ConfirmPasswordChanged(it)) },
-            label = { Text("Confirm Password") },
+            label = { Text(stringResource(R.string.signup_confirm_password)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             visualTransformation = PasswordVisualTransformation()
@@ -119,7 +120,7 @@ fun SignUpContent(
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(20.dp))
             } else {
-                Text("Create Account")
+                Text(stringResource(R.string.signup_button_text))
             }
         }
 
@@ -129,9 +130,12 @@ fun SignUpContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text("Already have an account? ", color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
             Text(
-                text = "Sign In",
+                text = stringResource(R.string.signup_already_have_account),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            )
+            Text(
+                text = stringResource(R.string.signup_sign_in),
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable { onNavigateToLogin() }
             )

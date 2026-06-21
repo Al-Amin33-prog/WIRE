@@ -1,34 +1,22 @@
 package com.example.wire.feature.auth.presentation.screen.content
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.wire.R
 import com.example.wire.feature.auth.presentation.event.AuthUiEvent
 import com.example.wire.feature.auth.presentation.state.AuthUiState
-
 
 @Composable
 fun LoginContent(
@@ -45,7 +33,7 @@ fun LoginContent(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Welcome Back",
+            text = stringResource(R.string.login_welcome_back),
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -53,7 +41,7 @@ fun LoginContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Sign in to continue",
+            text = stringResource(R.string.login_sign_in_continue),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
         )
@@ -63,7 +51,7 @@ fun LoginContent(
         OutlinedTextField(
             value = uiState.email,
             onValueChange = { onEvent(AuthUiEvent.EmailChanged(it)) },
-            label = { Text("Email") },
+            label = { Text(stringResource(R.string.login_email_label)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
@@ -73,7 +61,7 @@ fun LoginContent(
         OutlinedTextField(
             value = uiState.password,
             onValueChange = { onEvent(AuthUiEvent.PasswordChanged(it)) },
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.login_password_label)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             visualTransformation = PasswordVisualTransformation()
@@ -82,7 +70,7 @@ fun LoginContent(
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = "Forgot password?",
+            text = stringResource(R.string.login_forgot_password),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
@@ -109,7 +97,7 @@ fun LoginContent(
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(20.dp))
             } else {
-                Text("Sign In")
+                Text(stringResource(R.string.login_button_text))
             }
         }
 
@@ -122,11 +110,11 @@ fun LoginContent(
             ) {
                 Icon(
                     imageVector = Icons.Default.Fingerprint,
-                    contentDescription = "Biometric login",
+                    contentDescription = stringResource(R.string.login_biometric_button),
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Sign in with Biometric")
+                Text(stringResource(R.string.login_biometric_button))
             }
         }
 
@@ -136,11 +124,48 @@ fun LoginContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text("No account? ", color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
             Text(
-                text = "Create one",
+                text = stringResource(R.string.login_no_account),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            )
+            Text(
+                text = stringResource(R.string.login_create_one),
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable { onNavigateToSignUp() }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            HorizontalDivider(modifier = Modifier.weight(1f))
+            Text(
+                text = "  ${stringResource(R.string.login_or_continue_with)}  ",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+            )
+            HorizontalDivider(modifier = Modifier.weight(1f))
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedButton(
+            onClick = { onEvent(AuthUiEvent.GoogleSignInClicked) },
+            modifier = Modifier.fillMaxWidth(),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+        ) {
+            Text(
+                text = "🇬",
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(R.string.login_google_button),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold
             )
         }
     }
