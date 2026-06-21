@@ -4,7 +4,7 @@ import com.example.wire.core.domain.base.BaseUseCase
 import com.example.wire.feature.auth.domain.model.AuthUser
 import com.example.wire.feature.auth.domain.repository.AuthRepository
 
-class CreateAccountUseCase(
+class CreateAccountUseCase (
     private val authRepository: AuthRepository
 ) : BaseUseCase<CreateAccountUseCase.Params, Result<AuthUser>>() {
 
