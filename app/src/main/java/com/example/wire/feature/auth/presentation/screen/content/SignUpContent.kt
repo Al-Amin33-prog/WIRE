@@ -12,14 +12,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.wire.feature.auth.presentation.event.AuthUiEvent
@@ -66,6 +69,16 @@ fun SignUpContent(
             singleLine = true
         )
 
+        Spacer(modifier = Modifier.height(12.dp))
+        // Example of the field to add in SignUpContent.kt
+        OutlinedTextField(
+            value = uiState.phone,
+            onValueChange = { onEvent(AuthUiEvent.OnPhoneChange(it)) },
+            label = { Text("Phone Number") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+          //  leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) }
+        )
         Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
