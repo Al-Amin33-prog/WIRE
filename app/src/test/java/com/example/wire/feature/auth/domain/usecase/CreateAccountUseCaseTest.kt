@@ -16,7 +16,12 @@ class CreateAccountUseCaseTest {
 
     @Test
     fun `invoke with short password returns failure`() = runBlocking {
-        val params = CreateAccountUseCase.Params("test@example.com", "1234567", "Test User")
+        val params = CreateAccountUseCase.Params(
+            "test@example.com",
+            "1234567",
+            "Test User",
+            "123456789"
+        )
         val result = useCase(params)
 
         assertTrue(result.isFailure)
@@ -25,7 +30,11 @@ class CreateAccountUseCaseTest {
 
     @Test
     fun `invoke with empty display name returns failure`() = runBlocking {
-        val params = CreateAccountUseCase.Params("test@example.com", "password123", "")
+        val params = CreateAccountUseCase.Params(
+            "test@example.com",
+            "password123",
+            "Test",
+            "12345678")
         val result = useCase(params)
 
         assertTrue(result.isFailure)
@@ -37,11 +46,19 @@ class CreateAccountUseCaseTest {
         val email = "test@example.com"
         val password = "password123"
         val displayName = "Test User"
-        val user = AuthUser(uid = "123", email = email, displayName = displayName, token = "token", isEmailVerified = false)
+        val phone = "12345678"
+        val user = AuthUser(
+            uid = "123",
+            email = email,
+            displayName = displayName,
+            token = "token",
+            isEmailVerified = false,
+            phone = "12345678"
+            )
 
-        coEvery { repository.register(email, password, displayName) } returns Result.success(user)
+        coEvery { repository.register(email, password, displayName, phone  ) } returns Result.success(user)
 
-        val params = CreateAccountUseCase.Params(email, password, displayName)
+        val params = CreateAccountUseCase.Params(email, password, displayName,phone)
         val result = useCase(params)
 
         assertTrue(result.isSuccess)
@@ -53,13 +70,28 @@ class CreateAccountUseCaseTest {
         val email = "existing@example.com"
         val password = "password123"
         val displayName = "Test User"
+        val phone = "12345678"
 
-        coEvery { repository.register(email, password, displayName) } returns Result.failure(Exception("Email already in use"))
+        coEvery { repository.register(email, password, displayName, phone) } returns Result.failure(Exception("Email already in use"))
 
-        val params = CreateAccountUseCase.Params(email, password, displayName)
+        val params = CreateAccountUseCase.Params(email, password, displayName,phone)
         val result = useCase(params)
 
         assertTrue(result.isFailure)
         assertEquals("Email already in use", result.exceptionOrNull()?.message)
+    } @Test
+    fun `invoke with existing phone returns failure from repository`() = runBlocking {
+        val email = "existing@example.com"
+        val password = "password123"
+        val displayName = "Test User"
+        val phone = "12345678"
+
+        coEvery { repository.register(email, password, displayName, phone) } returns Result.failure(Exception("Email already in use"))
+
+        val params = CreateAccountUseCase.Params(email, password, displayName,phone)
+        val result = useCase(params)
+
+        assertTrue(result.isFailure)
+        assertEquals("Phone  already in use", result.exceptionOrNull()?.message)
     }
 }

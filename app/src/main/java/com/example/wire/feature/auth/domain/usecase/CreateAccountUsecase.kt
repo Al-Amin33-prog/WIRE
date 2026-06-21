@@ -11,7 +11,8 @@ class CreateAccountUseCase(
     data class Params(
         val email: String,
         val password: String,
-        val displayName: String
+        val displayName: String,
+        val phone: String
     )
 
     override suspend fun invoke(params: Params): Result<AuthUser> {
@@ -21,6 +22,7 @@ class CreateAccountUseCase(
         if (params.displayName.isBlank()) {
             return Result.failure(IllegalArgumentException("Display name cannot be empty"))
         }
-        return authRepository.register(params.email, params.password, params.displayName)
+        return authRepository.register(params.email, params.password, params.displayName,params.phone)
+
     }
 }
