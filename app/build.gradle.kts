@@ -71,7 +71,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.splash.screen)
-    implementation(libs.biometric) // Added for BiometricManager
+    implementation(libs.biometric) 
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
@@ -93,6 +93,9 @@ dependencies {
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
+
+    // Google Sign-In
+    implementation(libs.google.play.services.auth)
 
     // Testing
     testImplementation(libs.bundles.testing.unit)
