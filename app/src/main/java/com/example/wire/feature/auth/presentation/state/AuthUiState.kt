@@ -11,5 +11,6 @@ data class AuthUiState(
     val isPasswordResetEmailSent: Boolean = false,
     val isBiometricAvailable: Boolean = false,
     val isBiometricEnabled: Boolean = false,
-    val showBiometricPrompt: Boolean = false
+    val showBiometricPrompt: Boolean = false,
+    val phone: String = "",
 )
