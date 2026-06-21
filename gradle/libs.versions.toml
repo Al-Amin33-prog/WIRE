@@ -40,6 +40,7 @@ googleServices              = "4.4.2"
 firebaseCrashlytics         = "3.0.2"
 foundationLayout = "1.11.2"
 datastoreCore = "1.2.1"
+googlePlayServicesAuth = "20.7.0"
 
 [libraries]
 # ── AndroidX ──────────────────────────────────────────────────
@@ -50,7 +51,7 @@ androidx-activity-compose           = { group = "androidx.activity", name = "act
 androidx-splash-screen              = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashScreen" }
 androidx-appcompat                  = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material                            = { group = "com.google.android.material", name = "material", version.ref = "material" }
-
+google-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "googlePlayServicesAuth" }
 
 # ── Compose ───────────────────────────────────────────────────
 androidx-compose-bom                = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }

@@ -1,3 +1,44 @@
 <resources>
     <string name="app_name">WIRE</string>
+
+    <!-- Login Screen -->
+    <string name="login_welcome_back">Welcome Back</string>
+    <string name="login_sign_in_continue">Sign in to continue</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_forgot_password">Forgot password?</string>
+    <string name="login_button_text">Sign In</string>
+    <string name="login_biometric_button">Sign in with Biometric</string>
+    <string name="login_no_account">No account? </string>
+    <string name="login_create_one">Create one</string>
+    <string name="login_or_continue_with">or continue with</string>
+    <string name="login_google_button">Continue with Google</string>
+
+    <!-- Sign Up Screen -->
+    <string name="signup_create_account">Create Account</string>
+    <string name="signup_full_name">Full Name</string>
+    <string name="signup_phone_number">Phone Number</string>
+    <string name="signup_confirm_password">Confirm Password</string>
+    <string name="signup_button_text">Create Account</string>
+    <string name="signup_already_have_account">Already have an account? </string>
+    <string name="signup_sign_in">Sign In</string>
+
+    <!-- Forgot Password Screen -->
+    <string name="forgot_password_title">Reset Password</string>
+    <string name="forgot_password_subtitle">Enter your email and we\'ll send you a reset link</string>
+    <string name="forgot_password_email_sent">Check your inbox — reset link sent!</string>
+    <string name="forgot_password_send_link">Send Reset Link</string>
+
+    <!-- Errors and Feedback -->
+    <string name="error_passwords_dont_match">Passwords do not match</string>
+    <string name="error_login_failed">Login failed</string>
+    <string name="error_registration_failed">Registration failed</string>
+    <string name="error_reset_email_failed">Failed to send reset email</string>
+    <string name="error_google_failed">Google sign-in failed</string>
+    <string name="error_no_id_token">No ID token received</string>
+    <string name="biometric_not_recognized">Biometric not recognized</string>
+    <string name="error_activity_not_found">FragmentActivity not found</string>
+
+    <!-- Google Sign In -->
+    <string name="default_web_client_id">YOUR_WEB_CLIENT_ID.apps.googleusercontent.com</string>
 </resources>
