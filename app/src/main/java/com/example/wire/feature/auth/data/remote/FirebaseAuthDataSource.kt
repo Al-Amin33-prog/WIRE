@@ -17,7 +17,7 @@ class FirebaseAuthDataSource @Inject constructor(
         return user.toDto()
     }
 
-    suspend fun register(email: String, password: String, displayName: String): AuthUserDto {
+    suspend fun register(email: String, password: String, displayName: String, phone: String): AuthUserDto {
         val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
         val user = result.user ?: throw IllegalStateException("Registration failed — no user returned")
 
