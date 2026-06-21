@@ -9,6 +9,7 @@ fun AuthUserDto.toDomain(): AuthUser {
         email = email ?: "",
         displayName = displayName,
         isEmailVerified = isEmailVerified,
-        token = ""
+        token = "",
+        phone = phone ?: "" // Map nullable DTO phone to non-nullable Domain phone
     )
 }
