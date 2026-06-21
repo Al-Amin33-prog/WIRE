@@ -2,6 +2,7 @@ package com.example.wire.feature.auth.data.remote
 
 import com.example.wire.feature.auth.data.remote.dto.AuthUserDto
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
@@ -56,5 +57,12 @@ class FirebaseAuthDataSource @Inject constructor(
             displayName = displayName,
             isEmailVerified = isEmailVerified
         )
+    }
+    suspend fun loginWithGoogle(idToken: String): AuthUserDto {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        val result = firebaseAuth.signInWithCredential(credential).await()
+        val user = result.user
+            ?: throw IllegalStateException("Google sign-in failed — no user returned")
+        return user.toDto()
     }
 }
