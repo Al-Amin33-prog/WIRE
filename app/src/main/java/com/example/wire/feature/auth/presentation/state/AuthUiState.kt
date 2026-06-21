@@ -13,4 +13,5 @@ data class AuthUiState(
     val isBiometricEnabled: Boolean = false,
     val showBiometricPrompt: Boolean = false,
     val phone: String = "",
+    val triggerGoogleSignIn: Boolean = false
 )

@@ -18,4 +18,7 @@ sealed class AuthUiEvent {
     object BiometricAuthSucceeded : AuthUiEvent()
     data class BiometricAuthFailed(val reason: String) : AuthUiEvent()
     data class OnPhoneChange(val phone: String) : AuthUiEvent()
+    data class GoogleSignInResult(val idToken: String) : AuthUiEvent()
+    object GoogleSignInClicked : AuthUiEvent()
+    data class GoogleSignInFailed(val reason: String) : AuthUiEvent()
 }
