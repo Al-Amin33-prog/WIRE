@@ -22,7 +22,8 @@ class AuthViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
-    private val biometricManager: WireBiometricManager // <-- Injected!
+    private val biometricManager: WireBiometricManager, // <-- Injected!
+    private val googleSignInUseCase: GoogleSignInUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -50,6 +51,7 @@ class AuthViewModel @Inject constructor(
             is AuthUiEvent.BiometricAuthFailed -> _uiState.update { 
                 it.copy(showBiometricPrompt = false, errorMessage = event.reason) 
             }
+
             AuthUiEvent.BiometricAuthSucceeded -> {
                 _uiState.update { it.copy(showBiometricPrompt = false) }
                 // Handle success (e.g., fetch saved credentials and login)
@@ -57,8 +59,37 @@ class AuthViewModel @Inject constructor(
             is AuthUiEvent.OnPhoneChange -> {
                 _uiState.update { it.copy(phone = event.phone) }
             }
+            AuthUiEvent.GoogleSignInClicked -> _uiState.update {
+                it.copy(triggerGoogleSignIn = true)
+            }
+            is AuthUiEvent.GoogleSignInResult -> handleGoogleSignIn(event.idToken)
+            is AuthUiEvent.GoogleSignInFailed -> _uiState.update {
+                it.copy(errorMessage = event.reason, triggerGoogleSignIn = false)
+            }
             // ... other events
             else -> { /* Handle others */ }
+        }
+    }
+    private fun handleGoogleSignIn(idToken: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, triggerGoogleSignIn = false) }
+
+            val result = googleSignInUseCase(idToken)
+
+            result.fold(
+                onSuccess = {
+                    userPreferencesDataStore.setLoggedIn(true)
+                    _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.message ?: "Google sign-in failed"
+                        )
+                    }
+                }
+            )
         }
     }
 
