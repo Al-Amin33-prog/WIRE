@@ -27,10 +27,11 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun register(
         email: String,
         password: String,
-        displayName: String
+        displayName: String,
+        phone:String
     ): Result<AuthUser> {
         return try {
-            val userDto = firebaseAuthDataSource.register(email, password, displayName)
+            val userDto = firebaseAuthDataSource.register(email, password, displayName,phone)
             authApiService.syncUser()
             Result.success(userDto.toDomain())
         } catch (e: Exception) {

@@ -5,5 +5,6 @@ data class AuthUser(
     val email: String,
     val displayName: String?,
     val isEmailVerified: Boolean,
-    val token: String
+    val token: String,
+    val phone: String
 )
