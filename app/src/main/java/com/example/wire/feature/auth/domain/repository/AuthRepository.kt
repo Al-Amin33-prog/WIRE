@@ -24,4 +24,5 @@ interface AuthRepository {
     suspend fun getCurrentUser(): AuthUser?
 
     suspend fun sendPasswordResetEmail(email: String): Result<Unit>
+    suspend fun loginWithGoogle(idToken: String): Result<AuthUser>
 }

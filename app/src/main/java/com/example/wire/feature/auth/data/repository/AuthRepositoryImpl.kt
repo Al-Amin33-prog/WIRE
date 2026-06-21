@@ -59,4 +59,13 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+    override suspend fun loginWithGoogle(idToken: String): Result<AuthUser> {
+        return try {
+            val userDto = firebaseAuthDataSource.loginWithGoogle(idToken)
+            authApiService.syncUser()
+            Result.success(userDto.toDomain())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
