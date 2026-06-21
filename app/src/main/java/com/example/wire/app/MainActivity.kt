@@ -5,21 +5,25 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.fragment.app.FragmentActivity
-
+import com.example.wire.app.navigation.AppNavHost
+import com.example.wire.app.navigation.NavigatorImpl
 import com.example.wire.core.ui.util.LocalFragmentActivity
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : FragmentActivity() { // Changed to FragmentActivity
+class MainActivity : FragmentActivity() {
+    @Inject
+    lateinit var navigatorImpl: NavigatorImpl
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-
-            // This "provides" the activity to all screens in your app
+            // Provide the activity context for Biometrics/Permissions
             CompositionLocalProvider(LocalFragmentActivity provides this) {
-
-                // Your AppNavHost or Root Screen here
+                AppNavHost(
+                    navigatorImpl = navigatorImpl
+                )
 
             }
         }
