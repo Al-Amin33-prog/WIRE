@@ -39,9 +39,13 @@ class AuthViewModel @Inject constructor(
 
     fun onEvent(event: AuthUiEvent) {
         when (event) {
+
             is AuthUiEvent.EmailChanged -> _uiState.update { it.copy(email = event.value) }
             is AuthUiEvent.PasswordChanged -> _uiState.update { it.copy(password = event.value) }
             AuthUiEvent.LoginClicked -> login()
+            AuthUiEvent.CreateAccountClicked -> createAccount()
+            AuthUiEvent.LogoutClicked -> logout()
+            AuthUiEvent.ForgotPasswordClicked -> sendPasswordReset()
             AuthUiEvent.BiometricLoginClicked -> _uiState.update { it.copy(showBiometricPrompt = true) }
             is AuthUiEvent.BiometricAuthFailed -> _uiState.update { 
                 it.copy(showBiometricPrompt = false, errorMessage = event.reason) 
@@ -49,6 +53,9 @@ class AuthViewModel @Inject constructor(
             AuthUiEvent.BiometricAuthSucceeded -> {
                 _uiState.update { it.copy(showBiometricPrompt = false) }
                 // Handle success (e.g., fetch saved credentials and login)
+            }
+            is AuthUiEvent.OnPhoneChange -> {
+                _uiState.update { it.copy(phone = event.phone) }
             }
             // ... other events
             else -> { /* Handle others */ }
@@ -63,6 +70,44 @@ class AuthViewModel @Inject constructor(
             onFailed = { onEvent(AuthUiEvent.BiometricAuthFailed("Not recognized")) }
         )
     }
+    private fun createAccount() {
+        viewModelScope.launch {
+            val current = _uiState.value
+
+            if (current.password != current.confirmPassword) {
+                _uiState.update { it.copy(errorMessage = "Passwords do not match") }
+                return@launch
+            }
+
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+            val result = createAccountUseCase(
+                CreateAccountUseCase.Params(
+                    email = current.email,
+                    password = current.password,
+                    displayName = current.displayName,
+                    phone = current.phone
+                )
+            )
+
+            result.fold(
+                onSuccess = {
+                    _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(isLoading = false, errorMessage = error.message ?: "Registration failed")
+                    }
+                }
+            )
+        }
+    }
+    private fun logout() {
+        viewModelScope.launch {
+            logoutUseCase(Unit)
+            _uiState.update { AuthUiState() } // reset to clean state
+        }
+    }
 
     private fun login() {
         viewModelScope.launch {
@@ -74,6 +119,25 @@ class AuthViewModel @Inject constructor(
             )
         }
     }
+    private fun sendPasswordReset() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+            val result = forgotPasswordUseCase(_uiState.value.email)
+
+            result.fold(
+                onSuccess = {
+                    _uiState.update { it.copy(isLoading = false, isPasswordResetEmailSent = true) }
+                },
+                onFailure = { error ->
+                    _uiState.update {
+                        it.copy(isLoading = false, errorMessage = error.message ?: "Failed to send reset email")
+                    }
+                }
+            )
+        }
+    }
+
 
     private fun observeAuthState() {
         viewModelScope.launch {
