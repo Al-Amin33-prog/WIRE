@@ -3,8 +3,9 @@ package com.example.wire.feature.auth.domain.usecase
 import com.example.wire.core.domain.base.BaseUseCase
 import com.example.wire.feature.auth.domain.model.AuthUser
 import com.example.wire.feature.auth.domain.repository.AuthRepository
+import javax.inject.Inject
 
-class GoogleSignInUseCase(
+class GoogleSignInUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) : BaseUseCase<String, Result<AuthUser>>() {
 

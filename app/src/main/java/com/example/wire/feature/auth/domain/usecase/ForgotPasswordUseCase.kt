@@ -2,8 +2,9 @@ package com.example.wire.feature.auth.domain.usecase
 
 import com.example.wire.core.domain.base.BaseUseCase
 import com.example.wire.feature.auth.domain.repository.AuthRepository
+import javax.inject.Inject
 
-class ForgotPasswordUseCase(
+class ForgotPasswordUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) : BaseUseCase<String, Result<Unit>>() {
 
