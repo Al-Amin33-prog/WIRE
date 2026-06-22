@@ -3,6 +3,7 @@ package com.example.wire.feature.auth.presentation
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.wire.core.datastore.preferences.UserPreferencesDataStore
 import com.example.wire.core.ui.util.WireBiometricManager
 import com.example.wire.feature.auth.domain.usecase.*
 import com.example.wire.feature.auth.presentation.event.AuthUiEvent
@@ -22,8 +23,9 @@ class AuthViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val observeAuthStateUseCase: ObserveAuthStateUseCase,
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
-    private val biometricManager: WireBiometricManager, // <-- Injected!
-    private val googleSignInUseCase: GoogleSignInUseCase
+    private val biometricManager: WireBiometricManager,
+    private val googleSignInUseCase: GoogleSignInUseCase,
+    private val userPreferencesDataStore: UserPreferencesDataStore
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -40,54 +42,52 @@ class AuthViewModel @Inject constructor(
 
     fun onEvent(event: AuthUiEvent) {
         when (event) {
-
             is AuthUiEvent.EmailChanged -> _uiState.update { it.copy(email = event.value) }
             is AuthUiEvent.PasswordChanged -> _uiState.update { it.copy(password = event.value) }
+            is AuthUiEvent.ConfirmPasswordChanged -> _uiState.update { it.copy(confirmPassword = event.value) }
+            is AuthUiEvent.DisplayNameChanged -> _uiState.update { it.copy(displayName = event.value) }
+            
             AuthUiEvent.LoginClicked -> login()
             AuthUiEvent.CreateAccountClicked -> createAccount()
             AuthUiEvent.LogoutClicked -> logout()
             AuthUiEvent.ForgotPasswordClicked -> sendPasswordReset()
+            
             AuthUiEvent.BiometricLoginClicked -> _uiState.update { it.copy(showBiometricPrompt = true) }
+            
             is AuthUiEvent.BiometricAuthFailed -> _uiState.update { 
                 it.copy(showBiometricPrompt = false, errorMessage = event.reason) 
             }
-
+            
             AuthUiEvent.BiometricAuthSucceeded -> {
                 _uiState.update { it.copy(showBiometricPrompt = false) }
-                // Handle success (e.g., fetch saved credentials and login)
+                // Implement biometric-specific login if needed
             }
-            is AuthUiEvent.OnPhoneChange -> {
-                _uiState.update { it.copy(phone = event.phone) }
-            }
-            AuthUiEvent.GoogleSignInClicked -> _uiState.update {
-                it.copy(triggerGoogleSignIn = true)
-            }
+
+            AuthUiEvent.GoogleSignInClicked -> _uiState.update { it.copy(triggerGoogleSignIn = true) }
+            
             is AuthUiEvent.GoogleSignInResult -> handleGoogleSignIn(event.idToken)
-            is AuthUiEvent.GoogleSignInFailed -> _uiState.update {
-                it.copy(errorMessage = event.reason, triggerGoogleSignIn = false)
+            
+            is AuthUiEvent.GoogleSignInFailed -> _uiState.update { 
+                it.copy(errorMessage = event.reason, triggerGoogleSignIn = false) 
             }
-            // ... other events
-            else -> { /* Handle others */ }
+
+            is AuthUiEvent.OnPhoneChange -> _uiState.update { it.copy(phone = event.phone) }
+            
+
         }
     }
+
     private fun handleGoogleSignIn(idToken: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, triggerGoogleSignIn = false) }
-
             val result = googleSignInUseCase(idToken)
-
             result.fold(
                 onSuccess = {
                     userPreferencesDataStore.setLoggedIn(true)
                     _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
                 },
                 onFailure = { error ->
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = error.message ?: "Google sign-in failed"
-                        )
-                    }
+                    _uiState.update { it.copy(isLoading = false, errorMessage = error.message) }
                 }
             )
         }
@@ -101,44 +101,6 @@ class AuthViewModel @Inject constructor(
             onFailed = { onEvent(AuthUiEvent.BiometricAuthFailed("Not recognized")) }
         )
     }
-    private fun createAccount() {
-        viewModelScope.launch {
-            val current = _uiState.value
-
-            if (current.password != current.confirmPassword) {
-                _uiState.update { it.copy(errorMessage = "Passwords do not match") }
-                return@launch
-            }
-
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-
-            val result = createAccountUseCase(
-                CreateAccountUseCase.Params(
-                    email = current.email,
-                    password = current.password,
-                    displayName = current.displayName,
-                    phone = current.phone
-                )
-            )
-
-            result.fold(
-                onSuccess = {
-                    _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
-                },
-                onFailure = { error ->
-                    _uiState.update {
-                        it.copy(isLoading = false, errorMessage = error.message ?: "Registration failed")
-                    }
-                }
-            )
-        }
-    }
-    private fun logout() {
-        viewModelScope.launch {
-            logoutUseCase(Unit)
-            _uiState.update { AuthUiState() } // reset to clean state
-        }
-    }
 
     private fun login() {
         viewModelScope.launch {
@@ -150,25 +112,43 @@ class AuthViewModel @Inject constructor(
             )
         }
     }
-    private fun sendPasswordReset() {
+
+    private fun createAccount() {
         viewModelScope.launch {
+            val state = _uiState.value
+            if (state.password != state.confirmPassword) {
+                _uiState.update { it.copy(errorMessage = "Passwords do not match") }
+                return@launch
+            }
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-
-            val result = forgotPasswordUseCase(_uiState.value.email)
-
+            val result = createAccountUseCase(
+                CreateAccountUseCase.Params(state.email, state.password, state.displayName, state.phone)
+            )
             result.fold(
-                onSuccess = {
-                    _uiState.update { it.copy(isLoading = false, isPasswordResetEmailSent = true) }
-                },
-                onFailure = { error ->
-                    _uiState.update {
-                        it.copy(isLoading = false, errorMessage = error.message ?: "Failed to send reset email")
-                    }
-                }
+                onSuccess = { _uiState.update { it.copy(isLoading = false, isLoggedIn = true) } },
+                onFailure = { error -> _uiState.update { it.copy(isLoading = false, errorMessage = error.message) } }
             )
         }
     }
 
+    private fun logout() {
+        viewModelScope.launch {
+            logoutUseCase(Unit)
+            userPreferencesDataStore.clearAll()
+            _uiState.update { AuthUiState() }
+        }
+    }
+
+    private fun sendPasswordReset() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            val result = forgotPasswordUseCase(_uiState.value.email)
+            result.fold(
+                onSuccess = { _uiState.update { it.copy(isLoading = false, isPasswordResetEmailSent = true) } },
+                onFailure = { error -> _uiState.update { it.copy(isLoading = false, errorMessage = error.message) } }
+            )
+        }
+    }
 
     private fun observeAuthState() {
         viewModelScope.launch {
