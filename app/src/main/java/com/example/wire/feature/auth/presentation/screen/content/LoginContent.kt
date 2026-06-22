@@ -1,6 +1,7 @@
 package com.example.wire.feature.auth.presentation.screen.content
 
-import androidx.compose.foundation.BorderStroke
+
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -151,15 +153,19 @@ fun LoginContent(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedButton(
-            onClick = { onEvent(AuthUiEvent.GoogleSignInClicked) },
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "🇬",
-                style = MaterialTheme.typography.bodyLarge
+            Image(
+                painterResource(R.drawable.google__g__logo),
+                contentDescription = "Google_logo",
+                modifier = Modifier
+                    .clickable{
+                        onEvent(AuthUiEvent.GoogleSignInClicked)
+                    }
+                    .size(16.dp)
+
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
@@ -168,5 +174,8 @@ fun LoginContent(
                 fontWeight = FontWeight.SemiBold
             )
         }
+
+
+
     }
 }
