@@ -1,6 +1,7 @@
 [versions]
 agp                         = "8.7.0"
 kotlin                      = "2.0.21"
+ktor = "2.3.12"
 ksp                         = "2.0.21-1.0.28"
 coreKtx                     = "1.15.0"
 junit                       = "4.13.2"
@@ -41,6 +42,7 @@ firebaseCrashlytics         = "3.0.2"
 foundationLayout = "1.11.2"
 datastoreCore = "1.2.1"
 googlePlayServicesAuth = "20.7.0"
+firebaseCrashlyticsBuildtools = "3.0.7"
 
 [libraries]
 # ── AndroidX ──────────────────────────────────────────────────
@@ -52,6 +54,14 @@ androidx-splash-screen              = { group = "androidx.core", name = "core-sp
 androidx-appcompat                  = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material                            = { group = "com.google.android.material", name = "material", version.ref = "material" }
 google-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "googlePlayServicesAuth" }
+
+
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
+ktor-client-websockets = { group = "io.ktor", name = "ktor-client-websockets", version.ref = "ktor" }
+ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
 
 # ── Compose ───────────────────────────────────────────────────
 androidx-compose-bom                = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -125,6 +135,7 @@ coroutines-test                     = { group = "org.jetbrains.kotlinx", name = 
 arch-core-testing                   = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTesting" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 androidx-datastore-core = { group = "androidx.datastore", name = "datastore-core", version.ref = "datastoreCore" }
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 
 [bundles]
 compose                     = [
@@ -167,6 +178,15 @@ testing-android             = [
     "androidx-junit",
     "androidx-espresso-core",
     "mockk-android"
+]
+
+ktor-client = [
+    "ktor-client-core",
+    "ktor-client-cio",
+    "ktor-client-websockets",
+    "ktor-client-content-negotiation",
+    "ktor-serialization-kotlinx-json",
+    "ktor-client-logging"
 ]
 
 [plugins]
