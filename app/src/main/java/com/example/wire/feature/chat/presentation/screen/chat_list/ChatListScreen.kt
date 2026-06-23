@@ -9,6 +9,7 @@ import com.example.wire.feature.chat.presentation.component.viewmodel.ChatViewMo
 
 @Composable
 fun ChatListScreen(
+    onChatClick: (String) -> Unit,
     viewModel: ChatViewModel = hiltViewModel()
 ) {
     // Observe the state from ViewModel
@@ -17,7 +18,8 @@ fun ChatListScreen(
     // Pass state and events to the UI Content
     ChatContent(
         uiState = uiState,
-        onEvent = viewModel::onEvent
+        onEvent = viewModel::onEvent,
+        onChatClick = onChatClick
     )
 }
 

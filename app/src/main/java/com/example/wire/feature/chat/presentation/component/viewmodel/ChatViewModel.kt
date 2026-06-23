@@ -2,6 +2,7 @@ package com.example.wire.feature.chat.presentation.component.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.wire.feature.auth.domain.repository.AuthRepository
 import com.example.wire.feature.chat.data.wrapper.ChatUseCases
 import com.example.wire.feature.chat.presentation.component.event.ChatUiEvent
 import com.example.wire.feature.chat.presentation.component.state.ChatUiState
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    private val chatUseCases: ChatUseCases
+    private val chatUseCases: ChatUseCases,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ChatUiState())
@@ -25,7 +27,9 @@ class ChatViewModel @Inject constructor(
     init {
         onEvent(ChatUiEvent.LoadHistory(currentChatId))
         connectAndObserve()
+        loadUserProfile()
     }
+
 
     fun onEvent(event: ChatUiEvent) {
         when (event) {
@@ -46,6 +50,13 @@ class ChatViewModel @Inject constructor(
                     chatUseCases.disconnectFromChat()
                 }
             }
+        }
+    }
+    private fun loadUserProfile(){
+        viewModelScope.launch {
+            val user = authRepository.getCurrentUser()
+            val name = user?.displayName?: "User"
+            _uiState.update{it.copy(displayName = name)}
         }
     }
 
