@@ -5,18 +5,28 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.wire.R
+import com.example.wire.core.ui.theme.SurfaceDark
 import com.example.wire.feature.auth.presentation.event.AuthUiEvent
 import com.example.wire.feature.auth.presentation.state.AuthUiState
 
@@ -27,46 +37,91 @@ fun LoginContent(
     onNavigateToSignUp: () -> Unit,
     onNavigateToForgotPassword: () -> Unit
 ) {
+    var passwordVisible by remember{ mutableStateOf(false
+    ) }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(28.dp),
+            .padding(horizontal = 28.dp),
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = stringResource(R.string.login_welcome_back),
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.onBackground
+            text = "SEND.\nCHAT.\nWIRE.",
+            fontSize = 42.sp,
+            lineHeight = 48.sp,
+            fontWeight = FontWeight.Black,
+            color = Color.White,
+            letterSpacing = 2.sp
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = stringResource(R.string.login_sign_in_continue),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            text = "The messaging app where money moves as fast as conversation.",
+            fontSize = 16.sp,
+            color = Color.Gray,
+            modifier = Modifier.fillMaxWidth(0.8f)
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        Text(
+            text = "EMAIL",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Gray
+        )
+        Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = uiState.email,
             onValueChange = { onEvent(AuthUiEvent.EmailChanged(it)) },
-            label = { Text(stringResource(R.string.login_email_label)) },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            shape = RoundedCornerShape(12.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor =  Color.Unspecified,
+                unfocusedContainerColor = Color.Unspecified,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White
+            ),
+            placeholder = { Text("alex@gmail.com", color = Color.DarkGray) }
         )
 
         Spacer(modifier = Modifier.height(12.dp))
-
+        Text(
+            text = "PASSWORD",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Gray
+        )
+        Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = uiState.password,
             onValueChange = { onEvent(AuthUiEvent.PasswordChanged(it)) },
-            label = { Text(stringResource(R.string.login_password_label)) },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation()
+            shape = RoundedCornerShape(12.dp),
+            visualTransformation = if (passwordVisible) androidx.compose.ui.text.input.VisualTransformation.None
+            else androidx.compose.ui.text.input.PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        imageVector = if (passwordVisible) Icons.Default.Visibility
+                        else Icons.Default.VisibilityOff,
+                        contentDescription = null,
+                        tint = Color.Gray
+                    )
+                }
+            },
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = SurfaceDark,
+                unfocusedContainerColor = SurfaceDark,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White
+            )
         )
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -161,7 +216,7 @@ fun LoginContent(
                 painterResource(R.drawable.google__g__logo),
                 contentDescription = "Google_logo",
                 modifier = Modifier
-                    .clickable{
+                    .clickable {
                         onEvent(AuthUiEvent.GoogleSignInClicked)
                     }
                     .size(16.dp)

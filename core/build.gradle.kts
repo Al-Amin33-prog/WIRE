@@ -46,6 +46,11 @@ android {
 }
 
 dependencies {
+
+
+        implementation(libs.bundles.ktor.client)
+
+
     // AndroidX
     implementation(libs.androidx.core.ktx)
 

@@ -8,6 +8,8 @@ import com.example.wire.core.navigation.routes.Routes
 import com.example.wire.feature.auth.presentation.screen.ForgotPasswordScreen
 import com.example.wire.feature.auth.presentation.screen.LoginScreen
 import com.example.wire.feature.auth.presentation.screen.SignUpScreen
+import com.example.wire.feature.chat.presentation.screen.chat_list.ChatListScreen
+
 
 @Composable
 fun AppNavHost(navigatorImpl: NavigatorImpl) {
@@ -33,6 +35,9 @@ fun AppNavHost(navigatorImpl: NavigatorImpl) {
         }
         composable("forgot_password") {
             ForgotPasswordScreen(onNavigateBack = { navController.popBackStack() })
+        }
+        composable(Routes.ChatList.route) {
+         ChatListScreen() // Hilt will inject the ViewModel here
         }
     }
 }

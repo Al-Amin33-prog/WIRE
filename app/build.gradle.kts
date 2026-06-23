@@ -89,6 +89,7 @@ dependencies {
 
     // Networking
     implementation(libs.bundles.networking)
+    implementation(libs.bundles.ktor.client) // Added Ktor for WebSockets
 
     // Firebase
     implementation(platform(libs.firebase.bom))
