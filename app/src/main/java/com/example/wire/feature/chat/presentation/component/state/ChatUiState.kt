@@ -6,6 +6,7 @@ import com.example.wire.feature.chat.domain.model.Message
 data class ChatUiState(
 
     val messages: List<Message> = emptyList(),
+    val displayName: String = "User",
     val messageText: String = "",
 
     val currentMessage: String = "",
