@@ -1,3 +1,4 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -7,11 +8,16 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics.plugin)
+    alias(libs.plugins.room)
 }
 
 android {
     namespace = "com.example.wire"
     compileSdk = 35
+
+    extensions.configure<androidx.room.gradle.RoomExtension> {
+        schemaDirectory("$projectDir/schemas")
+    }
 
     defaultConfig {
         applicationId = "com.example.wire"
@@ -53,7 +59,10 @@ android {
             excludes += "/META-INF/LICENSE-notice.md"
         }
     }
+    // ADD THIS BLOCK AT THE TOP LEVEL
+
 }
+
 
 dependencies {
     // Modules
@@ -104,4 +113,10 @@ dependencies {
     androidTestImplementation(libs.bundles.testing.android)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // Room
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 }

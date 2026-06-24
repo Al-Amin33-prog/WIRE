@@ -1,3 +1,5 @@
+
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -5,17 +7,10 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.room) // Ensure this is in libs.versions.toml
 }
 
-
 android {
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
     namespace = "com.example.wire.core"
     compileSdk = 35
 
@@ -40,29 +35,34 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
     buildFeatures {
         compose = true
     }
 }
 
+// Keep this ONLY at the top level
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
 dependencies {
+    // Ktor
+    implementation(libs.bundles.ktor.client)
 
-
-        implementation(libs.bundles.ktor.client)
-
-
-    // AndroidX
+    // AndroidX & UI
     implementation(libs.androidx.core.ktx)
-
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging)
-
-    // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
-
-    // Lifecycle
     implementation(libs.bundles.lifecycle)
+
+    // Networking
+    implementation(libs.bundles.networking)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
 
     // Hilt
     implementation(libs.hilt.android)
@@ -70,26 +70,19 @@ dependencies {
     ksp(libs.hilt.compiler)
     ksp(libs.hilt.work.compiler)
 
-    // Networking
-    implementation(libs.bundles.networking)
-
-    // Room
-    implementation(libs.bundles.room)
+    // Room - USE EITHER THE BUNDLE OR INDIVIDUAL, NOT BOTH.
+    // I will use individual to match your previous fix
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
-    // DataStore
+    // DataStore & Security
     implementation(libs.datastore.preferences)
-
-    // Security
     implementation(libs.security.crypto)
 
-    // WorkManager
+    // Utilities
     implementation(libs.work.runtime.ktx)
-
-    // Coil
     implementation(libs.coil.compose)
-
-    // Serialization
     implementation(libs.kotlinx.serialization.json)
 
     // Testing
