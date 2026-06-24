@@ -16,4 +16,5 @@ interface WebSocketManager {
     fun observeMessages(): Flow<String>
 
     fun connectionState(): StateFlow<WebSocketState>
+    fun isTyping(): StateFlow<Boolean>
 }
