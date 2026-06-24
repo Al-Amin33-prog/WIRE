@@ -45,10 +45,13 @@ fun AppNavHost(navigatorImpl: NavigatorImpl) {
              onChatClick = {chatId ->
                  navController.navigate(Routes.Conversation.createRoute(chatId))
              }
-         ) // Hilt will inject the ViewModel here
+         )
         }
         composable(
-            route = Routes.Conversation.route,    arguments = listOf(navArgument("chatId") { type = NavType.StringType })
+            route = Routes.Conversation.route,    arguments = listOf(
+                navArgument("chatId") {
+                    type = NavType.StringType }
+            )
         ) { backStackEntry ->
             val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
             ConversationScreen(
