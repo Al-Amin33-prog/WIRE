@@ -59,7 +59,7 @@ fun ConversationContent(
             items(uiState.messages) { message ->
                 val isMe = message.senderId == "me" // Replace with actual logic
                 MessageBubble(
-                    message = message.content, isMe = isMe,
+                    message = message, isMe = isMe,
                     onLongClick = { onLongClick(message.id) }
                 )
             }
