@@ -1,6 +1,7 @@
 package com.example.wire.feature.chat.data.di
 
 import com.example.wire.core.network.websocket.WebSocketManager
+import com.example.wire.feature.chat.data.remote.dto.ChatApiService
 import com.example.wire.feature.chat.data.repository.ChatRepositoryImpl
 import com.example.wire.feature.chat.data.wrapper.ChatUseCases
 import com.example.wire.feature.chat.domain.repository.ChatRepository
@@ -47,7 +48,12 @@ object ChatModule {
 @Provides
 @Singleton
 fun provideChatRepository(
+    api: ChatApiService,
     webSocketManager: WebSocketManager
 ): ChatRepository {
-    return ChatRepositoryImpl(webSocketManager)
+    return ChatRepositoryImpl(
+        api,
+        webSocketManager
+
+    )
 }

@@ -15,6 +15,7 @@ import com.example.wire.feature.chat.presentation.component.viewmodel.ChatViewMo
 fun ConversationScreen(
     chatId: String,
     onBackClick: () -> Unit,
+    onLongClick: ()-> Unit,
     viewModel: ChatViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -29,6 +30,10 @@ fun ConversationScreen(
     ConversationContent(
         uiState = uiState,
         onEvent = viewModel::onEvent,
-        onBackClick = onBackClick
+        onBackClick = onBackClick,
+        onLongClick = {
+
+        }
+
     )
 }
