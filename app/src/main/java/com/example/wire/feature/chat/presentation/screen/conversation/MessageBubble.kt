@@ -18,7 +18,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 // Ensure these are your custom domain imports
-import com.example.wire.feature.chat.domain.model.Message
 import com.example.wire.feature.chat.domain.model.MessageStatus
 import com.example.wire.feature.chat.domain.model.MessageType
 import com.example.wire.core.ui.theme.SurfaceDark
@@ -29,7 +28,7 @@ import java.util.Locale
 
 @Composable
 fun MessageBubble(
-    message: Message,
+    message: String,
     isMe: Boolean,
     onLongClick: () -> Unit
 ) {

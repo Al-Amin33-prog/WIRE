@@ -10,10 +10,18 @@ data class Message(
     val senderId: String,
     val content: String,
     val timestamp: Long,
-    val type: MessageType = MessageType.TEXT,
-    val isRead: Boolean = false
+    val type: MessageType ,
+    val isRead: Boolean = false,
+    val status: MessageStatus = MessageStatus.SENT,
+    val isEdited: Boolean = false,
+    val isDeleted: Boolean = false,
+    val metadata: Map<String, String>? = null
+
 )
 
 enum class MessageType {
     TEXT, IMAGE, VIDEO, FILE
+}
+enum class MessageStatus {
+    SENDING, SENT, DELIVERED, READ, ERROR
 }
