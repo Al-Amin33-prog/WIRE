@@ -27,7 +27,11 @@ import com.example.wire.core.ui.theme.SurfaceDark
 import com.example.wire.core.ui.theme.Violet
 
 @Composable
-fun ChatInputBar(text: String, onTextChange: (String) -> Unit, onSend: () -> Unit) {
+fun ChatInputBar(
+    text: String,
+    onTextChange: (String) -> Unit,
+    onSend: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

@@ -22,13 +22,14 @@ import com.example.wire.feature.chat.domain.model.MessageStatus
 import com.example.wire.feature.chat.domain.model.MessageType
 import com.example.wire.core.ui.theme.SurfaceDark
 import com.example.wire.core.ui.theme.Violet
+import com.example.wire.feature.chat.domain.model.Message
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun MessageBubble(
-    message: String,
+    message: Message,
     isMe: Boolean,
     onLongClick: () -> Unit
 ) {

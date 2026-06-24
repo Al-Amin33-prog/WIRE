@@ -3,8 +3,7 @@ package com.example.wire.feature.chat.data.mapper
 
 
 import com.example.wire.feature.chat.domain.model.Message
-import com.example.wire.feature.chat.domain.model.MessageType
-import com.example.wire.feature.chat.domain.model.MessageStatus
+
 
 // Assuming your DTO has similar fields, we create an extension function
 // If your DTO message is already the domain Message, you can remove .toDomain()
