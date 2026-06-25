@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.wire.R
@@ -24,8 +25,13 @@ fun LoginScreen(
     onNavigateToForgotPassword: () -> Unit,
     onLoginSuccess: () -> Unit
 ) {
+
+
+
     val context = LocalContext.current
     val activity = LocalFragmentActivity.current
+    val webClientId = stringResource(R.string.default_web_client_id)
+
     val uiState by viewModel.uiState.collectAsState()
 
     val googleSignInLauncher = rememberLauncherForActivityResult(
@@ -36,19 +42,22 @@ fun LoginScreen(
             val account = task.getResult(ApiException::class.java)
             val idToken = account?.idToken
             if (idToken != null) {
-                viewModel.onEvent(AuthUiEvent.GoogleSignInResult(idToken))
+                viewModel.onEvent(
+                    AuthUiEvent.GoogleSignInResult(idToken))
             } else {
-                viewModel.onEvent(AuthUiEvent.GoogleSignInFailed("No ID token received"))
+                viewModel.onEvent(
+                    AuthUiEvent.GoogleSignInFailed("No ID token received"))
             }
         } catch (e: ApiException) {
-            viewModel.onEvent(AuthUiEvent.GoogleSignInFailed(e.message ?: "Google sign-in failed"))
+            viewModel.onEvent(
+                AuthUiEvent.GoogleSignInFailed(e.message ?: "Google sign-in failed"))
         }
     }
 
     LaunchedEffect(uiState.triggerGoogleSignIn) {
         if (uiState.triggerGoogleSignIn) {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(context.getString(R.string.default_web_client_id))
+                .requestIdToken(webClientId)
                 .requestEmail()
                 .build()
             val googleSignInClient = GoogleSignIn.getClient(context, gso)
