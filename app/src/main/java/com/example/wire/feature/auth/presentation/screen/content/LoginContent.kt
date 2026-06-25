@@ -51,7 +51,7 @@ fun LoginContent(
             fontSize = 42.sp,
             lineHeight = 48.sp,
             fontWeight = FontWeight.Black,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             letterSpacing = 2.sp
         )
 
@@ -83,8 +83,8 @@ fun LoginContent(
                 unfocusedContainerColor = Color.Unspecified,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor =MaterialTheme.colorScheme.onSurface
             ),
             placeholder = { Text("alex@gmail.com", color = Color.DarkGray) }
         )
@@ -115,12 +115,12 @@ fun LoginContent(
                 }
             },
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = SurfaceDark,
-                unfocusedContainerColor = SurfaceDark,
-                focusedIndicatorColor = Color.Transparent,
+                focusedContainerColor =  MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor =  MaterialTheme.colorScheme.surface,
+                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor =MaterialTheme.colorScheme.onSurface
             )
         )
 
