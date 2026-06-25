@@ -14,6 +14,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import retrofit2.Retrofit
 import javax.inject.Singleton
 
 @Module
@@ -43,17 +44,22 @@ object ChatModule {
                 LoadChatHistoryUseCase(repository)
         )
     }
+    @Provides
+    @Singleton
+    fun provideChatApiService(retrofit: Retrofit): ChatApiService {
+        return retrofit.create(ChatApiService::class.java)
+    }
+    @Provides
+    @Singleton
+    fun provideChatRepository(
+        api: ChatApiService,
+        webSocketManager: WebSocketManager
+    ): ChatRepository {
+        return ChatRepositoryImpl(
+            api,
+            webSocketManager
+
+        )
+    }
 }
 
-@Provides
-@Singleton
-fun provideChatRepository(
-    api: ChatApiService,
-    webSocketManager: WebSocketManager
-): ChatRepository {
-    return ChatRepositoryImpl(
-        api,
-        webSocketManager
-
-    )
-}
