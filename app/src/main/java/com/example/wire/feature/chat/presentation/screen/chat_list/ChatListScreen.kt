@@ -3,6 +3,7 @@ package com.example.wire.feature.chat.presentation.screen.chat_list
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 
 import com.example.wire.feature.chat.presentation.component.viewmodel.ChatViewModel
@@ -21,5 +22,11 @@ fun ChatListScreen(
         onEvent = viewModel::onEvent,
         onChatClick = onChatClick
     )
+}
+@Preview
+@Composable
+fun ChatListPreview(){
+
+
 }
 
