@@ -35,10 +35,6 @@ sealed class BottomNavItem(
         "Profile",
         Icons.Default.Person
     )
-    object Notification: BottomNavItem(
-       "Alerts",
-        "Alerts",
-        Icons.Default.Notifications
-    )
+
 
 }
