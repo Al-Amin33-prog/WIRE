@@ -1,6 +1,8 @@
 package com.example.wire.core.network.websocket
 
+import com.example.wire.core.database.dao.MessageDao
 import com.example.wire.core.network.notification.NotificationHandler
+import com.example.wire.feature.chat.data.mapper.toEntity
 
 import com.example.wire.feature.chat.data.remote.dto.ChatActionDto
 import com.example.wire.feature.notifications.domain.model.NotificationType
@@ -27,7 +29,8 @@ import javax.inject.Singleton
 @Singleton
 class WebSocketManagerImpl @Inject constructor(
     private val notificationRepository: NotificationRepository,
-    private val notificationHandler: NotificationHandler
+    private val notificationHandler: NotificationHandler,
+    private val messageDao: MessageDao
 ) : WebSocketManager {
 
     private val _state = MutableStateFlow<WebSocketState>(WebSocketState.Disconnected)
@@ -89,6 +92,12 @@ class WebSocketManagerImpl @Inject constructor(
                                 }
 
                                 "SEND" -> {
+                                    val msg = chatAction.message
+                                   if (msg != null){
+                                       CoroutineScope(Dispatchers.IO).launch {
+                                           messageDao.insertMessage(msg.toEntity(chatId = "get_chat_id_from_logic"))
+                                       }
+                                   }
                                     notificationHandler.showSystemAlert(
                                         title = chatAction.message?.senderId ?: "New Message",
                                         message = chatAction.message?.content ?: "",
