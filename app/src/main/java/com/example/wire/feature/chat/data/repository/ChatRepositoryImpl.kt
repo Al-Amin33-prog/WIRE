@@ -1,5 +1,6 @@
 package com.example.wire.feature.chat.data.repository
 
+import com.example.wire.core.database.dao.MessageDao
 import com.example.wire.core.network.websocket.WebSocketManager
 import com.example.wire.feature.chat.data.remote.dto.ChatActionDto
 import com.example.wire.feature.chat.data.remote.dto.ChatApiService
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 class ChatRepositoryImpl @Inject constructor(
     private val api: ChatApiService,
-    private val webSocketManager: WebSocketManager
+    private val webSocketManager: WebSocketManager,
+    private val messageDao: MessageDao
 ) : ChatRepository {
 
     override suspend fun connect() {
@@ -33,14 +35,9 @@ class ChatRepositoryImpl @Inject constructor(
     }
 
     override fun observeMessages(chatId: String): Flow<List<Message>> {
-        return webSocketManager        .observeMessages()
-            .map { json ->
-                val dto = Json.decodeFromString<ChatActionDto>(json)
-
-                // Only map and return if there is a message
-                dto.message?.let {
-                    listOf(it) // If it's already domain type, no .toDomain() needed
-                } ?: emptyList()
+        return messageDao.getMessagesForChat(chatId)
+            .map { entities ->
+                entities.map { it.toDomain() }
             }
     }
 
