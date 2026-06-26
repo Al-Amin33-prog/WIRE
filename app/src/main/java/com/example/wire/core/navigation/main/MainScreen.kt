@@ -32,7 +32,6 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
         BottomNavItem.Chat,
         BottomNavItem.Wallet,
         BottomNavItem.Contacts,
-        BottomNavItem.Notification,
         BottomNavItem.Profile
     )
 
@@ -82,7 +81,7 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
                 })
             }
 
-            composable(BottomNavItem.Notification.route) {
+            composable("notifications") {
                 // FIX 3: Parameter names must match your NotificationsScreen declaration
                 NotificationsScreen(
                     onBackClick = {

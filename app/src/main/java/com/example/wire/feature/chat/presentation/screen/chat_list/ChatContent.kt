@@ -22,12 +22,17 @@ import com.example.wire.feature.wallet.presentation.components.WalletCard
 fun ChatContent(
     uiState: ChatUiState,
     onEvent: (ChatUiEvent) -> Unit,
-    onChatClick: (String) -> Unit
+    onChatClick: (String) -> Unit,
+    onNotificationClick: () -> Unit
 ) {
     Scaffold(
         containerColor = BackgroundDark, // Using your theme color
         topBar = {
-            HeaderSection(userName = uiState.displayName)
+            HeaderSection(
+                userName = uiState.displayName,
+                onNotificationClick = onNotificationClick,
+
+                )
         }
     ) { padding ->
         LazyColumn(

@@ -14,8 +14,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,44 +30,78 @@ import androidx.compose.ui.unit.sp
 import com.example.wire.core.ui.theme.SurfaceDark
 
 @Composable
-fun HeaderSection(userName: String) {
+fun HeaderSection(
+    userName: String,
+    unreadCount: Int = 3, // This should eventually come from NotificationViewModel
+    onSearchClick: () -> Unit = {},
+    onNotificationClick: () -> Unit // Required for the deep link to the Activity screen
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 16.dp),
+            .padding(horizontal = 20.dp, vertical = 24.dp), // Increased padding for a more premium feel
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
             Text(
                 text = "Good morning, $userName 👋",
-                color = Color.Gray, fontSize = 14.sp
+                color = Color.Gray,
+                style = MaterialTheme.typography.labelMedium,
+                letterSpacing = 0.5.sp
             )
             Text(
-                text = "MESSAGES",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Black,
+                text = "Messages", // Changed from MESSAGES to match standard Fintech UI
+                fontSize = 34.sp,
+                fontWeight = FontWeight.Bold,
                 color = Color.White
             )
         }
-        Row {
-            IconButton(onClick = {}, modifier = Modifier.background(SurfaceDark, CircleShape)) {
-                Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            // Search Icon
+            IconButton(
+                onClick = onSearchClick,
+                modifier = Modifier
+                    .size(44.dp)
+                    .background(SurfaceDark, CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search",
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
             }
-            Spacer(modifier = Modifier.width(8.dp))
-            Box {
-                IconButton(onClick = {}, modifier = Modifier.background(SurfaceDark, CircleShape)) {
-                    Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.White)
-                }
-                // Notification Badge
-                Box(
-                    modifier = Modifier
-                        .size(16.dp)
-                        .background(Color.Red, CircleShape)
-                        .align(Alignment.TopEnd),
-                    contentAlignment = Alignment.Center
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // Notification Icon with Official Material 3 Badging
+            IconButton(
+                onClick = onNotificationClick,
+                modifier = Modifier
+                    .size(44.dp)
+                    .background(SurfaceDark, CircleShape)
+            ) {
+                BadgedBox(
+                    badge = {
+                        if (unreadCount > 0) {
+                            Badge(
+                                containerColor = Color.Red,
+                                contentColor = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            ) {
+                                Text(unreadCount.toString(), fontSize = 10.sp)
+                            }
+                        }
+                    }
                 ) {
-                    Text("3", color = Color.White, fontSize = 10.sp)
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "Activity",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
             }
         }
