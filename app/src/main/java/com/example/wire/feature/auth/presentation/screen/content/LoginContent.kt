@@ -22,11 +22,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wire.R
-import com.example.wire.core.ui.theme.SurfaceDark
 import com.example.wire.feature.auth.presentation.event.AuthUiEvent
 import com.example.wire.feature.auth.presentation.state.AuthUiState
 
@@ -47,7 +45,10 @@ fun LoginContent(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "SEND.\nCHAT.\nWIRE.",
+            stringResource(R.string.send),
+            stringResource(R.string.chat),
+            stringResource(R.string.wire),
+
             fontSize = 42.sp,
             lineHeight = 48.sp,
             fontWeight = FontWeight.Black,
@@ -58,7 +59,7 @@ fun LoginContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "The messaging app where money moves as fast as conversation.",
+            text = stringResource(R.string.the_app_where_money_),
             fontSize = 16.sp,
             color = Color.Gray,
             modifier = Modifier.fillMaxWidth(0.8f)
@@ -67,7 +68,7 @@ fun LoginContent(
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "EMAIL",
+            text = stringResource(R.string.email),
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Gray
@@ -86,12 +87,15 @@ fun LoginContent(
                 focusedTextColor = MaterialTheme.colorScheme.onSurface,
                 unfocusedTextColor =MaterialTheme.colorScheme.onSurface
             ),
-            placeholder = { Text("alex@gmail.com", color = Color.DarkGray) }
+            placeholder = {
+                Text(stringResource(R.string.user_email_com),
+                color = Color.DarkGray)
+            }
         )
 
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "PASSWORD",
+            text = stringResource(R.string.password),
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Gray

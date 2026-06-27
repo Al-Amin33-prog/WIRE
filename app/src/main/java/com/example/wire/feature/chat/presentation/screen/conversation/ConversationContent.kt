@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.wire.core.ui.theme.*
 import com.example.wire.feature.chat.presentation.component.event.ChatUiEvent
 import com.example.wire.feature.chat.presentation.component.state.ChatUiState
 import com.example.wire.feature.chat.presentation.screen.chat_list.ChatInputBar
@@ -27,7 +26,7 @@ fun ConversationContent(
     onLongClick: (String) -> Unit
 ) {
     Scaffold(
-        containerColor = BackgroundDark,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             ConversationHeader(
                 userName = uiState.displayName,

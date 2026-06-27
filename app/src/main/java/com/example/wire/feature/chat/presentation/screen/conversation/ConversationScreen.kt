@@ -3,7 +3,6 @@ package com.example.wire.feature.chat.presentation.screen.conversation
 
 
 import androidx.compose.runtime.Composable
-
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue

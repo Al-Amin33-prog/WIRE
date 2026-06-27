@@ -17,15 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-// Ensure these are your custom domain imports
+import com.example.wire.core.common.util.formatTimestamp
 import com.example.wire.feature.chat.domain.model.MessageStatus
 import com.example.wire.feature.chat.domain.model.MessageType
 import com.example.wire.core.ui.theme.SurfaceDark
 import com.example.wire.core.ui.theme.Violet
 import com.example.wire.feature.chat.domain.model.Message
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+
 
 @Composable
 fun MessageBubble(
@@ -72,7 +70,8 @@ fun MessageBubble(
                         }
                         // You can add Image/Video/Payment cases here later
                         else -> {
-                            Text("Supported in next update", color = Color.Gray, fontSize = 12.sp)
+                            Text("Supported in next update",
+                                color = Color.Gray, fontSize = 12.sp)
                         }
                     }
 
@@ -114,7 +113,3 @@ fun MessageBubble(
     }
 }
 
-fun formatTimestamp(timestamp: Long): String {
-    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-    return sdf.format(Date(timestamp))
-}

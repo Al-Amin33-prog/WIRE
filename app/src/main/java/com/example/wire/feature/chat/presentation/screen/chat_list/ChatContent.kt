@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.wire.core.ui.theme.*
 import com.example.wire.feature.chat.presentation.component.event.ChatUiEvent
 import com.example.wire.feature.chat.presentation.component.state.ChatUiState
 import com.example.wire.feature.chat.presentation.screen.component.ChatItem
@@ -26,7 +25,7 @@ fun ChatContent(
     onNotificationClick: () -> Unit
 ) {
     Scaffold(
-        containerColor = BackgroundDark, // Using your theme color
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             HeaderSection(
                 userName = uiState.displayName,
@@ -71,7 +70,7 @@ fun ChatContent(
                     lastMessage = "Sent you $50.00",
                     time = "2m",
                     unreadCount = 2,
-                    avatarColor = Color(0xFF2ECC71),
+                    avatarColor = Color.Unspecified,
                     onClick = { onChatClick("demo_id") }
                 )
             }

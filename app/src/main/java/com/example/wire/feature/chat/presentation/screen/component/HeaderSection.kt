@@ -2,7 +2,6 @@ package com.example.wire.feature.chat.presentation.screen.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,14 +31,14 @@ import com.example.wire.core.ui.theme.SurfaceDark
 @Composable
 fun HeaderSection(
     userName: String,
-    unreadCount: Int = 3, // This should eventually come from NotificationViewModel
+    unreadCount: Int = 3,
     onSearchClick: () -> Unit = {},
-    onNotificationClick: () -> Unit // Required for the deep link to the Activity screen
+    onNotificationClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 24.dp), // Increased padding for a more premium feel
+            .padding(horizontal = 20.dp, vertical = 24.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -51,7 +50,7 @@ fun HeaderSection(
                 letterSpacing = 0.5.sp
             )
             Text(
-                text = "Messages", // Changed from MESSAGES to match standard Fintech UI
+                text = "Messages", //
                 fontSize = 34.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
