@@ -95,7 +95,7 @@ class WebSocketManagerImpl @Inject constructor(
                                     val msg = chatAction.message
                                    if (msg != null){
                                        CoroutineScope(Dispatchers.IO).launch {
-                                           messageDao.insertMessage(msg.toEntity(chatId = "get_chat_id_from_logic"))
+                                           messageDao.insertMessage(msg.toEntity(chatId =  msg.senderId))
                                        }
                                    }
                                     notificationHandler.showSystemAlert(
