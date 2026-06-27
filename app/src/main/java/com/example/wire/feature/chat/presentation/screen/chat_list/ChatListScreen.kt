@@ -5,29 +5,38 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.wire.feature.chat.presentation.component.state.ChatUiState
 import com.example.wire.feature.chat.presentation.component.viewmodel.ChatViewModel
 
 
 @Composable
 fun ChatListScreen(
     onChatClick: (String) -> Unit,
-    onNotificationClick: () -> Unit, // Add this parameter
+    onNotificationClick: () -> Unit,
     viewModel: ChatViewModel = hiltViewModel()
 ) {
-    // Observe the state from ViewModel
+
     val uiState by viewModel.uiState.collectAsState()
 
-    // Pass state and events to the UI Content
+
     ChatContent(
         uiState = uiState,
         onEvent = viewModel::onEvent,
         onChatClick = onChatClick,
-        onNotificationClick = onNotificationClick // Use the callback here
+        onNotificationClick = onNotificationClick
     )
 }
 
 @Preview
 @Composable
 fun ChatListPreview(){
-    // Add preview implementation if needed
+    ChatContent(
+        uiState = ChatUiState(
+
+        ),
+        onEvent = {},
+        onChatClick = {},
+        onNotificationClick = {}
+    )
+
 }

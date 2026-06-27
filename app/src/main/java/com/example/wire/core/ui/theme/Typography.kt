@@ -8,7 +8,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.wire.R
 
-// 1. Rename this from WireTypography to InterFontFamily
+
 val InterFontFamily = FontFamily(
     Font(R.font.inter_regular, FontWeight.Normal),
     Font(R.font.inter_medium, FontWeight.Medium),
@@ -16,10 +16,10 @@ val InterFontFamily = FontFamily(
     Font(R.font.inter_bold, FontWeight.Bold)
 )
 
-// 2. Rename this variable to WireTypography so Theme.kt can see it
+
 val WireTypography = Typography(
     headlineLarge = TextStyle(
-        fontFamily = InterFontFamily, // Use the new name here
+        fontFamily = InterFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 32.sp,
         lineHeight = 40.sp,
