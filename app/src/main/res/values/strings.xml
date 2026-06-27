@@ -41,4 +41,22 @@
 
     <!-- Google Sign In -->
     <string name="default_web_client_id">YOUR_WEB_CLIENT_ID.apps.googleusercontent.com</string>
+    <string name="the_app_where_money_">The messaging app where money moves as fast as conversation.</string>
+    <string name="send">SEND</string>
+    <string name="chat">CHAT</string>
+    <string name="wire">WIRE</string>
+    <string name="email">EMAIL</string>
+    <string name="user_email_com">User@email.com</string>
+    <string name="password">PASSWORD</string>
+    <string name="recent">RECENT</string>
+    <string name="search_conversation">Search conversations......</string>
+    <string name="messages">Messages</string>
+    <string name="good_morning">Good morning</string>
+    <string name="search">Search</string>
+    <string name="activity">Activity</string>
+    <string name="this_message_was_deleted">This message was deleted</string>
+    <string name="edited">Edited</string>
+    <string name="no_recent_activity">No recent activity</string>
+    <string name="clear_all">Clear All</string>
+    <string name="back">Back</string>
 </resources>
