@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -14,10 +13,6 @@ plugins {
 android {
     namespace = "com.example.wire"
     compileSdk = 35
-
-    extensions.configure<androidx.room.gradle.RoomExtension> {
-        schemaDirectory("$projectDir/schemas")
-    }
 
     defaultConfig {
         applicationId = "com.example.wire"
@@ -59,10 +54,12 @@ android {
             excludes += "/META-INF/LICENSE-notice.md"
         }
     }
-    // ADD THIS BLOCK AT THE TOP LEVEL
-
+    
+    // Some versions of Gradle need the extension configured this way
+    extensions.configure<androidx.room.gradle.RoomExtension> {
+        schemaDirectory("$projectDir/schemas")
+    }
 }
-
 
 dependencies {
     // Modules
@@ -76,7 +73,7 @@ dependencies {
     implementation(project(":feature:contacts"))
     implementation(project(":feature:settings"))
 
-    // AndroidX
+    // AndroidX & UI
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.splash.screen)
@@ -85,8 +82,6 @@ dependencies {
     // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
-
-    // Lifecycle
     implementation(libs.bundles.lifecycle)
 
     // Hilt
@@ -98,23 +93,32 @@ dependencies {
 
     // Networking
     implementation(libs.bundles.networking)
-    implementation(libs.bundles.ktor.client) // Added Ktor for WebSockets
+    implementation(libs.bundles.ktor.client)
 
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
-
-    // Google Sign-In
     implementation(libs.google.play.services.auth)
 
-    // Testing
+    // Testing (Robolectric & Mocking)
     testImplementation(libs.bundles.testing.unit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.navigation.testing)
+    testImplementation(libs.okhttp.mockwebserver)
+
+
+// --- ADD THESE TWO LINES ---
+
+            testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.androidx.test.core)
+
+
+
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.bundles.testing.android)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // Room
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
