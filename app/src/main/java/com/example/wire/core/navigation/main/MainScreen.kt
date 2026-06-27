@@ -78,7 +78,12 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
                 ChatListScreen(onChatClick = { chatId ->
                     // FIX 2: Use the navigatorImpl (OUTER navigator) to go to the full-screen Conversation
                     navigatorImpl.navController?.navigate(Routes.Conversation.createRoute(chatId))
-                })
+                },
+                    onNotificationClick = {
+                        navigatorImpl.navController?.navigate("notifications")
+                    }
+                )
+
             }
 
             composable("notifications") {

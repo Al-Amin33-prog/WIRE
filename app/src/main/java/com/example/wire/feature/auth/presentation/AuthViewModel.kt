@@ -46,34 +46,28 @@ class AuthViewModel @Inject constructor(
             is AuthUiEvent.PasswordChanged -> _uiState.update { it.copy(password = event.value) }
             is AuthUiEvent.ConfirmPasswordChanged -> _uiState.update { it.copy(confirmPassword = event.value) }
             is AuthUiEvent.DisplayNameChanged -> _uiState.update { it.copy(displayName = event.value) }
-            
+            is AuthUiEvent.OnPhoneChange -> _uiState.update { it.copy(phone = event.phone) }
+
             AuthUiEvent.LoginClicked -> login()
             AuthUiEvent.CreateAccountClicked -> createAccount()
             AuthUiEvent.LogoutClicked -> logout()
             AuthUiEvent.ForgotPasswordClicked -> sendPasswordReset()
             
             AuthUiEvent.BiometricLoginClicked -> _uiState.update { it.copy(showBiometricPrompt = true) }
-            
-            is AuthUiEvent.BiometricAuthFailed -> _uiState.update { 
-                it.copy(showBiometricPrompt = false, errorMessage = event.reason) 
-            }
-            
             AuthUiEvent.BiometricAuthSucceeded -> {
                 _uiState.update { it.copy(showBiometricPrompt = false) }
-                // Implement biometric-specific login if needed
+                // Here you would typically trigger a silent login with saved credentials
+            }
+            is AuthUiEvent.BiometricAuthFailed -> {
+                _uiState.update { it.copy(showBiometricPrompt = false, errorMessage = event.reason) }
             }
 
             AuthUiEvent.GoogleSignInClicked -> _uiState.update { it.copy(triggerGoogleSignIn = true) }
-            
             is AuthUiEvent.GoogleSignInResult -> handleGoogleSignIn(event.idToken)
-            
             is AuthUiEvent.GoogleSignInFailed -> _uiState.update { 
                 it.copy(errorMessage = event.reason, triggerGoogleSignIn = false) 
             }
-
-            is AuthUiEvent.OnPhoneChange -> _uiState.update { it.copy(phone = event.phone) }
-            
-
+            else -> Unit
         }
     }
 
@@ -107,26 +101,38 @@ class AuthViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             val result = loginUseCase(LoginUseCase.Params(_uiState.value.email, _uiState.value.password))
             result.fold(
-                onSuccess = { _uiState.update { it.copy(isLoading = false, isLoggedIn = true) } },
-                onFailure = { error -> _uiState.update { it.copy(isLoading = false, errorMessage = error.message) } }
+                onSuccess = {
+                    userPreferencesDataStore.setLoggedIn(true)
+                    _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
+                },
+                onFailure = { error ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = error.message) }
+                }
             )
         }
     }
 
     private fun createAccount() {
         viewModelScope.launch {
-            val state = _uiState.value
-            if (state.password != state.confirmPassword) {
+            val current = _uiState.value
+            if (current.password != current.confirmPassword) {
                 _uiState.update { it.copy(errorMessage = "Passwords do not match") }
                 return@launch
             }
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             val result = createAccountUseCase(
-                CreateAccountUseCase.Params(state.email, state.password, state.displayName, state.phone)
+                CreateAccountUseCase.Params(
+                    current.email, current.password, current.displayName, current.phone
+                )
             )
             result.fold(
-                onSuccess = { _uiState.update { it.copy(isLoading = false, isLoggedIn = true) } },
-                onFailure = { error -> _uiState.update { it.copy(isLoading = false, errorMessage = error.message) } }
+                onSuccess = {
+                    userPreferencesDataStore.setLoggedIn(true)
+                    _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
+                },
+                onFailure = { error ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = error.message) }
+                }
             )
         }
     }
