@@ -1,5 +1,6 @@
 package com.example.wire.feature.chat.data.di
 
+import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
 import com.example.wire.core.network.websocket.WebSocketManager
 import com.example.wire.feature.chat.data.remote.dto.ChatApiService
@@ -55,13 +56,14 @@ object ChatModule {
     fun provideChatRepository(
         api: ChatApiService,
         messageDao: MessageDao,
+        chatDao: ChatDao,
         webSocketManager: WebSocketManager
     ): ChatRepository {
         return ChatRepositoryImpl(
             api,
             webSocketManager,
-            messageDao
-
+            messageDao,
+            chatDao
         )
     }
 }

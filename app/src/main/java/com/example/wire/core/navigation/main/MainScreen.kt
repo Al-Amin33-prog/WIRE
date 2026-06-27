@@ -1,5 +1,6 @@
 package com.example.wire.core.navigation.main
 
+import com.example.wire.feature.notifications.presentation.screen.NotificationsScreen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -19,7 +20,7 @@ import com.example.wire.app.navigation.NavigatorImpl
 import com.example.wire.core.navigation.routes.BottomNavItem
 import com.example.wire.core.navigation.routes.Routes // Added missing import
 import com.example.wire.feature.chat.presentation.screen.chat_list.ChatListScreen // Added missing import
-import com.example.wire.feature.notifications.presentation.screen.NotificationsScreen // Added missing import
+
 
 @Composable
 fun MainScreen(navigatorImpl: NavigatorImpl) {

@@ -14,4 +14,6 @@ interface ChatDao {
 
     @Query("SELECT * FROM chats ORDER BY timestamp DESC")
     fun getAllChats(): Flow<List<ChatEntity>>
+
+    suspend fun updateChatPreview(chatId: String, lastMessage: String, timestamp: Long)
 }

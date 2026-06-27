@@ -1,5 +1,6 @@
 package com.example.wire.core.network.websocket
 
+import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
 import com.example.wire.core.network.notification.NotificationHandler
 import com.example.wire.feature.chat.data.mapper.toEntity
@@ -30,7 +31,8 @@ import javax.inject.Singleton
 class WebSocketManagerImpl @Inject constructor(
     private val notificationRepository: NotificationRepository,
     private val notificationHandler: NotificationHandler,
-    private val messageDao: MessageDao
+    private val messageDao: MessageDao,
+    private val chatDao: ChatDao
 ) : WebSocketManager {
 
     private val _state = MutableStateFlow<WebSocketState>(WebSocketState.Disconnected)
@@ -96,13 +98,20 @@ class WebSocketManagerImpl @Inject constructor(
                                    if (msg != null){
                                        CoroutineScope(Dispatchers.IO).launch {
                                            messageDao.insertMessage(msg.toEntity(chatId =  msg.senderId))
+                                           chatDao.updateChatPreview(
+                                               chatId = msg.senderId,
+                                               lastMessage = msg.content,
+                                               timestamp = System.currentTimeMillis()
+                                           )
+
                                        }
+                                       notificationHandler.showSystemAlert(
+                                           title = msg.metadata?.get("senderName")?: "New Message",
+                                           message = msg.content,
+                                           type = NotificationType.MESSAGE
+                                       )
                                    }
-                                    notificationHandler.showSystemAlert(
-                                        title = chatAction.message?.senderId ?: "New Message",
-                                        message = chatAction.message?.content ?: "",
-                                        type = NotificationType.MESSAGE
-                                    )
+
                                     incomingMessages.emit(jsonString)
                                 }
 
