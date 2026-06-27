@@ -67,7 +67,7 @@ class AuthViewModel @Inject constructor(
             is AuthUiEvent.GoogleSignInFailed -> _uiState.update { 
                 it.copy(errorMessage = event.reason, triggerGoogleSignIn = false) 
             }
-            else -> Unit
+
         }
     }
 

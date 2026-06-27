@@ -55,14 +55,17 @@ fun NotificationItem(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            Icon(icon, contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary)
         }
 
         Spacer(Modifier.width(16.dp))
 
         Column(modifier = Modifier.weight(1f)) {
-            Text(notification.title, fontWeight = FontWeight.Bold)
-            Text(notification.content, style = MaterialTheme.typography.bodyMedium)
+            Text(notification.title,
+                fontWeight = FontWeight.Bold)
+            Text(notification.content,
+                style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

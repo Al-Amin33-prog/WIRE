@@ -43,7 +43,7 @@ class NotificationRepositoryImpl @Inject constructor(
            id = notification.id,
            title = notification.title,
            content = notification.content,
-           type = notification.type.name, // Save Enum as String
+           type = notification.type.name,
            timestamp = notification.timestamp,
            isRead = notification.isRead
        )

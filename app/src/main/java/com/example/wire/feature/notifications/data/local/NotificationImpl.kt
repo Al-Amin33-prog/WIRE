@@ -21,11 +21,13 @@ class NotificationHandlerImpl @Inject constructor(
     override fun showSystemAlert(title: String, message: String, type: NotificationType) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "wire_alerts"
-        val intent = Intent(context, Class.forName("com.example.wire.MainActivity")).apply {
+        val intent = Intent(context,
+            Class.forName("com.example.wire.MainActivity")).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             // Pass the destination as an extra
             putExtra("NAVIGATION_TARGET", when(type) {
-                NotificationType.PAYMENT_RECEIVED, NotificationType.PAYMENT_REQUEST -> "notifications"
+                NotificationType.PAYMENT_RECEIVED,
+                NotificationType.PAYMENT_REQUEST -> "notifications"
                 NotificationType.MESSAGE -> "chat_list"
                 else -> "notifications"
             })
@@ -39,18 +41,20 @@ class NotificationHandlerImpl @Inject constructor(
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "Wire Alerts", NotificationManager.IMPORTANCE_HIGH)
+            val channel = NotificationChannel(channelId, "Wire Alerts",
+                NotificationManager.IMPORTANCE_HIGH)
             notificationManager.createNotificationChannel(channel)
         }
 
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.notification_important_24px) // Ensure this icon exists in res/drawable
+            .setSmallIcon(R.drawable.notification_important_24px)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()
 
-        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
+        notificationManager.notify(System.currentTimeMillis().toInt(),
+            notification)
     }
 }

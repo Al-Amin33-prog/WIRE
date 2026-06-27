@@ -9,5 +9,5 @@ interface WebSocketManager {
     suspend fun sendMessage(message: String)
     fun observeMessages(): Flow<String>
     fun connectionState(): StateFlow<WebSocketState>
-    fun isTyping(): StateFlow<Boolean> // Added missing method
+    fun isTyping(): StateFlow<Boolean>
 }

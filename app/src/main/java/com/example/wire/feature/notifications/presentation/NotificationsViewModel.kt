@@ -7,7 +7,7 @@ import com.example.wire.feature.notifications.presentation.state.NotificationUIS
 import com.example.wire.feature.notifications.presentation.event.NotificationUIEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch // Added for Coroutines
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,7 +26,7 @@ class NotificationsViewModel @Inject constructor(
 
     private fun observeNotifications() {
         _uiState.update { it.copy(isLoading = true) }
-        useCases.getNotifications() // Best practice: use the useCase, not the repository directly
+        useCases.getNotifications()
             .onEach { list ->
                 _uiState.update { it.copy(notifications = list, isLoading = false) }
             }
@@ -37,7 +37,7 @@ class NotificationsViewModel @Inject constructor(
     }
 
     fun onEvent(event: NotificationUIEvent) {
-        viewModelScope.launch { // Wrapped in a coroutine to handle suspend functions
+        viewModelScope.launch {
             when(event) {
                 is NotificationUIEvent.Refresh -> observeNotifications()
                 is NotificationUIEvent.MarkAsRead -> {

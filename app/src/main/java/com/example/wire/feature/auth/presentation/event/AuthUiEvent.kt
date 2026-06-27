@@ -10,11 +10,7 @@ sealed class AuthUiEvent {
     object CreateAccountClicked : AuthUiEvent()
     object LogoutClicked : AuthUiEvent()
     object ForgotPasswordClicked : AuthUiEvent()
-
-    //object ErrorDismissed : AuthUiEvent()
-
     object BiometricLoginClicked : AuthUiEvent()
-   // object EnableBiometricClicked : AuthUiEvent()
     object BiometricAuthSucceeded : AuthUiEvent()
     data class BiometricAuthFailed(val reason: String) : AuthUiEvent()
     data class OnPhoneChange(val phone: String) : AuthUiEvent()
