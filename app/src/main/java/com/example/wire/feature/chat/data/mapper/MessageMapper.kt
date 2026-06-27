@@ -1,7 +1,7 @@
 package com.example.wire.feature.chat.data.mapper
 
 import com.example.wire.feature.chat.domain.model.Message
-import com.example.wire.core.database.entity.MessageEntity // Add this
+import com.example.wire.core.database.entity.MessageEntity
 
 // Convert Room Entity to Domain Model (For UI)
 fun MessageEntity.toDomain(): Message {

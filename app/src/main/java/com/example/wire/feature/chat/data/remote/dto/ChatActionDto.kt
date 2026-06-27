@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ChatActionDto(
     val action: String, // "SEND", "EDIT", "DELETE", "PAYMENT", "TYPING_ON", "TYPING_OFF"
-    val message: Message? = null, // Ensure this is YOUR domain Message, not DataStore Message
+    val message: Message? = null, //  domain Message, not DataStore Message
     val messageId: String? = null
 )
