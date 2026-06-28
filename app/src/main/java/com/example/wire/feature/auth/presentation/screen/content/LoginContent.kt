@@ -5,7 +5,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Visibility
@@ -22,6 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wire.R
@@ -35,79 +39,84 @@ fun LoginContent(
     onNavigateToSignUp: () -> Unit,
     onNavigateToForgotPassword: () -> Unit
 ) {
-    var passwordVisible by remember{ mutableStateOf(false
-    ) }
+    var passwordVisible by remember { mutableStateOf(false) }
+
+
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 28.dp),
+            // This prevents "Overlap" - the user can scroll if the screen is too short
+            .verticalScroll(scrollState)
+            .padding(horizontal = 28.dp, vertical = 20.dp),
         verticalArrangement = Arrangement.Center
     ) {
+        // --- HEADER ---
         Text(
-            stringResource(R.string.send),
-            stringResource(R.string.chat),
-            stringResource(R.string.wire),
-
+            text = stringResource(R.string.app_tagline),
             fontSize = 42.sp,
-            lineHeight = 48.sp,
+            lineHeight = 46.sp, // Slightly tighter line height
             fontWeight = FontWeight.Black,
             color = MaterialTheme.colorScheme.onBackground,
-            letterSpacing = 2.sp
+            letterSpacing = 1.sp
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = stringResource(R.string.the_app_where_money_),
-            fontSize = 16.sp,
+            fontSize = 15.sp, // Slightly smaller for better fit
             color = Color.Gray,
-            modifier = Modifier.fillMaxWidth(0.8f)
+            modifier = Modifier.fillMaxWidth(0.9f)
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp)) // Reduced from 32
 
+        // --- EMAIL FIELD ---
         Text(
             text = stringResource(R.string.email),
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.labelLarge,
             color = Color.Gray
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         OutlinedTextField(
             value = uiState.email,
             onValueChange = { onEvent(AuthUiEvent.EmailChanged(it)) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
+            singleLine = true,
             colors = TextFieldDefaults.colors(
-                focusedContainerColor =  Color.Unspecified,
-                unfocusedContainerColor = Color.Unspecified,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.5f),
                 focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                unfocusedTextColor =MaterialTheme.colorScheme.onSurface
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
             ),
             placeholder = {
-                Text(stringResource(R.string.user_email_com),
-                color = Color.DarkGray)
+                Text(stringResource(R.string.user_email_com), color = Color.Gray)
             }
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // --- PASSWORD FIELD ---
         Text(
             text = stringResource(R.string.password),
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.labelLarge,
             color = Color.Gray
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         OutlinedTextField(
             value = uiState.password,
             onValueChange = { onEvent(AuthUiEvent.PasswordChanged(it)) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
-            visualTransformation = if (passwordVisible) androidx.compose.ui.text.input.VisualTransformation.None
-            else androidx.compose.ui.text.input.PasswordVisualTransformation(),
+            singleLine = true,
+            visualTransformation = if (passwordVisible) VisualTransformation.None
+            else PasswordVisualTransformation(),
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
@@ -119,122 +128,109 @@ fun LoginContent(
                 }
             },
             colors = TextFieldDefaults.colors(
-                focusedContainerColor =  MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor =  MaterialTheme.colorScheme.surface,
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                unfocusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.5f),
                 focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                unfocusedTextColor =MaterialTheme.colorScheme.onSurface
-            )
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+            ),
+            placeholder = {
+                Text(stringResource(R.string.asteric))
+            }
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
-
+        // Forgot Password link
         Text(
             text = stringResource(R.string.login_forgot_password),
-            style = MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
+                .padding(top = 8.dp)
                 .align(Alignment.End)
                 .clickable { onNavigateToForgotPassword() }
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
+        // --- ERROR MESSAGE ---
         uiState.errorMessage?.let { error ->
             Text(
                 text = error,
                 color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = 12.dp)
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 8.dp)
             )
         }
 
+        // --- LOGIN BUTTON ---
         Button(
             onClick = { onEvent(AuthUiEvent.LoginClicked) },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !uiState.isLoading
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            enabled = !uiState.isLoading,
+            shape = RoundedCornerShape(12.dp)
         ) {
             if (uiState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
             } else {
-                Text(stringResource(R.string.login_button_text))
+                Text(stringResource(R.string.login_button_text), fontWeight = FontWeight.Bold)
             }
         }
 
+        // --- BIOMETRIC OPTION ---
         if (uiState.isBiometricAvailable && uiState.isBiometricEnabled) {
             Spacer(modifier = Modifier.height(12.dp))
-
             OutlinedButton(
                 onClick = { onEvent(AuthUiEvent.BiometricLoginClicked) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Fingerprint,
-                    contentDescription = stringResource(R.string.login_biometric_button),
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                Icon(Icons.Default.Fingerprint, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(stringResource(R.string.login_biometric_button))
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        Row(
+        // --- FOOTER (Sign Up / Google) ---
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = stringResource(R.string.login_no_account),
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-            )
-            Text(
-                text = stringResource(R.string.login_create_one),
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable { onNavigateToSignUp() }
-            )
-        }
+            Row {
+                Text(stringResource(R.string.login_no_account), color = Color.Gray)
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    text = stringResource(R.string.login_create_one),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable { onNavigateToSignUp() }
+                )
+            }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            HorizontalDivider(modifier = Modifier.weight(1f))
-            Text(
-                text = "  ${stringResource(R.string.login_or_continue_with)}  ",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
-            )
-            HorizontalDivider(modifier = Modifier.weight(1f))
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painterResource(R.drawable.google__g__logo),
-                contentDescription = "Google_logo",
+            // Google Login
+            OutlinedButton(
+                onClick = { onEvent(AuthUiEvent.GoogleSignInClicked) },
                 modifier = Modifier
-                    .clickable {
-                        onEvent(AuthUiEvent.GoogleSignInClicked)
-                    }
-                    .size(16.dp)
-
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(R.string.login_google_button),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Image(
+                    painterResource(R.drawable.google__g__logo),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(stringResource(R.string.login_google_button), color = MaterialTheme.colorScheme.onBackground)
+            }
         }
-
-
-
     }
 }

@@ -6,7 +6,7 @@ import com.example.wire.core.navigation.navigator.Navigator
 import javax.inject.Inject
 
 class NavigatorImpl @Inject constructor() : Navigator {
-    var navController: NavHostController? = null // Changed from lateinit to nullable
+    var navController: NavHostController? = null
 
     override fun navigateTo(route: String) {
         navController?.navigate(route)
@@ -30,7 +30,7 @@ class NavigatorImpl @Inject constructor() : Navigator {
             navController?.navigate(screenRoute) {
                 launchSingleTop = true
                 restoreState = true
-                popUpTo(navController?.graph?.startDestinationId ?: return@let) {
+                popUpTo(navController?.graph?.startDestinationId ?: return@navigate) {
                     saveState = true
                 }
             }

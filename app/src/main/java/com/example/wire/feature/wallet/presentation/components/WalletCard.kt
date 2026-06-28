@@ -37,10 +37,16 @@ fun WalletCard() {
         colors = CardDefaults.cardColors(containerColor = Color(0xFF1E153D)) // Deep Purple
     ) {
         Column(modifier = Modifier.padding(24.dp)) {
-            Text("WALLET BALANCE", color = Color.Gray, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            Text("WALLET BALANCE", color = Color.Gray,
+                fontSize = 12.sp, fontWeight = FontWeight.Bold)
             Row(verticalAlignment = Alignment.Bottom) {
-                Text("$4,280", color = Color.White, fontSize = 32.sp, fontWeight = FontWeight.Bold)
-                Text(".50", color = Color.White.copy(alpha = 0.6f), fontSize = 24.sp, modifier = Modifier.padding(bottom = 4.dp))
+                Text("$4,280",
+                    color = Color.White, fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold)
+                Text(".50",
+                    color = Color.White.copy(alpha = 0.6f),
+                    fontSize = 24.sp,
+                    modifier = Modifier.padding(bottom = 4.dp))
             }
 
             Spacer(modifier = Modifier.height(20.dp))

@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.wire.core.ui.theme.SurfaceDark
+
 
 @Composable
 fun HeaderSection(
@@ -50,7 +50,7 @@ fun HeaderSection(
                 letterSpacing = 0.5.sp
             )
             Text(
-                text = "Messages", //
+                text = "Messages",
                 fontSize = 34.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -63,7 +63,9 @@ fun HeaderSection(
                 onClick = onSearchClick,
                 modifier = Modifier
                     .size(44.dp)
-                    .background(SurfaceDark, CircleShape)
+                    .background(
+                        MaterialTheme.colorScheme.background,
+                        CircleShape)
             ) {
                 Icon(
                     imageVector = Icons.Default.Search,
@@ -80,7 +82,9 @@ fun HeaderSection(
                 onClick = onNotificationClick,
                 modifier = Modifier
                     .size(44.dp)
-                    .background(SurfaceDark, CircleShape)
+                    .background(
+                        MaterialTheme.colorScheme.background,
+                        CircleShape)
             ) {
                 BadgedBox(
                     badge = {

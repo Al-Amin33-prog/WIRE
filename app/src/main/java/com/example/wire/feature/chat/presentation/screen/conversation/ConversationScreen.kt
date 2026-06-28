@@ -6,8 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.wire.feature.chat.presentation.component.event.ChatUiEvent
+import com.example.wire.feature.chat.presentation.component.state.ChatUiState
 import com.example.wire.feature.chat.presentation.component.viewmodel.ChatViewModel
 
 @Composable
@@ -35,4 +37,18 @@ fun ConversationScreen(
         }
 
     )
+}
+
+@Preview
+@Composable
+fun ConversationScreenPreview(){
+    ConversationContent(
+        uiState = ChatUiState(
+
+        ),
+        onEvent = {},
+        onBackClick = {},
+        onLongClick = {}
+    )
+
 }
