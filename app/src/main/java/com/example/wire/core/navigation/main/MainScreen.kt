@@ -82,6 +82,9 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
                 },
                     onNotificationClick = {
                         navigatorImpl.navController?.navigate("notifications")
+                    },
+                    onFabClick = {
+                        navigatorImpl.navController?.navigate("contact_selection")
                     }
                 )
 
