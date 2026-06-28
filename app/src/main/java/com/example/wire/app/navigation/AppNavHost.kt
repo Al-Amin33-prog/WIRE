@@ -11,6 +11,7 @@ import com.example.wire.feature.auth.presentation.screen.ForgotPasswordScreen
 import com.example.wire.feature.auth.presentation.screen.LoginScreen
 import com.example.wire.feature.auth.presentation.screen.SignUpScreen
 import com.example.wire.feature.chat.presentation.screen.conversation.ConversationScreen
+import com.example.wire.feature.contacts.presentation.ContactSelectionScreen
 
 @Composable
 fun AppNavHost(
@@ -71,5 +72,18 @@ fun AppNavHost(
                 onLongClick = { /* Handle delete/edit */ }
             )
         }
+
+
+        composable("contact_selection") {
+            ContactSelectionScreen(
+                onContactSelected = { userId ->
+                    // Navigate directly to conversation
+                    navController.navigate(Routes.Conversation.createRoute(userId)) {
+                        // Remove selection screen from backstack so back goes to ChatList
+                        popUpTo("contact_selection") { inclusive = true }
+                    }
+                },
+                onBackClick = { navController.popBackStack() })
     }
+}
 }

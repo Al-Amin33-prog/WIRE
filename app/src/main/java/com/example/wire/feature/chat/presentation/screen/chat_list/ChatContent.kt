@@ -4,6 +4,10 @@ package com.example.wire.feature.chat.presentation.screen.chat_list
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,7 +26,8 @@ fun ChatContent(
     uiState: ChatUiState,
     onEvent: (ChatUiEvent) -> Unit,
     onChatClick: (String) -> Unit,
-    onNotificationClick: () -> Unit
+    onNotificationClick: () -> Unit,
+    onFabClick: () -> Unit
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -32,6 +37,19 @@ fun ChatContent(
                 onNotificationClick = onNotificationClick,
 
                 )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onFabClick,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White,
+                shape = CircleShape
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.Chat,
+                    null
+                )
+            }
         }
     ) { padding ->
         LazyColumn(

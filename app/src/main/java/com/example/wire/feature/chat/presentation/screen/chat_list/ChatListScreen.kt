@@ -13,6 +13,7 @@ import com.example.wire.feature.chat.presentation.component.viewmodel.ChatViewMo
 fun ChatListScreen(
     onChatClick: (String) -> Unit,
     onNotificationClick: () -> Unit,
+    onFabClick:() -> Unit,
     viewModel: ChatViewModel = hiltViewModel()
 ) {
 
@@ -23,7 +24,8 @@ fun ChatListScreen(
         uiState = uiState,
         onEvent = viewModel::onEvent,
         onChatClick = onChatClick,
-        onNotificationClick = onNotificationClick
+        onNotificationClick = onNotificationClick,
+       onFabClick = onFabClick,
     )
 }
 
@@ -36,7 +38,8 @@ fun ChatListPreview(){
         ),
         onEvent = {},
         onChatClick = {},
-        onNotificationClick = {}
+        onNotificationClick = {},
+        {}
     )
 
 }
