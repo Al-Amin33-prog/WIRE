@@ -12,4 +12,5 @@ sealed interface ChatUiEvent {
 
     object Disconnect : ChatUiEvent
     data class LoadHistory(val chatId: String) : ChatUiEvent
+    object Refresh : ChatUiEvent
 }
