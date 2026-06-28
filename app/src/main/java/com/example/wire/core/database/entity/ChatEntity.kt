@@ -12,5 +12,6 @@ data class ChatEntity(
     val lastMessage: String,
     val timestamp: Long,
     val unreadCount: Int = 0,
-    val avatarColor: Int // Store color as Int
+    val avatarColor: Int ,
+    val isContact: Boolean = false
 )
