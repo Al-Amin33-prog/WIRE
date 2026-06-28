@@ -21,4 +21,9 @@ interface ChatDao {
     suspend fun updateChatPreview(chatId: String, lastMessage: String, timestamp: Long)
     @Upsert
     suspend fun upsertChat(chat: ChatEntity)
+
+
+
+    @Query("SELECT * FROM chats WHERE isContact = 1 ORDER BY contactName ASC")
+    fun getSyncedContacts(): Flow<List<ChatEntity>>
 }
