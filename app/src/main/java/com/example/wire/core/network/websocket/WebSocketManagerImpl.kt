@@ -2,6 +2,7 @@ package com.example.wire.core.network.websocket
 
 import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
+import com.example.wire.core.database.entity.ChatEntity
 import com.example.wire.core.network.notification.NotificationHandler
 import com.example.wire.feature.chat.data.mapper.toEntity
 
@@ -118,6 +119,26 @@ class WebSocketManagerImpl @Inject constructor(
                                 "TYPING_ON" -> _isTyping.value = true
                                 "TYPING_OFF" -> _isTyping.value = false
                                 "DELETE" -> incomingMessages.emit(jsonString)
+
+                                // Inside listenForMessages() when block
+                                "CONTACT_MATCH" -> {
+                                    val matchedUser = chatAction.message // Assuming the match comes in a message object
+                                    if (matchedUser != null) {
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            chatDao.upsertChat(
+                                                ChatEntity(
+                                                    chatId = matchedUser.senderId,
+                                                    contactName = matchedUser.metadata?.get("senderName")
+                                                        ?: "New Contact",
+                                                    lastMessage = "Recently joined Wire",
+                                                    timestamp = System.currentTimeMillis(),
+                                                    avatarColor = -12345,
+                                                    isContact = true
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         } catch (e: Exception) {
                             incomingMessages.emit(jsonString)
