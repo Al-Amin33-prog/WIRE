@@ -1,6 +1,7 @@
 package com.example.wire.feature.chat.data.repository
 
 
+
 import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
 import com.example.wire.core.network.websocket.WebSocketManager
@@ -73,6 +74,8 @@ class ChatRepositoryImpl @Inject constructor(
 
         return api.getChatHistory(chatId)
     }
+
+
 }
 
 
