@@ -17,4 +17,8 @@ interface ChatApiService {
     suspend fun sendMessage(
         @Body request: ChatActionDto
     ): Response<Unit>
+
+    @GET("chat/recent")
+    suspend fun getRecentChats(): List<ChatDto>
+
 }
