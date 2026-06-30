@@ -1,25 +1,16 @@
 package com.example.wire.feature.contacts.presentation
 
-
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.wire.feature.contacts.components.ContactItem
+import com.example.wire.core.ui.theme.WireTheme
+import com.example.wire.feature.contacts.domain.model.ContactUser
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContactSelectionScreen(
     onContactSelected: (String) -> Unit,
@@ -28,27 +19,39 @@ fun ContactSelectionScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Select Contact") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null)
-                    }
-                }
-            )
+    // Permission Logic (Stateful Side Effect)
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        viewModel.syncContacts(hasPermission = isGranted)
+    }
+
+    ContactSelectionContent(
+        uiState = uiState,
+        onBackClick = onBackClick,
+        onContactSelected = onContactSelected,
+        onGrantPermissionClick = {
+            permissionLauncher.launch(Manifest.permission.READ_CONTACTS)
         }
-    ) { padding ->
-        LazyColumn(modifier = Modifier.padding(padding)) {
-            // FIXED: items now correctly passes ContactUser to ContactItem
-            items(uiState.contacts) { contact ->
-                ContactItem(
-                    contact = contact,
-                    onClick = { onContactSelected(contact.id) }
+    )
+}
+
+
+
+@Preview(showBackground = true)
+@Composable
+fun ContactSelectionPreview() {
+    WireTheme(darkTheme = false) { // NovaPay Light Mode
+        ContactSelectionContent(
+            uiState = ContactUiState(
+                contacts = listOf(
+                    ContactUser("1", "Sarah K.", 0xFF2ECC71.toInt()),
+                    ContactUser("2", "Marcus T.", 0xFF3498DB.toInt())
                 )
-            }
-        }
+            ),
+            onBackClick = {},
+            onContactSelected = {},
+            onGrantPermissionClick = {}
+        )
     }
 }
