@@ -56,9 +56,17 @@ class CreateAccountUseCaseTest {
             phone = "12345678"
             )
 
-        coEvery { repository.register(email, password, displayName, phone  ) } returns Result.success(user)
+        coEvery { repository.register(email,
+            password,
+            displayName,
+            phone  )
+        } returns Result.success(user)
 
-        val params = CreateAccountUseCase.Params(email, password, displayName,phone)
+        val params = CreateAccountUseCase.Params(
+            email,
+            password,
+            displayName,
+            phone)
         val result = useCase(params)
 
         assertTrue(result.isSuccess)
