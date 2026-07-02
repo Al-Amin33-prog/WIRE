@@ -1,101 +1,135 @@
 package com.example.wire.feature.auth.presentation.screen.content
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.wire.R
+import com.example.wire.core.ui.theme.BrandNavy
+import com.example.wire.core.ui.theme.WireTheme
 import com.example.wire.feature.auth.presentation.event.AuthUiEvent
 import com.example.wire.feature.auth.presentation.state.AuthUiState
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForgotPasswordContent(
     uiState: AuthUiState,
     onEvent: (AuthUiEvent) -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(28.dp)
-    ) {
-        Text(
-            text = "←",
-            modifier = Modifier.clickable { onNavigateBack() },
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.headlineLarge
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = stringResource(R.string.forgot_password_title),
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = stringResource(R.string.forgot_password_subtitle),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-        )
-
-        Spacer(modifier = Modifier.height(28.dp))
-
-        if (uiState.isPasswordResetEmailSent) {
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background, // Cream #F5F2ED
+        topBar = {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(horizontal = 28.dp)
+        ) {
             Text(
-                text = stringResource(R.string.forgot_password_email_sent),
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.bodyLarge
-            )
-        } else {
-            OutlinedTextField(
-                value = uiState.email,
-                onValueChange = { onEvent(AuthUiEvent.EmailChanged(it)) },
-                label = { Text(stringResource(R.string.login_email_label)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                text = stringResource(R.string.forgot_password_title),
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Black,
+                color = MaterialTheme.colorScheme.onBackground
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = stringResource(R.string.forgot_password_subtitle),
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
 
-            uiState.errorMessage?.let { error ->
-                Text(
-                    text = error,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(bottom = 12.dp)
+            Spacer(modifier = Modifier.height(32.dp))
+
+            if (uiState.isPasswordResetEmailSent) {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(R.string.forgot_password_email_sent),
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            } else {
+                OutlinedTextField(
+                    value = uiState.email,
+                    onValueChange = { onEvent(AuthUiEvent.EmailChanged(it)) },
+                    placeholder = { Text("Enter your email") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    singleLine = true
                 )
-            }
 
-            Button(
-                onClick = { onEvent(AuthUiEvent.ForgotPasswordClicked) },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !uiState.isLoading
-            ) {
-                if (uiState.isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.size(20.dp))
-                } else {
-                    Text(stringResource(R.string.forgot_password_send_link))
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = { onEvent(AuthUiEvent.ForgotPasswordClicked) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    enabled = !uiState.isLoading,
+                    colors = ButtonDefaults.buttonColors(containerColor = BrandNavy),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+                ) {
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator()
+                    } else {
+                        Text("Send Reset Link", fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ForgotPasswordPreview() {
+    WireTheme(darkTheme = false) {
+        ForgotPasswordContent(AuthUiState(),
+            {},
+            {})
     }
 }

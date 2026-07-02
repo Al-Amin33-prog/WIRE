@@ -36,10 +36,27 @@ class ContactViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun syncContacts() {
+    fun syncContacts(hasPermission: Boolean) {
+        if (!hasPermission){
+            _uiState.update { it.copy(isPermissionDenied = true) }
+            return
+        }
         viewModelScope.launch {
-            // This now "uses" the syncContacts function from the repository
-            repository.syncContacts()
+            try {
+                _uiState.update { it.copy(isLoading = true) }
+                repository.syncContacts()
+            }catch (e: SecurityException){
+                _uiState.update { it.copy(
+                    isPermissionDenied = true,
+                    isLoading = false
+                ) }
+            }catch (e:Exception){
+                _uiState.update { it.copy(
+                    errorMessage = e.message,
+                    isLoading = false
+                ) }
+            }
+
         }
     }
 }

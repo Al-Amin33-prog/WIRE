@@ -1,18 +1,38 @@
 package com.example.wire.feature.auth.domain.usecase
 
+import com.example.wire.core.common.util.AppError
+import com.example.wire.core.common.util.Resource
 import com.example.wire.core.domain.base.BaseUseCase
 import com.example.wire.feature.auth.domain.model.AuthUser
 import com.example.wire.feature.auth.domain.repository.AuthRepository
+import java.io.IOException
+import java.net.SocketTimeoutException
 import javax.inject.Inject
 
 class GoogleSignInUseCase @Inject constructor(
     private val authRepository: AuthRepository
-) : BaseUseCase<String, Result<AuthUser>>() {
+) : BaseUseCase<String, Resource<AuthUser>>() {
 
-    override suspend fun invoke(params: String): Result<AuthUser> {
+    override suspend fun invoke(params: String): Resource<AuthUser> {
+        // 1. Validation
         if (params.isBlank()) {
-            return Result.failure(IllegalArgumentException("Google token cannot be empty"))
+            return Resource.Error(AppError.Validation("Google authentication token is missing"))
         }
-        return authRepository.loginWithGoogle(params)
+
+        // 2. Execution
+        return try {
+            val result = authRepository.loginWithGoogle(params)
+            if (result.isSuccess) {
+                Resource.Success(result.getOrThrow())
+            } else {
+                Resource.Error(AppError.Network.Unknown(result.exceptionOrNull()?.message))
+            }
+        } catch (e: SocketTimeoutException) {
+            Resource.Error(AppError.Network.Timeout)
+        } catch (e: IOException) {
+            Resource.Error(AppError.Network.NoInternet)
+        } catch (e: Exception) {
+            Resource.Error(AppError.Network.Unknown(e.message))
+        }
     }
 }

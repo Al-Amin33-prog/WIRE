@@ -24,7 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.wire.core.ui.theme.Violet
+
 
 @Composable
 fun ChatInputBar(
@@ -75,7 +75,7 @@ fun ChatInputBar(
         IconButton(
             onClick = onSend,
             modifier = Modifier
-                .background(Violet, CircleShape)
+                .background(MaterialTheme.colorScheme.primary, CircleShape)
         ) {
             Icon(
                 Icons.AutoMirrored.Filled.Send,

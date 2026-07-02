@@ -27,7 +27,6 @@ class ContactRepositoryImpl @Inject constructor(
                 ContactUser(
                     id = entity.chatId,
                     name = entity.contactName,
-                    lastMessage = entity.lastMessage,
                     avatarColor = entity.avatarColor
                 )
             }

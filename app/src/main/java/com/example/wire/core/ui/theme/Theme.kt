@@ -1,42 +1,43 @@
 package com.example.wire.core.ui.theme
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-// Define your colors (Color.kt)
-val CyanPrimary = Color(0xFF00B4D8)
-val BackgroundWhite = Color(0xFFFFFFFF)
-val SurfaceWhite = Color(0xFFF8F9FA)
-
-// In Theme.kt
-private val LightColorScheme = lightColorScheme(
-    primary = CyanPrimary,
-    onPrimary = Color.White,
-    background = BackgroundWhite,
-    surface = SurfaceWhite,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    // This will handle the text fields if we use MaterialTheme.colorScheme
-    surfaceVariant = Color(0xFFF1F3F4)
-)
-
-// The DarkColorScheme stays as your initial "Design" (Violet/Black)
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF7B2CBF), // Your Violet
-    background = Color.Black,
-    surface = Color(0xFF121212)
+    primary = BrandCyan,        // Cyan highlight for Dark Mode
+    secondary = BrandGold,
+    background = BackgroundDark,
+    surface = SurfaceDark,
+    onPrimary = BrandNavy,
+    onBackground = TextWhite,
+    onSurface = TextWhite,
+    outlineVariant = Color(0xFF2C2C2E)
 )
 
+private val LightColorScheme = lightColorScheme(
+    primary = BrandNavy,        // Navy Buttons/Bubbles for Light Mode
+    secondary = BrandGold,
+    background = BackgroundLight,
+    surface = SurfaceLight,
+    onPrimary = TextWhite,
+    onBackground = TextBlack,
+    onSurface = TextBlack,
+    outlineVariant = DividerLight
+)
 
 @Composable
-fun WireTheme(content: @Composable () -> Unit) {
+fun WireTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
+    val colorScheme = if (darkTheme)
+        DarkColorScheme else LightColorScheme
+
     MaterialTheme(
-        colorScheme = DarkColorScheme,
-        typography = WireTypography,
-        shapes = WireShapes,
+        colorScheme = colorScheme,
+        typography = WireTypography, // Ensure your Type.kt uses 'Inter' or 'Lexend' for Fintech
         content = content
     )
 }

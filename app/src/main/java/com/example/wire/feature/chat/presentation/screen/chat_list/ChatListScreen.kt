@@ -5,6 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.wire.core.ui.theme.WireTheme
 import com.example.wire.feature.chat.presentation.component.state.ChatUiState
 import com.example.wire.feature.chat.presentation.component.viewmodel.ChatViewModel
 
@@ -32,14 +33,19 @@ fun ChatListScreen(
 @Preview
 @Composable
 fun ChatListPreview(){
-    ChatContent(
-        uiState = ChatUiState(
+    WireTheme(
+        false
+    ) {
+        ChatContent(
+            uiState = ChatUiState(
 
-        ),
-        onEvent = {},
-        onChatClick = {},
-        onNotificationClick = {},
-        {}
-    )
+            ),
+            onEvent = {},
+            onChatClick = {},
+            onNotificationClick = {},
+            {}
+        )
+    }
+
 
 }

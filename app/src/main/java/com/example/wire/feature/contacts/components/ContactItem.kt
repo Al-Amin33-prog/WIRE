@@ -13,12 +13,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-// ADD THIS IMPORT
 import com.example.wire.feature.contacts.domain.model.ContactUser
 
 @Composable
 fun ContactItem(
-    contact: ContactUser, // FIXED: Changed from Int to ContactUser
+    contact: ContactUser,
     onClick: () -> Unit
 ) {
     Row(
@@ -28,11 +27,11 @@ fun ContactItem(
             .padding(horizontal = 20.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Avatar
+        // Avatar with deterministic background color
         Box(
             modifier = Modifier
-                .size(50.dp)
-                .background(Color(contact.avatarColor).copy(alpha = 0.2f), CircleShape),
+                .size(52.dp)
+                .background(Color(contact.avatarColor).copy(alpha = 0.1f), CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -49,11 +48,11 @@ fun ContactItem(
             Text(
                 text = contact.name,
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onBackground
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground // Black in Light Mode
             )
             Text(
-                text = contact.lastMessage,
+                text = "Tap to start conversation", // Default invitation text
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
