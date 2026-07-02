@@ -17,7 +17,7 @@ class ContactRepositoryImpl @Inject constructor(
     private val chatDao: ChatDao,
     private val api: ContactApiService,
 
-    @field:ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context
 ) : ContactRepository {
 
     override fun getSyncedContacts(): Flow<List<ContactUser>> {

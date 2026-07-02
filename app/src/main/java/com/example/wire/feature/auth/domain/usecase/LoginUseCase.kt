@@ -7,8 +7,9 @@ import com.example.wire.feature.auth.domain.model.AuthUser
 import com.example.wire.feature.auth.domain.repository.AuthRepository
 import java.io.IOException
 import java.net.SocketTimeoutException
+import javax.inject.Inject
 
-class LoginUseCase(
+class LoginUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) : BaseUseCase<LoginUseCase.Params, Resource<AuthUser>>() {
 

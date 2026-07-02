@@ -21,7 +21,6 @@ import com.example.wire.core.common.util.formatTimestamp
 import com.example.wire.feature.chat.domain.model.MessageStatus
 import com.example.wire.feature.chat.domain.model.MessageType
 import com.example.wire.core.ui.theme.SurfaceDark
-import com.example.wire.core.ui.theme.Violet
 import com.example.wire.feature.chat.domain.model.Message
 
 
@@ -32,7 +31,7 @@ fun MessageBubble(
     onLongClick: () -> Unit
 ) {
     val bubbleColor = if (message.isDeleted) Color.DarkGray
-    else (if (isMe) Violet else SurfaceDark)
+    else (if (isMe) MaterialTheme.colorScheme.primary else SurfaceDark)
 
     Column(
         modifier = Modifier

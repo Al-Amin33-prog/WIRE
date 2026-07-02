@@ -31,7 +31,7 @@ import javax.inject.Singleton
 
 @Singleton
 class WebSocketManagerImpl @Inject constructor(
-    @field:ApplicationScope private val applicationScope: CoroutineScope,
+    @ApplicationScope private val applicationScope: CoroutineScope,
     private val dispatchers: CoroutineDispatchers,
     private val notificationRepository: NotificationRepository,
     private val notificationHandler: NotificationHandler,
