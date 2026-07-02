@@ -7,11 +7,7 @@ import com.example.wire.feature.chat.data.remote.dto.ChatApiService
 import com.example.wire.feature.chat.data.repository.ChatRepositoryImpl
 import com.example.wire.feature.chat.data.wrapper.ChatUseCases
 import com.example.wire.feature.chat.domain.repository.ChatRepository
-import com.example.wire.feature.chat.domain.usecase.ConnectToChatUseCase
-import com.example.wire.feature.chat.domain.usecase.DisconnectFromChatUseCase
-import com.example.wire.feature.chat.domain.usecase.LoadChatHistoryUseCase
-import com.example.wire.feature.chat.domain.usecase.ObserveMessagesUseCase
-import com.example.wire.feature.chat.domain.usecase.SendMessageUseCase
+import com.example.wire.feature.chat.domain.usecase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,33 +20,11 @@ import javax.inject.Singleton
 object ChatModule {
 
     @Provides
-    fun provideChatUseCases(
-        repository: ChatRepository
-    ): ChatUseCases {
-
-        return ChatUseCases(
-
-            connectToChat =
-                ConnectToChatUseCase(repository),
-
-            disconnectFromChat =
-                DisconnectFromChatUseCase(repository),
-
-            observeMessages =
-                ObserveMessagesUseCase(repository),
-
-            sendMessage =
-                SendMessageUseCase(repository),
-
-            loadChatHistory =
-                LoadChatHistoryUseCase(repository)
-        )
-    }
-    @Provides
     @Singleton
     fun provideChatApiService(retrofit: Retrofit): ChatApiService {
         return retrofit.create(ChatApiService::class.java)
     }
+
     @Provides
     @Singleton
     fun provideChatRepository(
@@ -59,12 +33,18 @@ object ChatModule {
         chatDao: ChatDao,
         webSocketManager: WebSocketManager
     ): ChatRepository {
-        return ChatRepositoryImpl(
-            api,
-            webSocketManager,
-            messageDao,
-            chatDao
+        return ChatRepositoryImpl(api, webSocketManager, messageDao, chatDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideChatUseCases(repository: ChatRepository): ChatUseCases {
+        return ChatUseCases(
+            connectToChat = ConnectToChatUseCase(repository),
+            disconnectFromChat = DisconnectFromChatUseCase(repository),
+            observeMessages = ObserveMessagesUseCase(repository),
+            sendMessage = SendMessageUseCase(repository),
+            loadChatHistory = LoadChatHistoryUseCase(repository)
         )
     }
 }
-
