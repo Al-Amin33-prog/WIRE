@@ -3,6 +3,8 @@ package com.example.wire.feature.auth.presentation
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.wire.core.common.util.AppError
+import com.example.wire.core.common.util.Resource
 import com.example.wire.core.datastore.preferences.UserPreferencesDataStore
 import com.example.wire.core.ui.util.WireBiometricManager
 import com.example.wire.feature.auth.domain.usecase.*
@@ -52,11 +54,10 @@ class AuthViewModel @Inject constructor(
             AuthUiEvent.CreateAccountClicked -> createAccount()
             AuthUiEvent.LogoutClicked -> logout()
             AuthUiEvent.ForgotPasswordClicked -> sendPasswordReset()
-            
+
             AuthUiEvent.BiometricLoginClicked -> _uiState.update { it.copy(showBiometricPrompt = true) }
             AuthUiEvent.BiometricAuthSucceeded -> {
                 _uiState.update { it.copy(showBiometricPrompt = false) }
-                // Here you would typically trigger a silent login with saved credentials
             }
             is AuthUiEvent.BiometricAuthFailed -> {
                 _uiState.update { it.copy(showBiometricPrompt = false, errorMessage = event.reason) }
@@ -64,51 +65,44 @@ class AuthViewModel @Inject constructor(
 
             AuthUiEvent.GoogleSignInClicked -> _uiState.update { it.copy(triggerGoogleSignIn = true) }
             is AuthUiEvent.GoogleSignInResult -> handleGoogleSignIn(event.idToken)
-            is AuthUiEvent.GoogleSignInFailed -> _uiState.update { 
-                it.copy(errorMessage = event.reason, triggerGoogleSignIn = false) 
+            is AuthUiEvent.GoogleSignInFailed -> _uiState.update {
+                it.copy(errorMessage = event.reason, triggerGoogleSignIn = false)
             }
-
         }
     }
 
     private fun handleGoogleSignIn(idToken: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, triggerGoogleSignIn = false) }
-            val result = googleSignInUseCase(idToken)
-            result.fold(
-                onSuccess = {
+            // Use 'when' instead of .fold() for your custom Resource class
+            when (val result = googleSignInUseCase(idToken)) {
+                is Resource.Success -> {
                     userPreferencesDataStore.setLoggedIn(true)
                     _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
-                },
-                onFailure = { error ->
-                    _uiState.update { it.copy(isLoading = false, errorMessage = error.message) }
                 }
-            )
+                is Resource.Error -> {
+                    _uiState.update { it.copy(isLoading = false, errorMessage = mapError(result.error)) }
+                }
+                is Resource.Loading -> { /* Handled manually above */ }
+            }
         }
-    }
-
-    fun showBiometricPrompt(activity: FragmentActivity) {
-        biometricManager.showBiometricPrompt(
-            activity = activity,
-            onSuccess = { onEvent(AuthUiEvent.BiometricAuthSucceeded) },
-            onError = { onEvent(AuthUiEvent.BiometricAuthFailed(it)) },
-            onFailed = { onEvent(AuthUiEvent.BiometricAuthFailed("Not recognized")) }
-        )
     }
 
     private fun login() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = loginUseCase(LoginUseCase.Params(_uiState.value.email, _uiState.value.password))
-            result.fold(
-                onSuccess = {
+            val params = LoginUseCase.Params(_uiState.value.email, _uiState.value.password)
+
+            when (val result = loginUseCase(params)) {
+                is Resource.Success -> {
                     userPreferencesDataStore.setLoggedIn(true)
                     _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
-                },
-                onFailure = { error ->
-                    _uiState.update { it.copy(isLoading = false, errorMessage = error.message) }
                 }
-            )
+                is Resource.Error -> {
+                    _uiState.update { it.copy(isLoading = false, errorMessage = mapError(result.error)) }
+                }
+                is Resource.Loading -> { }
+            }
         }
     }
 
@@ -120,20 +114,35 @@ class AuthViewModel @Inject constructor(
                 return@launch
             }
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = createAccountUseCase(
-                CreateAccountUseCase.Params(
-                    current.email, current.password, current.displayName, current.phone
-                )
+            val params = CreateAccountUseCase.Params(
+                current.email, current.password, current.displayName, current.phone
             )
-            result.fold(
-                onSuccess = {
+
+            when (val result = createAccountUseCase(params)) {
+                is Resource.Success -> {
                     userPreferencesDataStore.setLoggedIn(true)
                     _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
-                },
-                onFailure = { error ->
-                    _uiState.update { it.copy(isLoading = false, errorMessage = error.message) }
                 }
-            )
+                is Resource.Error -> {
+                    _uiState.update { it.copy(isLoading = false, errorMessage = mapError(result.error)) }
+                }
+                is Resource.Loading -> { }
+            }
+        }
+    }
+
+    private fun sendPasswordReset() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            when (val result = forgotPasswordUseCase(_uiState.value.email)) {
+                is Resource.Success -> {
+                    _uiState.update { it.copy(isLoading = false, isPasswordResetEmailSent = true) }
+                }
+                is Resource.Error -> {
+                    _uiState.update { it.copy(isLoading = false, errorMessage = mapError(result.error)) }
+                }
+                is Resource.Loading -> { }
+            }
         }
     }
 
@@ -145,14 +154,14 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private fun sendPasswordReset() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = forgotPasswordUseCase(_uiState.value.email)
-            result.fold(
-                onSuccess = { _uiState.update { it.copy(isLoading = false, isPasswordResetEmailSent = true) } },
-                onFailure = { error -> _uiState.update { it.copy(isLoading = false, errorMessage = error.message) } }
-            )
+    // Helper to convert your AppError objects into user-friendly strings
+    private fun mapError(error: AppError): String {
+        return when (error) {
+            is AppError.Validation -> error.message
+            is AppError.Network.NoInternet -> "No internet connection. Please check your network."
+            is AppError.Network.Timeout -> "Request timed out. Please try again."
+            is AppError.Network.Unknown -> error.message ?: "An unexpected error occurred"
+            else -> "An error occurred"
         }
     }
 
@@ -162,5 +171,14 @@ class AuthViewModel @Inject constructor(
                 _uiState.update { it.copy(isLoggedIn = user != null) }
             }
         }
+    }
+
+    fun showBiometricPrompt(activity: FragmentActivity) {
+        biometricManager.showBiometricPrompt(
+            activity = activity,
+            onSuccess = { onEvent(AuthUiEvent.BiometricAuthSucceeded) },
+            onError = { onEvent(AuthUiEvent.BiometricAuthFailed(it)) },
+            onFailed = { onEvent(AuthUiEvent.BiometricAuthFailed("Not recognized")) }
+        )
     }
 }
