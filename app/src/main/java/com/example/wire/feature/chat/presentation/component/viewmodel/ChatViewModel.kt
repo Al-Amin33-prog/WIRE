@@ -2,6 +2,8 @@ package com.example.wire.feature.chat.presentation.component.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.wire.core.common.util.AppError
+import com.example.wire.core.common.util.Resource
 import com.example.wire.core.data.repository.SyncRepository
 import com.example.wire.feature.auth.domain.repository.AuthRepository
 import com.example.wire.feature.chat.data.wrapper.ChatUseCases
@@ -23,7 +25,6 @@ class ChatViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ChatUiState())
     val uiState = _uiState.asStateFlow()
 
-    // Consider getting this from a SavedStateHandle for real navigation
     private val currentChatId = "default_chat_id"
 
     init {
@@ -32,24 +33,18 @@ class ChatViewModel @Inject constructor(
         loadUserProfile()
     }
 
-
     fun onEvent(event: ChatUiEvent) {
         when (event) {
             is ChatUiEvent.MessageChanged -> {
                 _uiState.update { it.copy(messageText = event.message) }
             }
-            is ChatUiEvent.SendMessage -> {
-                sendMessage()
-            }
-            is ChatUiEvent.Connect -> {
-                connectAndObserve()
-            }
-            is ChatUiEvent.LoadHistory -> {
-                loadHistory(event.chatId)
-            }
+            is ChatUiEvent.SendMessage -> sendMessage()
+            is ChatUiEvent.Connect -> connectAndObserve()
+            is ChatUiEvent.LoadHistory -> loadHistory(event.chatId)
             is ChatUiEvent.Disconnect -> {
                 viewModelScope.launch {
                     chatUseCases.disconnectFromChat()
+                    _uiState.update { it.copy(isConnected = false) }
                 }
             }
             is ChatUiEvent.Refresh -> {
@@ -59,11 +54,12 @@ class ChatViewModel @Inject constructor(
             }
         }
     }
-    private fun loadUserProfile(){
+
+    private fun loadUserProfile() {
         viewModelScope.launch {
             val user = authRepository.getCurrentUser()
-            val name = user?.displayName?: "User"
-            _uiState.update{it.copy(displayName = name)}
+            val name = user?.displayName ?: "User"
+            _uiState.update { it.copy(displayName = name) }
         }
     }
 
@@ -71,24 +67,30 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            // Connect to WebSocket
-            chatUseCases.connectToChat()
+            // 1. Handle Connection Resource
+            when (val connectionResult = chatUseCases.connectToChat()) {
+                is Resource.Success -> {
+                    _uiState.update { it.copy(isConnected = true, isLoading = false, error = null) }
+                }
+                is Resource.Error -> {
+                    _uiState.update { it.copy(
+                        isConnected = false,
+                        isLoading = false,
+                        error = mapError(connectionResult.error)
+                    )}
+                }
+                is Resource.Loading -> { }
+            }
 
-            // Observe incoming messages
+            // 2. Observe Messages (This remains a Flow)
             chatUseCases.observeMessages(currentChatId)
                 .onEach { newMessageList ->
-                    // Note: ensure your UseCase/Repo returns List<Message>
-                    // or adjust logic if it returns a single Message
                     _uiState.update { state ->
-                        state.copy(
-                            messages = state.messages + newMessageList,
-                            isConnected = true,
-                            isLoading = false
-                        )
+                        state.copy(messages = newMessageList)
                     }
                 }
                 .catch { e ->
-                    _uiState.update { it.copy(error = e.message, isConnected = false, isLoading = false) }
+                    _uiState.update { it.copy(error = e.message, isConnected = false) }
                 }
                 .launchIn(this)
         }
@@ -96,21 +98,23 @@ class ChatViewModel @Inject constructor(
 
     private fun loadHistory(chatId: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            try {
-                // 1. Actually get the data
-                val history = chatUseCases.loadChatHistory(chatId)
+            _uiState.update { it.copy(isLoading = true, error = null) }
 
-                // 2. Update the state (Assuming history is a List<Message>)
-                _uiState.update { it.copy(
-                    messages = history,
-                    isLoading = false
-                )}
-            } catch (e: Exception) {
-                _uiState.update { it.copy(
-                    error = "Could not load history",
-                    isLoading = false
-                )}
+            // FIX: Handle the Resource result
+            when (val result = chatUseCases.loadChatHistory(chatId)) {
+                is Resource.Success -> {
+                    _uiState.update { it.copy(
+                        messages = result.data, // Access .data to get the List<Message>
+                        isLoading = false
+                    )}
+                }
+                is Resource.Error -> {
+                    _uiState.update { it.copy(
+                        error = mapError(result.error),
+                        isLoading = false
+                    )}
+                }
+                is Resource.Loading -> { }
             }
         }
     }
@@ -120,19 +124,32 @@ class ChatViewModel @Inject constructor(
         if (text.isBlank()) return
 
         viewModelScope.launch {
-            try {
-                chatUseCases.sendMessage(currentChatId, text)
-                _uiState.update { it.copy(messageText = "") }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(error = "Failed to send: ${e.message}") }
+            // FIX: Handle the Resource result
+            when (val result = chatUseCases.sendMessage(currentChatId, text)) {
+                is Resource.Success -> {
+                    _uiState.update { it.copy(messageText = "", error = null) }
+                }
+                is Resource.Error -> {
+                    _uiState.update { it.copy(error = mapError(result.error)) }
+                }
+                is Resource.Loading -> { }
             }
+        }
+    }
+
+    // Helper to map AppError to user-friendly strings (Matches your AuthViewModel logic)
+    private fun mapError(error: AppError): String {
+        return when (error) {
+            is AppError.Validation -> error.message
+            is AppError.Network.NoInternet -> "No internet connection."
+            is AppError.Network.Timeout -> "Connection timed out."
+            is AppError.Network.Unknown -> error.message ?: "An unexpected error occurred"
+            else -> "An error occurred"
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        // Use NonCancellable to ensure the disconnect signal is sent
-        // even though the ViewModelScope is being cancelled
         viewModelScope.launch(NonCancellable) {
             chatUseCases.disconnectFromChat()
         }
