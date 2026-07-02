@@ -2,6 +2,7 @@ package com.example.wire.core.di
 
 import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
+import com.example.wire.core.domain.dispatcher.CoroutineDispatchers
 import com.example.wire.core.network.notification.NotificationHandler
 import com.example.wire.core.network.websocket.WebSocketManager
 import com.example.wire.core.network.websocket.WebSocketManagerImpl
@@ -10,6 +11,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 @Module
@@ -22,17 +24,17 @@ object WebSocketModule {
         notificationRepository: NotificationRepository,
         notificationHandler: NotificationHandler,
         messageDao: MessageDao,
-        chatDao: ChatDao
-
+        chatDao: ChatDao,
+        @ApplicationScope applicationScope: CoroutineScope, // FIXED: Added @ApplicationScope and changed type to CoroutineScope
+        dispatchers: CoroutineDispatchers
     ): WebSocketManager {
-
         return WebSocketManagerImpl(
             notificationRepository = notificationRepository,
             notificationHandler = notificationHandler,
             messageDao = messageDao,
-            chatDao = chatDao
-
-
+            chatDao = chatDao,
+            applicationScope = applicationScope,
+            dispatchers = dispatchers,
         )
     }
 }
