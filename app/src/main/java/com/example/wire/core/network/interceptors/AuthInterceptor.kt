@@ -11,25 +11,20 @@ class AuthInterceptor @Inject constructor(
     private val firebaseAuth: FirebaseAuth
 ) : Interceptor {
 
+    // Inside AuthInterceptor.kt - REFACTOR THIS:
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
+        // Use the cached token first (false = don't force refresh)
         val token = runBlocking {
-            try {
-                firebaseAuth.currentUser?.getIdToken(false)?.await()?.token
-            } catch (e: Exception) {
-                null
-            }
+            firebaseAuth.currentUser?.getIdToken(false)?.await()?.token
         }
 
-        val newRequest = if (token != null) {
-            originalRequest.newBuilder()
-                .addHeader("Authorization", "Bearer $token")
-                .build()
-        } else {
-            originalRequest
+        val requestBuilder = originalRequest.newBuilder()
+        if (token != null) {
+            requestBuilder.addHeader("Authorization", "Bearer $token")
         }
 
-        return chain.proceed(newRequest)
+        return chain.proceed(requestBuilder.build())
     }
 }
