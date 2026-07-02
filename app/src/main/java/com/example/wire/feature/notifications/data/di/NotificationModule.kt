@@ -1,6 +1,6 @@
 package com.example.wire.feature.notifications.data.di
 
-import com.example.wire.feature.notifications.domain.usecase.ClearAllUseCases
+
 import com.example.wire.feature.notifications.domain.usecase.GetNotificationsUseCase
 import com.example.wire.feature.notifications.domain.usecase.MarkAsReadUseCase
 import com.example.wire.feature.notifications.domain.usecase.NotificationUseCases
@@ -11,6 +11,7 @@ import com.example.wire.feature.notifications.data.local.NotificationDao
 import com.example.wire.feature.notifications.data.local.NotificationHandlerImpl
 import com.example.wire.feature.notifications.domain.repository.NotificationRepository
 import com.example.wire.feature.notifications.domain.repository.NotificationRepositoryImpl
+import com.example.wire.feature.notifications.domain.usecase.ClearAllUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,7 +57,7 @@ object NotificationModule {
         return NotificationUseCases(
             getNotifications = GetNotificationsUseCase(repository),
             markAsRead = MarkAsReadUseCase(repository),
-           clearAll = ClearAllUseCases(repository)
+           clearAll = ClearAllUseCase(repository)
         )
     }
 }
