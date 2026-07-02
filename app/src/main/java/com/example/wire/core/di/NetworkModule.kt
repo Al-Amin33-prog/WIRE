@@ -1,6 +1,7 @@
 package com.example.wire.core.di
 
 import android.os.Build
+import com.example.wire.core.network.interceptors.AuthAuthenticator
 import com.example.wire.core.network.interceptors.AuthInterceptor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -39,9 +40,11 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        authInterceptor: AuthInterceptor
+        authInterceptor: AuthInterceptor,
+        authAuthenticator: AuthAuthenticator
     ): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(authInterceptor)
+        .authenticator(authAuthenticator)
         .build()
 
     @Provides
