@@ -1,11 +1,13 @@
 package com.example.wire.core.network.websocket
 
+import com.example.wire.core.common.util.AvatarUtils
 import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
 import com.example.wire.core.database.entity.ChatEntity
+import com.example.wire.core.di.ApplicationScope
+import com.example.wire.core.domain.dispatcher.CoroutineDispatchers
 import com.example.wire.core.network.notification.NotificationHandler
 import com.example.wire.feature.chat.data.mapper.toEntity
-
 import com.example.wire.feature.chat.data.remote.dto.ChatActionDto
 import com.example.wire.feature.notifications.domain.model.NotificationType
 import com.example.wire.feature.notifications.domain.model.WireNotification
@@ -16,7 +18,6 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,6 +31,8 @@ import javax.inject.Singleton
 
 @Singleton
 class WebSocketManagerImpl @Inject constructor(
+    @field:ApplicationScope private val applicationScope: CoroutineScope,
+    private val dispatchers: CoroutineDispatchers,
     private val notificationRepository: NotificationRepository,
     private val notificationHandler: NotificationHandler,
     private val messageDao: MessageDao,
@@ -63,7 +66,7 @@ class WebSocketManagerImpl @Inject constructor(
     }
 
     private fun listenForMessages() {
-        CoroutineScope(Dispatchers.IO).launch {
+        applicationScope.launch(dispatchers.io) {
             try {
                 session?.incoming?.consumeEach { frame ->
                     if (frame is Frame.Text) {
@@ -75,7 +78,6 @@ class WebSocketManagerImpl @Inject constructor(
                                 "PAYMENT" -> {
                                     val msg = chatAction.message
                                     val paymentNotif = WireNotification(
-                                        // FIXED: Use java.util.UUID
                                         id = msg?.id ?: UUID.randomUUID().toString(),
                                         title = "Payment Received",
                                         content = "You received $${msg?.content} from ${msg?.senderId}",
@@ -97,22 +99,19 @@ class WebSocketManagerImpl @Inject constructor(
                                 "SEND" -> {
                                     val msg = chatAction.message
                                    if (msg != null){
-                                       CoroutineScope(Dispatchers.IO).launch {
-                                           messageDao.insertMessage(msg.toEntity(chatId =  msg.senderId))
-                                           chatDao.updateChatPreview(
-                                               chatId = msg.senderId,
-                                               lastMessage = msg.content,
-                                               timestamp = System.currentTimeMillis()
-                                           )
+                                       messageDao.insertMessage(msg.toEntity(chatId =  msg.senderId))
+                                       chatDao.updateChatPreview(
+                                           chatId = msg.senderId,
+                                           lastMessage = msg.content,
+                                           timestamp = System.currentTimeMillis()
+                                       )
 
-                                       }
                                        notificationHandler.showSystemAlert(
                                            title = msg.metadata?.get("senderName")?: "New Message",
                                            message = msg.content,
                                            type = NotificationType.MESSAGE
                                        )
                                    }
-
                                     incomingMessages.emit(jsonString)
                                 }
 
@@ -120,23 +119,20 @@ class WebSocketManagerImpl @Inject constructor(
                                 "TYPING_OFF" -> _isTyping.value = false
                                 "DELETE" -> incomingMessages.emit(jsonString)
 
-                                // Inside listenForMessages() when block
                                 "CONTACT_MATCH" -> {
-                                    val matchedUser = chatAction.message // Assuming the match comes in a message object
+                                    val matchedUser = chatAction.message
                                     if (matchedUser != null) {
-                                        CoroutineScope(Dispatchers.IO).launch {
-                                            chatDao.upsertChat(
-                                                ChatEntity(
-                                                    chatId = matchedUser.senderId,
-                                                    contactName = matchedUser.metadata?.get("senderName")
-                                                        ?: "New Contact",
-                                                    lastMessage = "Recently joined Wire",
-                                                    timestamp = System.currentTimeMillis(),
-                                                    avatarColor = -12345,
-                                                    isContact = true
-                                                )
+                                        val name = matchedUser.metadata?.get("senderName") ?: "New Contact"
+                                        chatDao.upsertChat(
+                                            ChatEntity(
+                                                chatId = matchedUser.senderId,
+                                                contactName = name,
+                                                lastMessage = "Recently joined Wire",
+                                                timestamp = System.currentTimeMillis(),
+                                                avatarColor = AvatarUtils.getColorForName(name),
+                                                isContact = true
                                             )
-                                        }
+                                        )
                                     }
                                 }
                             }
