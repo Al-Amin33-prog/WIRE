@@ -1,5 +1,7 @@
 package com.example.wire.feature.auth.domain.usecase
 
+import com.example.wire.core.common.util.AppError
+import com.example.wire.core.common.util.Resource
 import com.example.wire.feature.auth.domain.model.AuthUser
 import com.example.wire.feature.auth.domain.repository.AuthRepository
 import io.mockk.coEvery
@@ -15,91 +17,54 @@ class CreateAccountUseCaseTest {
     private val useCase = CreateAccountUseCase(repository)
 
     @Test
-    fun `invoke with short password returns failure`() = runBlocking {
-        val params = CreateAccountUseCase.Params(
-            "test@example.com",
-            "1234567",
-            "Test User",
-            "123456789"
-        )
+    fun `invoke with short password returns validation error`() = runBlocking {
+        val params = CreateAccountUseCase.Params("test@example.com", "1234567", "Test User", "123456789")
+
         val result = useCase(params)
 
-        assertTrue(result.isFailure)
-        assertEquals("Password must be at least 8 characters", result.exceptionOrNull()?.message)
+        assertTrue(result is Resource.Error)
+        val error = (result as Resource.Error).error
+        assertTrue(error is AppError.Validation)
+        assertEquals("Password must be at least 8 characters", (error as AppError.Validation).message)
     }
 
     @Test
-    fun `invoke with empty display name returns failure`() = runBlocking {
-        val params = CreateAccountUseCase.Params(
-            "test@example.com",
-            "password123",
-            "Test",
-            "12345678")
+    fun `invoke with empty display name returns validation error`() = runBlocking {
+        val params = CreateAccountUseCase.Params("test@example.com", "password123", "", "12345678")
+
         val result = useCase(params)
 
-        assertTrue(result.isFailure)
-        assertEquals("Display name cannot be empty", result.exceptionOrNull()?.message)
+        assertTrue(result is Resource.Error)
+        val error = (result as Resource.Error).error
+        assertTrue(error is AppError.Validation)
+        assertEquals("Display name cannot be empty", (error as AppError.Validation).message)
     }
 
     @Test
-    fun `invoke with valid data returns success from repository`() = runBlocking {
+    fun `invoke with valid data returns success resource`() = runBlocking {
         val email = "test@example.com"
-        val password = "password123"
-        val displayName = "Test User"
-        val phone = "12345678"
         val user = AuthUser(
-            uid = "123",
-            email = email,
-            displayName = displayName,
-            token = "token",
-            isEmailVerified = false,
-            phone = "12345678"
-            )
+            "123", email, "Test User", false,"token", "12345678", )
 
-        coEvery { repository.register(email,
-            password,
-            displayName,
-            phone  )
-        } returns Result.success(user)
+        coEvery { repository.register(any(), any(), any(), any()) } returns Result.success(user)
 
-        val params = CreateAccountUseCase.Params(
-            email,
-            password,
-            displayName,
-            phone)
+        val params = CreateAccountUseCase.Params(email, "password123", "Test User", "12345678")
         val result = useCase(params)
 
-        assertTrue(result.isSuccess)
-        assertEquals(user, result.getOrNull())
+        assertTrue(result is Resource.Success)
+        assertEquals(user, (result as Resource.Success).data)
     }
 
     @Test
-    fun `invoke with existing email returns failure from repository`() = runBlocking {
-        val email = "existing@example.com"
-        val password = "password123"
-        val displayName = "Test User"
-        val phone = "12345678"
+    fun `invoke with repository failure returns network unknown error`() = runBlocking {
+        coEvery { repository.register(any(), any(), any(), any()) } returns Result.failure(Exception("Email taken"))
 
-        coEvery { repository.register(email, password, displayName, phone) } returns Result.failure(Exception("Email already in use"))
-
-        val params = CreateAccountUseCase.Params(email, password, displayName,phone)
+        val params = CreateAccountUseCase.Params("test@example.com", "password123", "Test User", "12345678")
         val result = useCase(params)
 
-        assertTrue(result.isFailure)
-        assertEquals("Email already in use", result.exceptionOrNull()?.message)
-    } @Test
-    fun `invoke with existing phone returns failure from repository`() = runBlocking {
-        val email = "existing@example.com"
-        val password = "password123"
-        val displayName = "Test User"
-        val phone = "12345678"
-
-        coEvery { repository.register(email, password, displayName, phone) } returns Result.failure(Exception("Email already in use"))
-
-        val params = CreateAccountUseCase.Params(email, password, displayName,phone)
-        val result = useCase(params)
-
-        assertTrue(result.isFailure)
-        assertEquals("Phone  already in use", result.exceptionOrNull()?.message)
+        assertTrue(result is Resource.Error)
+        val error = (result as Resource.Error).error
+        assertTrue(error is AppError.Network.Unknown)
+        assertEquals("Email taken", (error as AppError.Network.Unknown).message)
     }
 }

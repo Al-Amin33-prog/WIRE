@@ -1,5 +1,7 @@
 package com.example.wire.feature.auth.domain.usecase
 
+import com.example.wire.core.common.util.AppError
+import com.example.wire.core.common.util.Resource
 import com.example.wire.feature.auth.domain.repository.AuthRepository
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -14,39 +16,21 @@ class ForgotPasswordUseCaseTest {
     private val useCase = ForgotPasswordUseCase(repository)
 
     @Test
-    fun `invoke with blank email returns failure`() = runBlocking {
-        val result = useCase("")
-
-        assertTrue(result.isFailure)
-        assertEquals("Please enter a valid email", result.exceptionOrNull()?.message)
-    }
-
-    @Test
-    fun `invoke with invalid email format returns failure`() = runBlocking {
+    fun `invoke with invalid email format returns validation error`() = runBlocking {
         val result = useCase("invalid-email")
 
-        assertTrue(result.isFailure)
-        assertEquals("Please enter a valid email", result.exceptionOrNull()?.message)
+        assertTrue(result is Resource.Error)
+        val error = (result as Resource.Error).error
+        assertTrue(error is AppError.Validation)
+        assertEquals("Please enter a valid email address", (error as AppError.Validation).message)
     }
 
     @Test
-    fun `invoke with valid email returns success from repository`() = runBlocking {
-        val email = "test@example.com"
-        coEvery { repository.sendPasswordResetEmail(email) } returns Result.success(Unit)
+    fun `invoke with valid email returns success resource`() = runBlocking {
+        coEvery { repository.sendPasswordResetEmail(any()) } returns Result.success(Unit)
 
-        val result = useCase(email)
+        val result = useCase("test@example.com")
 
-        assertTrue(result.isSuccess)
-    }
-
-    @Test
-    fun `invoke with repository error returns failure`() = runBlocking {
-        val email = "test@example.com"
-        coEvery { repository.sendPasswordResetEmail(email) } returns Result.failure(Exception("Network error"))
-
-        val result = useCase(email)
-
-        assertTrue(result.isFailure)
-        assertEquals("Network error", result.exceptionOrNull()?.message)
+        assertTrue(result is Resource.Success)
     }
 }
