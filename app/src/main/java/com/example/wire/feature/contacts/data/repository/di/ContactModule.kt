@@ -1,5 +1,8 @@
 package com.example.wire.feature.contacts.data.repository.di
 
+import com.example.wire.core.database.dao.ChatDao
+import com.example.wire.core.network.websocket.WebSocketProcessor
+import com.example.wire.feature.contacts.data.processor.ContactMatchProcessor
 import com.example.wire.feature.contacts.data.repository.ContactRepository
 import com.example.wire.feature.contacts.data.repository.ContactRepositoryImpl
 import com.example.wire.feature.contacts.data.repository.remote.ContactApiService
@@ -22,10 +25,16 @@ abstract class ContactModule {
     ): ContactRepository
 
     companion object {
+
         @Provides
         @Singleton
         fun provideContactApiService(retrofit: Retrofit): ContactApiService {
             return retrofit.create(ContactApiService::class.java)
+        }
+
+        @Provides
+        fun provideContactMatchProcessor(chatDao: ChatDao): WebSocketProcessor {
+            return ContactMatchProcessor(chatDao)
         }
     }
 }
