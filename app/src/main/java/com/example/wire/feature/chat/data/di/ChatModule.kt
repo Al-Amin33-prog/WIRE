@@ -2,7 +2,10 @@ package com.example.wire.feature.chat.data.di
 
 import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
+import com.example.wire.core.network.notification.NotificationHandler
 import com.example.wire.core.network.websocket.WebSocketManager
+import com.example.wire.core.network.websocket.WebSocketProcessor
+import com.example.wire.feature.chat.data.processor.ChatMessageProcessor
 import com.example.wire.feature.chat.data.remote.dto.ChatApiService
 import com.example.wire.feature.chat.data.repository.ChatRepositoryImpl
 import com.example.wire.feature.chat.data.wrapper.ChatUseCases
@@ -12,6 +15,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
@@ -46,5 +50,14 @@ object ChatModule {
             sendMessage = SendMessageUseCase(repository),
             loadChatHistory = LoadChatHistoryUseCase(repository)
         )
+    }
+    @Provides
+    @IntoSet
+    fun provideChatMessageProcessor(
+        messageDao: MessageDao,
+        chatDao: ChatDao,
+        notificationHandler: NotificationHandler
+    ): WebSocketProcessor {
+        return ChatMessageProcessor(messageDao, chatDao, notificationHandler)
     }
 }
