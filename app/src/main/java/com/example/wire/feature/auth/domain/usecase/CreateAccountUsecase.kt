@@ -21,30 +21,28 @@ class CreateAccountUseCase @Inject constructor(
     )
 
     override suspend fun invoke(params: Params): Resource<AuthUser> {
-        // 1. Domain Validation Logic
+        // 1. Validation Logic
         if (params.password.length < 8) {
             return Resource.Error(AppError.Validation("Password must be at least 8 characters"))
         }
         if (params.displayName.isBlank()) {
             return Resource.Error(AppError.Validation("Display name cannot be empty"))
         }
-        if (params.email.isBlank()) {
-            return Resource.Error(AppError.Validation("Email cannot be empty"))
+        if (params.phone.isBlank()) {
+            return Resource.Error(AppError.Validation("Phone number is required"))
         }
 
-        // 2. Repository Execution with Exception Mapping
+        // 2. Execution and Error Mapping
         return try {
             val result = authRepository.register(
-                params.email,
-                params.password,
-                params.displayName,
+                params.email, 
+                params.password, 
+                params.displayName, 
                 params.phone
             )
-
             if (result.isSuccess) {
                 Resource.Success(result.getOrThrow())
             } else {
-                // Map repository failure results
                 Resource.Error(AppError.Network.Unknown(result.exceptionOrNull()?.message))
             }
         } catch (e: SocketTimeoutException) {
@@ -52,7 +50,6 @@ class CreateAccountUseCase @Inject constructor(
         } catch (e: IOException) {
             Resource.Error(AppError.Network.NoInternet)
         } catch (e: Exception) {
-            // General fallback
             Resource.Error(AppError.Network.Unknown(e.message))
         }
     }

@@ -4,6 +4,7 @@ import com.example.wire.core.common.util.AppError
 import com.example.wire.core.common.util.Resource
 import com.example.wire.core.domain.base.BaseUseCase
 import com.example.wire.feature.auth.domain.repository.AuthRepository
+import java.io.IOException
 import javax.inject.Inject
 
 class LogoutUseCase @Inject constructor(
@@ -14,8 +15,10 @@ class LogoutUseCase @Inject constructor(
         return try {
             authRepository.logout()
             Resource.Success(Unit)
+        } catch (e: IOException) {
+            Resource.Error(AppError.Network.NoInternet)
         } catch (e: Exception) {
-            Resource.Error(AppError.Network.Unknown("Failed to logout securely: ${e.message}"))
+            Resource.Error(AppError.Network.Unknown(e.message))
         }
     }
 }
