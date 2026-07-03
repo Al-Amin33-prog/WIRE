@@ -32,7 +32,8 @@ class AuthRepositoryImpl @Inject constructor(
     ): Result<AuthUser> {
         return try {
             val userDto = firebaseAuthDataSource.register(email, password, displayName,phone)
-            authApiService.syncUser()
+            val completeUserDto = userDto.copy(phone = phone)
+            authApiService.syncUser(completeUserDto)
             Result.success(userDto.toDomain())
         } catch (e: Exception) {
             Result.failure(e)
