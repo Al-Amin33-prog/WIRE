@@ -3,6 +3,7 @@ package com.example.wire.feature.chat.presentation.screen.conversation
 
 
 
+import MessageBubble
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -58,7 +59,8 @@ fun ConversationContent(
             items(uiState.messages) { message ->
                 val isMe = message.senderId == "me" // Replace with actual logic
                 MessageBubble(
-                    message = message, isMe = isMe,
+                    message = message,
+                    isMe = isMe,
                     onLongClick = { onLongClick(message.id) }
                 )
             }

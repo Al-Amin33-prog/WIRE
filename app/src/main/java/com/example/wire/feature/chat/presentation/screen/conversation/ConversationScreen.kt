@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.wire.core.ui.theme.WireTheme
+import com.example.wire.feature.chat.domain.model.Message
 import com.example.wire.feature.chat.domain.model.MessageType
 import com.example.wire.feature.chat.presentation.component.event.ChatUiEvent
 import com.example.wire.feature.chat.presentation.component.state.ChatUiState
@@ -41,28 +42,28 @@ fun ConversationScreen(
     )
 }
 
-@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "NovaPay Light Mode")
 @Composable
 fun ConversationScreenPreviewLight() {
     WireTheme(darkTheme = false) {
         ConversationContent(
             uiState = ChatUiState(
                 displayName = "Sarah K.",
+                // Ensure 'me' and 'other' IDs are distinct for alignment
                 messages = listOf(
-                    com.example.wire.feature.chat.domain.model.Message(
+         Message(
                         id = "1",
-                        senderId = "other",
+                        senderId = "other", // Incoming (Left)
                         content = "Hey! Did you get the money? 💰",
                         timestamp = System.currentTimeMillis(),
                         type = MessageType.TEXT
                     ),
-                    com.example.wire.feature.chat.domain.model.Message(
+                    Message(
                         id = "2",
-                        senderId = "me",
-                        content = "75.00", // The logic in your bubble will detect the type
+                        senderId = "me",    // Outgoing (Right)
+                        content = "Yes I did! Thanks so much 🙏",
                         timestamp = System.currentTimeMillis(),
-                        type = MessageType.TEXT,
-                        metadata = mapOf("type" to "PAYMENT_SENT")
+                        type = MessageType.TEXT
                     )
                 )
             ),
