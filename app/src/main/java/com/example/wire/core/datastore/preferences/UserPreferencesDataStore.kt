@@ -26,41 +26,27 @@ class UserPreferencesDataStore @Inject constructor(
     }
 
     val isLoggedIn: Flow<Boolean> = context.dataStore.data
-        .map { preferences ->
-            preferences[IS_LOGGED_IN] ?: false
-        }
+        .map { preferences -> preferences[IS_LOGGED_IN] ?: false }
 
     val isBiometricEnabled: Flow<Boolean> = context.dataStore.data
-        .map { preferences ->
-            preferences[IS_BIOMETRIC_ENABLED] ?: false
-        }
+        .map { preferences -> preferences[IS_BIOMETRIC_ENABLED] ?: false }
 
     val savedUserEmail: Flow<String> = context.dataStore.data
-        .map { preferences ->
-            preferences[SAVED_USER_EMAIL] ?: ""
-        }
+        .map { preferences -> preferences[SAVED_USER_EMAIL] ?: "" }
 
     suspend fun setLoggedIn(value: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[IS_LOGGED_IN] = value
-        }
+        context.dataStore.edit { preferences -> preferences[IS_LOGGED_IN] = value }
     }
 
     suspend fun setBiometricEnabled(value: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[IS_BIOMETRIC_ENABLED] = value
-        }
+        context.dataStore.edit { preferences -> preferences[IS_BIOMETRIC_ENABLED] = value }
     }
 
     suspend fun setSavedEmail(email: String) {
-        context.dataStore.edit { preferences ->
-            preferences[SAVED_USER_EMAIL] = email
-        }
+        context.dataStore.edit { preferences -> preferences[SAVED_USER_EMAIL] = email }
     }
 
     suspend fun clearAll() {
-        context.dataStore.edit { preferences ->
-            preferences.clear()
-        }
+        context.dataStore.edit { it.clear() }
     }
 }

@@ -1,11 +1,14 @@
-package com.example.wire.feature.chat.presentation.screen.conversation
 
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -17,12 +20,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.wire.core.common.util.formatTimestamp
+import com.example.wire.core.ui.theme.BrandNavy
+import com.example.wire.feature.chat.domain.model.Message
 import com.example.wire.feature.chat.domain.model.MessageStatus
 import com.example.wire.feature.chat.domain.model.MessageType
-import com.example.wire.core.ui.theme.SurfaceDark
-import com.example.wire.feature.chat.domain.model.Message
-
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Check
+import com.example.wire.core.common.util.formatTimestamp
 
 @Composable
 fun MessageBubble(
@@ -30,79 +35,82 @@ fun MessageBubble(
     isMe: Boolean,
     onLongClick: () -> Unit
 ) {
-    val bubbleColor = if (message.isDeleted) Color.DarkGray
-    else (if (isMe) MaterialTheme.colorScheme.primary else SurfaceDark)
+
+    val bubbleColor = when {
+        message.isDeleted -> Color.LightGray.copy(alpha = 0.4f)
+        isMe -> BrandNavy // Outgoing: Navy Blue
+        else -> Color.White // Incoming: Pure White
+    }
+
+    val textColor = if (isMe) Color.White else Color.Black
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        horizontalAlignment = if (isMe) Alignment.End
-        else Alignment.Start
+        horizontalAlignment = if (isMe) Alignment.End else Alignment.Start
     ) {
         Surface(
             color = bubbleColor,
+            tonalElevation = 1.dp,
+            shadowElevation = 0.5.dp, // Soft shadow like in the image
             shape = RoundedCornerShape(
                 topStart = 16.dp,
                 topEnd = 16.dp,
                 bottomStart = if (isMe) 16.dp else 4.dp,
                 bottomEnd = if (isMe) 4.dp else 16.dp
             ),
-            modifier = Modifier.combinedClickable(
-                onClick = { /* Nothing */ },
-                onLongClick = onLongClick
-            )
+            modifier = Modifier
+                .combinedClickable(
+                    onClick = { },
+                    onLongClick = onLongClick
+                )
+                .widthIn(max = 280.dp)
         ) {
-            Column(modifier = Modifier.padding(12.dp)) {
+            Column(modifier = Modifier.padding(
+                horizontal = 12.dp,
+                vertical = 8.dp
+            )) {
                 if (message.isDeleted) {
                     Text(
                         text = "This message was deleted",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.LightGray,
+                        color = Color.Gray,
                         fontStyle = FontStyle.Italic
                     )
                 } else {
-                    // --- HANDLE MESSAGE TYPE ---
                     when (message.type) {
                         MessageType.TEXT -> {
-                            Text(text = message.content, color = Color.White)
-                        }
-                        // You can add Image/Video/Payment cases here later
-                        else -> {
-                            Text("Supported in next update",
-                                color = Color.Gray, fontSize = 12.sp)
-                        }
-                    }
-
-                    // --- FOOTER (Status + Time) ---
-                    Row(
-                        modifier = Modifier.align(Alignment.End).padding(top = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        if (message.isEdited) {
                             Text(
-                                text = "Edited",
-                                fontSize = 10.sp,
-                                color = Color.White.copy(alpha = 0.5f),
-                                modifier = Modifier.padding(end = 6.dp)
+                                text = message.content,
+                                color = textColor,
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         }
+                        else -> { /* Handle Payments here later */ }
+                    }
 
+                    // Footer with Time and Status
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(top = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
                             text = formatTimestamp(message.timestamp),
                             fontSize = 10.sp,
-                            color = Color.White.copy(alpha = 0.7f)
+                            color = textColor.copy(alpha = 0.6f)
                         )
 
-                        if (isMe && !message.isDeleted) {
+                        if (isMe) {
                             Spacer(modifier = Modifier.width(4.dp))
-                            // Handle MessageStatus (Currently logic for SENT)
                             Icon(
                                 imageVector = if (message.status == MessageStatus.SENT)
                                     Icons.Default.Check else Icons.Default.AccessTime,
                                 contentDescription = null,
-                                modifier = Modifier.size(12.dp),
-                                tint = Color.White.copy(alpha = 0.7f)
+                                modifier = Modifier.size(10.dp),
+                                tint = textColor.copy(alpha = 0.6f)
                             )
                         }
                     }
@@ -111,4 +119,3 @@ fun MessageBubble(
         }
     }
 }
-
