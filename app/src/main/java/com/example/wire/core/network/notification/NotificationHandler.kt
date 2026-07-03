@@ -5,4 +5,5 @@ import com.example.wire.feature.notifications.domain.model.NotificationType
 
 interface NotificationHandler {
     fun showSystemAlert(title: String, message: String, type: NotificationType)
+    fun showChatNotification(chatId: String, senderName: String, message: String)
 }
