@@ -7,8 +7,10 @@ import com.example.wire.feature.notifications.domain.usecase.NotificationUseCase
 import android.content.Context
 import com.example.wire.feature.notifications.data.remote.NotificationApiService
 import com.example.wire.core.network.notification.NotificationHandler // Ensure this path matches your core
+import com.example.wire.core.network.websocket.WebSocketProcessor
 import com.example.wire.feature.notifications.data.local.NotificationDao
 import com.example.wire.feature.notifications.data.local.NotificationHandlerImpl
+import com.example.wire.feature.notifications.data.processor.PaymentProcessor
 import com.example.wire.feature.notifications.domain.repository.NotificationRepository
 import com.example.wire.feature.notifications.domain.repository.NotificationRepositoryImpl
 import com.example.wire.feature.notifications.domain.usecase.ClearAllUseCase
@@ -60,4 +62,11 @@ object NotificationModule {
            clearAll = ClearAllUseCase(repository)
         )
     }
+    @Provides
+    @Singleton
+    fun providePaymentProcessor(
+    notificationRepository: NotificationRepository,
+    notificationHandler: NotificationHandler
+    ): WebSocketProcessor = PaymentProcessor(notificationRepository, notificationHandler)
+
 }
