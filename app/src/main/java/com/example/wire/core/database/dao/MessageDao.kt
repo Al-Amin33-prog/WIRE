@@ -17,4 +17,7 @@ interface MessageDao {
 
     @Query("UPDATE messages SET status = :status WHERE id = :messageId")
     suspend fun updateMessageStatus(messageId: String, status: String)
+
+    @Query("SELECT * FROM messages WHERE status = 'PENDING' OR status = 'FAILED'")
+    fun getUnsentMessages(): Flow<List<MessageEntity>>
 }

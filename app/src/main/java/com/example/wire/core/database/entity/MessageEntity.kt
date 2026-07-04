@@ -14,5 +14,6 @@ data class MessageEntity(
     val status: String, // SENDING, SENT, ERROR
     val isRead: Boolean,
     val isEdited: Boolean,
-    val isDeleted: Boolean
+    val isDeleted: Boolean,
+
 )
