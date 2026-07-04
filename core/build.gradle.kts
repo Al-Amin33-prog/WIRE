@@ -85,6 +85,13 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.kotlinx.serialization.json)
 
+
+        // ...
+        implementation(libs.androidx.work.runtime)
+        implementation(libs.hilt.work)
+        ksp(libs.hilt.work.compiler)
+
+
     // Testing
     testImplementation(libs.bundles.testing.unit)
     androidTestImplementation(libs.bundles.testing.android)
