@@ -1,5 +1,6 @@
 package com.example.wire.core.data.repository
 
+import com.example.wire.core.common.util.PerformanceMonitor
 import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
 import com.example.wire.core.database.entity.ChatEntity
@@ -25,11 +26,17 @@ class SyncRepositoryImpl @Inject constructor(
     private val notificationApi: NotificationApiService,
     private val messageDao: MessageDao,
     private val chatDao: ChatDao,
-    private val notificationDao: NotificationDao
+    private val notificationDao: NotificationDao,
+    private val performanceMonitor: PerformanceMonitor
 ) : SyncRepository {
 
     override suspend fun syncAll() = withContext(Dispatchers.IO) {
+        val startTime = System.currentTimeMillis()
         try {
+
+            val duration = System.currentTimeMillis() - startTime
+            performanceMonitor.recordEvent(duration)
+            println("WIRE_HEALTH: P99 Sync Latency is ${performanceMonitor.getP99()} ms")
             // Sync Notifications
             val remoteNotifications = notificationApi.getNotificationHistory()
             remoteNotifications.forEach { dto ->
