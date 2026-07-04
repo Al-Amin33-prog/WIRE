@@ -2,6 +2,8 @@ package com.example.wire.feature.chat.data.mapper
 
 import com.example.wire.feature.chat.domain.model.Message
 import com.example.wire.core.database.entity.MessageEntity
+import com.example.wire.feature.chat.domain.model.MessageStatus
+import com.example.wire.feature.chat.domain.model.MessageType
 
 // Convert Room Entity to Domain Model (For UI)
 fun MessageEntity.toDomain(): Message {
@@ -10,8 +12,8 @@ fun MessageEntity.toDomain(): Message {
         senderId = this.senderId,
         content = this.content,
         timestamp = this.timestamp,
-        type = com.example.wire.feature.chat.domain.model.MessageType.valueOf(this.type),
-        status = com.example.wire.feature.chat.domain.model.MessageStatus.valueOf(this.status),
+        type = MessageType.valueOf(this.type),
+        status = MessageStatus.valueOf(this.status),
         isRead = this.isRead,
         isEdited = this.isEdited,
         isDeleted = this.isDeleted
