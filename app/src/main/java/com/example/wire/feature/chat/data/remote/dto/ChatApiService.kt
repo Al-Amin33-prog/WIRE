@@ -11,7 +11,7 @@ interface ChatApiService {
     @GET("chat/history/{chatId}")
     suspend fun getChatHistory(
         @Path("chatId") chatId: String
-    ): List<Message> // You will map these to your domain Message
+    ): List<Message> //  map these to your domain Message
 
     @POST("chat/send")
     suspend fun sendMessage(
