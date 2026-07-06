@@ -7,7 +7,8 @@ import androidx.room.Room
 import com.example.wire.core.database.WireDatabase
 import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
-import com.example.wire.feature.notifications.data.local.NotificationDao
+import com.example.wire.core.database.dao.NotificationDao
+import com.example.wire.core.database.dao.TransactionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,6 +45,12 @@ object DatabaseModule {
     @Provides
     fun provideNotificationDao(database: WireDatabase): NotificationDao {
         return database.notificationDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionDao(database: WireDatabase): TransactionDao{
+        return database.transactionDao()
     }
 }
 
