@@ -1,17 +1,8 @@
 package com.example.wire.core.network.websocket
 
-import com.example.wire.core.common.util.AvatarUtils
-import com.example.wire.core.database.dao.ChatDao
-import com.example.wire.core.database.dao.MessageDao
-import com.example.wire.core.database.entity.ChatEntity
+
 import com.example.wire.core.di.ApplicationScope
 import com.example.wire.core.domain.dispatcher.CoroutineDispatchers
-import com.example.wire.core.network.notification.NotificationHandler
-import com.example.wire.feature.chat.data.mapper.toEntity
-import com.example.wire.feature.chat.data.remote.dto.ChatActionDto
-import com.example.wire.feature.notifications.domain.model.NotificationType
-import com.example.wire.feature.notifications.domain.model.WireNotification
-import com.example.wire.feature.notifications.domain.repository.NotificationRepository
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
@@ -24,40 +15,27 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class WebSocketManagerImpl @Inject constructor(
     @ApplicationScope private val applicationScope: CoroutineScope,
-    private val dispatchers: CoroutineDispatchers,
-    private val notificationRepository: NotificationRepository,
-    private val notificationHandler: NotificationHandler,
-    private val messageDao: MessageDao,
-    private val chatDao: ChatDao
+    private val dispatchers: CoroutineDispatchers
+    // DAOs and Repositories REMOVED - Logic moved to Processors
 ) : WebSocketManager {
 
     private val _state = MutableStateFlow<WebSocketState>(WebSocketState.Disconnected)
-
-    private val client = HttpClient(CIO) {
-        install(WebSockets)
-    }
-
-    private var session: DefaultClientWebSocketSession? = null
-    private val _isTyping = MutableStateFlow(false)
-    override fun isTyping() = _isTyping.asStateFlow()
-
     private val incomingMessages = MutableSharedFlow<String>()
+    private val client = HttpClient(CIO) { install(WebSockets) }
+    private var session: DefaultClientWebSocketSession? = null
 
     override fun connectionState() = _state.asStateFlow()
+    override fun observeMessages(): Flow<String> = incomingMessages
 
     override suspend fun connect() {
         try {
-            session = client.webSocketSession {
-                url(WebSocketConfig.BASE_URL)
-            }
+            session = client.webSocketSession { url(WebSocketConfig.BASE_URL) }
             _state.value = WebSocketState.Connected
             listenForMessages()
         } catch (e: Exception) {
@@ -70,75 +48,9 @@ class WebSocketManagerImpl @Inject constructor(
             try {
                 session?.incoming?.consumeEach { frame ->
                     if (frame is Frame.Text) {
-                        val jsonString = frame.readText()
-                        try {
-                            val chatAction = Json.decodeFromString<ChatActionDto>(jsonString)
-
-                            when(chatAction.action) {
-                                "PAYMENT" -> {
-                                    val msg = chatAction.message
-                                    val paymentNotif = WireNotification(
-                                        id = msg?.id ?: UUID.randomUUID().toString(),
-                                        title = "Payment Received",
-                                        content = "You received $${msg?.content} from ${msg?.senderId}",
-                                        type = NotificationType.PAYMENT_RECEIVED,
-                                        timestamp = System.currentTimeMillis(),
-                                        isRead = false
-                                    )
-                                    notificationRepository.saveNotification(paymentNotif)
-
-                                    notificationHandler.showSystemAlert(
-                                        title = "Money Received! 💰",
-                                        message = paymentNotif.content,
-                                        type = NotificationType.PAYMENT_RECEIVED
-                                    )
-
-                                    incomingMessages.emit(jsonString)
-                                }
-
-                                "SEND" -> {
-                                    val msg = chatAction.message
-                                   if (msg != null){
-                                       messageDao.insertMessage(msg.toEntity(chatId =  msg.senderId))
-                                       chatDao.updateChatPreview(
-                                           chatId = msg.senderId,
-                                           lastMessage = msg.content,
-                                           timestamp = System.currentTimeMillis()
-                                       )
-
-                                       notificationHandler.showSystemAlert(
-                                           title = msg.metadata?.get("senderName")?: "New Message",
-                                           message = msg.content,
-                                           type = NotificationType.MESSAGE
-                                       )
-                                   }
-                                    incomingMessages.emit(jsonString)
-                                }
-
-                                "TYPING_ON" -> _isTyping.value = true
-                                "TYPING_OFF" -> _isTyping.value = false
-                                "DELETE" -> incomingMessages.emit(jsonString)
-
-                                "CONTACT_MATCH" -> {
-                                    val matchedUser = chatAction.message
-                                    if (matchedUser != null) {
-                                        val name = matchedUser.metadata?.get("senderName") ?: "New Contact"
-                                        chatDao.upsertChat(
-                                            ChatEntity(
-                                                chatId = matchedUser.senderId,
-                                                contactName = name,
-                                                lastMessage = "Recently joined Wire",
-                                                timestamp = System.currentTimeMillis(),
-                                                avatarColor = AvatarUtils.getColorForName(name),
-                                                isContact = true
-                                            )
-                                        )
-                                    }
-                                }
-                            }
-                        } catch (e: Exception) {
-                            incomingMessages.emit(jsonString)
-                        }
+                        // THE SYMPHONY: Just emit the raw string.
+                        // The Switchboard (UseCase) will catch this and send it to Processors.
+                        incomingMessages.emit(frame.readText())
                     }
                 }
             } catch (e: Exception) {
@@ -147,16 +59,16 @@ class WebSocketManagerImpl @Inject constructor(
         }
     }
 
+    override suspend fun sendMessage(message: String) {
+        session?.send(Frame.Text(message))
+    }
+
     override suspend fun disconnect() {
         session?.close()
         _state.value = WebSocketState.Disconnected
     }
 
-    override suspend fun sendMessage(message: String) {
-        session?.send(Frame.Text(message))
-    }
-
-    override fun observeMessages(): Flow<String> {
-        return incomingMessages
-    }
+    // Typing state logic can stay or move to a TypingProcessor
+    private val _isTyping = MutableStateFlow(false)
+    override fun isTyping() = _isTyping.asStateFlow()
 }
