@@ -1,8 +1,8 @@
 package com.example.wire.core.navigation.routes
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.ChatBubble
-import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -24,10 +24,10 @@ sealed class BottomNavItem(
         "Wallet",
         Icons.Default.AccountBalanceWallet
     )
-    object Contacts : BottomNavItem(
-        "contacts",
-        "Contacts",
-        Icons.Default.Contacts
+    object Send : BottomNavItem(
+        "send",
+        "Send",
+        Icons.AutoMirrored.Filled.Send
     )
     object Profile : BottomNavItem(
         "profile",

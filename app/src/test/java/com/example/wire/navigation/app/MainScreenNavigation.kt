@@ -18,7 +18,7 @@ class MainScreenNavigationTest {
         val items = listOf(
             BottomNavItem.Chat,
             BottomNavItem.Wallet,
-            BottomNavItem.Contacts,
+            BottomNavItem.Send,
             BottomNavItem.Profile
         )
         
