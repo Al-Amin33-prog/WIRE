@@ -6,6 +6,7 @@ import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
 import com.example.wire.core.network.websocket.WebSocketManager
 import com.example.wire.core.worker.WorkScheduler
+import com.example.wire.feature.auth.domain.repository.AuthRepository
 import com.example.wire.feature.chat.data.remote.dto.ChatApiService
 import com.example.wire.feature.chat.domain.model.*
 import com.example.wire.feature.chat.data.mapper.toDomain
@@ -21,7 +22,8 @@ class ChatRepositoryImpl @Inject constructor(
     private val webSocketManager: WebSocketManager,
     private val messageDao: MessageDao,
     private val chatDao: ChatDao,
-    private val workScheduler: WorkScheduler // INJECTED
+    private val workScheduler: WorkScheduler,
+    private val authRepository: AuthRepository
 ) : ChatRepository {
 
     override suspend fun connect() {
@@ -91,4 +93,44 @@ class ChatRepositoryImpl @Inject constructor(
             Resource.Error(AppError.Network.Unknown(e.message))
         }
     }
+
+
+    override suspend fun markChatAsRead(chatId: String): Resource<Unit> {
+        return try {
+            val currentUser = authRepository.getCurrentUser()
+            val myId = currentUser?.uid ?: "me"
+
+            // 1. Local SSOT Update
+            messageDao.markChatAsRead(chatId, currentUserId = myId)
+
+            // 2. Notify Backend (Read Receipt)
+            // We send an action so the other person's 'ChatMessageProcessor' can update their UI
+            webSocketManager.sendMessage(
+                "{\"action\":\"READ\", \"message\":{\"senderId\":\"$myId\", \"metadata\":{\"chatId\":\"$chatId\"}}}"
+            )
+
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(AppError.Network.Unknown(e.message))
+        }
+    }
+
+    override suspend fun editMessage(messageId: String, newContent: String): Resource<Unit> {
+        return try {
+            val timestamp = System.currentTimeMillis()
+
+            // 1. Update Room (SSOT)
+            messageDao.updateMessageContent(messageId, newContent, timestamp)
+
+            // 2. Notify Backend via WebSocket
+            webSocketManager.sendMessage(
+                "{\"action\":\"EDIT\", \"message\":{\"id\":\"$messageId\", \"content\":\"$newContent\"}}"
+            )
+
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(AppError.Network.Unknown(e.message))
+        }
+    }
+
 }

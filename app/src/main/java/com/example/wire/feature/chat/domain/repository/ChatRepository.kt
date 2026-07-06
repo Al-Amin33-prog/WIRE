@@ -1,6 +1,6 @@
 package com.example.wire.feature.chat.domain.repository
 
-import androidx.compose.ui.input.key.Key
+
 import com.example.wire.core.common.util.Resource
 import com.example.wire.feature.chat.domain.model.Message
 import kotlinx.coroutines.flow.Flow
@@ -29,4 +29,12 @@ interface ChatRepository {
         String, messageId: String
     )
     : Resource<Unit>
+
+    suspend fun markChatAsRead(chatId: String): Resource<Unit>
+    suspend fun editMessage(
+        messageId: String,
+        newContent: String
+    ): Resource<Unit>
+
+
 }
