@@ -22,7 +22,11 @@ class ObserveWebSocketEventsUseCase @Inject constructor(
                     val chatAction = Json.decodeFromString<ChatActionDto>(jsonString)
 
                     // Find the right feature to handle this event
-                    processors.find { it.action == chatAction.action }?.process(chatAction)
+                    processors
+                        .filter{ it.action == chatAction.action }
+                        .forEach { processor ->
+                            processor.process(chatAction)
+                        }
 
                 } catch (e: Exception) {
                     println("Switchboard Error: ${e.message}")

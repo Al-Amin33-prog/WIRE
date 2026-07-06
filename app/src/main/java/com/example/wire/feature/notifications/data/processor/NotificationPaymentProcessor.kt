@@ -9,7 +9,7 @@ import com.example.wire.feature.notifications.domain.repository.NotificationRepo
 import java.util.UUID
 import javax.inject.Inject
 
-class PaymentProcessor @Inject constructor(
+class NotificationPaymentProcessor @Inject constructor(
     private val notificationRepository: NotificationRepository,
     private val notificationHandler: NotificationHandler
 ) : WebSocketProcessor {
