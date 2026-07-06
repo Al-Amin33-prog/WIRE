@@ -68,7 +68,7 @@ fun ConversationContent(
                     }
                 )
 
-// Add a ModalBottomSheet or Dialog at the bottom of ConversationContent
+
                 if (uiState.showMessageActions) {
                     ModalBottomSheet(
                         onDismissRequest = { onEvent(ChatUiEvent.DismissMessageActions) }

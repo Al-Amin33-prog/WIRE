@@ -33,8 +33,8 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
     val items = listOf(
         BottomNavItem.Chat,
         BottomNavItem.Wallet,
-        BottomNavItem.Contacts,
-        BottomNavItem.Profile
+        BottomNavItem.Profile,
+        BottomNavItem.Send
     )
 
     Scaffold(
@@ -111,7 +111,7 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
                     )
                 }
             }
-            composable(BottomNavItem.Contacts.route) {
+            composable(BottomNavItem.Send.route) {
                 Box(Modifier.padding(16.dp)) { Text("Contacts Coming Soon") }
             }
             composable(BottomNavItem.Profile.route) {
