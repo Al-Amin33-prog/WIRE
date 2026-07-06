@@ -20,4 +20,18 @@ interface MessageDao {
 
     @Query("SELECT * FROM messages WHERE status = 'PENDING' OR status = 'FAILED'")
     fun getUnsentMessages(): Flow<List<MessageEntity>>
+    @Query("UPDATE messages SET isDeleted = 1 WHERE id = :messageId")
+    suspend fun markMessageAsDeleted(messageId: String)
+
+    @Query("UPDATE messages SET isRead = 1 WHERE chatId = :chatId AND senderId != :currentUserId")
+    suspend fun markChatAsRead(chatId: String, currentUserId: String)
+    @Query("UPDATE messages SET content = :newContent, isEdited = 1, timestamp = :timestamp WHERE id = :messageId")
+    suspend fun updateMessageContent(messageId: String, newContent: String, timestamp: Long)
+
+
+
+
+
+
+
 }
