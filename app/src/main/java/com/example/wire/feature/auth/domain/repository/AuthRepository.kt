@@ -1,5 +1,6 @@
 package com.example.wire.feature.auth.domain.repository
 
+import com.example.wire.core.common.util.Resource
 import com.example.wire.feature.auth.domain.model.AuthUser
 import kotlinx.coroutines.flow.Flow
 
@@ -8,14 +9,14 @@ interface AuthRepository {
     suspend fun login(
         email: String,
         password: String
-    ): Result<AuthUser>
+    ): Resource<AuthUser>
 
     suspend fun register(
         email: String,
         password: String,
         displayName: String,
         phone: String
-    ): Result<AuthUser>
+    ): Resource<AuthUser>
 
     suspend fun logout()
 
@@ -23,6 +24,6 @@ interface AuthRepository {
 
     suspend fun getCurrentUser(): AuthUser?
 
-    suspend fun sendPasswordResetEmail(email: String): Result<Unit>
-    suspend fun loginWithGoogle(idToken: String): Result<AuthUser>
+    suspend fun sendPasswordResetEmail(email: String): Resource<Unit>
+    suspend fun loginWithGoogle(idToken: String): Resource<AuthUser>
 }

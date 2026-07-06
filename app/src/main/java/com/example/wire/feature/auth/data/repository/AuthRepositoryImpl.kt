@@ -1,5 +1,7 @@
 package com.example.wire.feature.auth.data.repository
 
+import com.example.wire.core.common.util.AppError
+import com.example.wire.core.common.util.Resource
 import com.example.wire.feature.auth.data.mapper.toDomain
 import com.example.wire.feature.auth.data.remote.FirebaseAuthDataSource
 import com.example.wire.feature.auth.data.remote.authApiServices.AuthApiService
@@ -7,6 +9,7 @@ import com.example.wire.feature.auth.domain.model.AuthUser
 import com.example.wire.feature.auth.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.io.IOException
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -14,13 +17,16 @@ class AuthRepositoryImpl @Inject constructor(
     private val authApiService: AuthApiService
 ) : AuthRepository {
 
-    override suspend fun login(email: String, password: String): Result<AuthUser> {
+    override suspend fun login(email: String, password: String): Resource<AuthUser> {
         return try {
             val userDto = firebaseAuthDataSource.login(email, password)
+            // SYMPHONY: Handshake with backend
             authApiService.syncUser()
-            Result.success(userDto.toDomain())
+            Resource.Success(userDto.toDomain())
+        } catch (e: IOException) {
+            Resource.Error(AppError.Network.NoInternet)
         } catch (e: Exception) {
-            Result.failure(e)
+            Resource.Error(AppError.Network.Unknown(e.message))
         }
     }
 
@@ -28,15 +34,15 @@ class AuthRepositoryImpl @Inject constructor(
         email: String,
         password: String,
         displayName: String,
-        phone:String
-    ): Result<AuthUser> {
+        phone: String
+    ): Resource<AuthUser> {
         return try {
-            val userDto = firebaseAuthDataSource.register(email, password, displayName,phone)
+            val userDto = firebaseAuthDataSource.register(email, password, displayName, phone)
             val completeUserDto = userDto.copy(phone = phone)
             authApiService.syncUser(completeUserDto)
-            Result.success(userDto.toDomain())
+            Resource.Success(userDto.toDomain())
         } catch (e: Exception) {
-            Result.failure(e)
+            Resource.Error(AppError.Network.Unknown(e.message))
         }
     }
 
@@ -52,21 +58,22 @@ class AuthRepositoryImpl @Inject constructor(
         return firebaseAuthDataSource.getCurrentUser()?.toDomain()
     }
 
-    override suspend fun sendPasswordResetEmail(email: String): Result<Unit> {
+    override suspend fun sendPasswordResetEmail(email: String): Resource<Unit> {
         return try {
             firebaseAuthDataSource.sendPasswordResetEmail(email)
-            Result.success(Unit)
+            Resource.Success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Resource.Error(AppError.Network.Unknown(e.message))
         }
     }
-    override suspend fun loginWithGoogle(idToken: String): Result<AuthUser> {
+
+    override suspend fun loginWithGoogle(idToken: String): Resource<AuthUser> {
         return try {
             val userDto = firebaseAuthDataSource.loginWithGoogle(idToken)
             authApiService.syncUser()
-            Result.success(userDto.toDomain())
+            Resource.Success(userDto.toDomain())
         } catch (e: Exception) {
-            Result.failure(e)
+            Resource.Error(AppError.Network.Unknown(e.message))
         }
     }
 }
