@@ -3,7 +3,7 @@ package com.example.wire.feature.notifications.domain.repository
 
 
 import com.example.wire.feature.notifications.data.local.NotificationDao
-import com.example.wire.feature.notifications.data.local.NotificationEntity
+import com.example.wire.core.database.entity.NotificationEntity
 import com.example.wire.feature.notifications.data.remote.NotificationApiService
 import com.example.wire.feature.notifications.domain.model.NotificationType
 import com.example.wire.feature.notifications.domain.model.WireNotification

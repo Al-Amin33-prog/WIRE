@@ -20,6 +20,7 @@ import com.example.wire.app.navigation.NavigatorImpl
 import com.example.wire.core.navigation.routes.BottomNavItem
 import com.example.wire.core.navigation.routes.Routes // Added missing import
 import com.example.wire.feature.chat.presentation.screen.chat_list.ChatListScreen // Added missing import
+import com.example.wire.feature.wallet.presentation.screen.WalletScreen
 
 
 @Composable
@@ -102,7 +103,13 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
 
 
             composable(BottomNavItem.Wallet.route) {
-                Box(Modifier.padding(16.dp)) { Text("Wallet Coming Soon") }
+                Box(Modifier.padding(16.dp)) {
+                    WalletScreen(
+                        onBackClick = {
+                            navController.navigate(BottomNavItem.Chat.route)
+                        }
+                    )
+                }
             }
             composable(BottomNavItem.Contacts.route) {
                 Box(Modifier.padding(16.dp)) { Text("Contacts Coming Soon") }
@@ -113,3 +120,4 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
         }
     }
 }
+

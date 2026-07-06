@@ -7,5 +7,6 @@ data class MessageDto(
     val id: String,    val senderId: String,
     val content: String,
     val timestamp: Long,
-    val type: String
+    val type: String,
+    val metadata: Map<String,String>? = null
 )

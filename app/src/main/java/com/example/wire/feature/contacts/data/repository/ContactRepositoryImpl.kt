@@ -6,6 +6,7 @@ import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.entity.ChatEntity
 import com.example.wire.feature.contacts.domain.model.ContactUser
 import com.example.wire.feature.contacts.data.repository.remote.ContactApiService
+import com.example.wire.feature.contacts.domain.model.repository.ContactRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

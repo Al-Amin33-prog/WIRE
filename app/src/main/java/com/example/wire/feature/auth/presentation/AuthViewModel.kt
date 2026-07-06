@@ -20,13 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase,
-    private val createAccountUseCase: CreateAccountUseCase,
-    private val logoutUseCase: LogoutUseCase,
-    private val observeAuthStateUseCase: ObserveAuthStateUseCase,
-    private val forgotPasswordUseCase: ForgotPasswordUseCase,
+    private val authUseCases: AuthUseCases, // Bundled wrapper
     private val biometricManager: WireBiometricManager,
-    private val googleSignInUseCase: GoogleSignInUseCase,
     private val userPreferencesDataStore: UserPreferencesDataStore
 ) : ViewModel() {
 
@@ -74,8 +69,8 @@ class AuthViewModel @Inject constructor(
     private fun handleGoogleSignIn(idToken: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, triggerGoogleSignIn = false) }
-            // Use 'when' instead of .fold() for your custom Resource class
-            when (val result = googleSignInUseCase(idToken)) {
+            // FIX: Access through authUseCases
+            when (val result = authUseCases.googleSignIn(idToken)) {
                 is Resource.Success -> {
                     userPreferencesDataStore.setLoggedIn(true)
                     _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
@@ -83,7 +78,7 @@ class AuthViewModel @Inject constructor(
                 is Resource.Error -> {
                     _uiState.update { it.copy(isLoading = false, errorMessage = mapError(result.error)) }
                 }
-                is Resource.Loading -> { /* Handled manually above */ }
+                is Resource.Loading -> { }
             }
         }
     }
@@ -93,7 +88,8 @@ class AuthViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             val params = LoginUseCase.Params(_uiState.value.email, _uiState.value.password)
 
-            when (val result = loginUseCase(params)) {
+            // FIX: Access through authUseCases
+            when (val result = authUseCases.login(params)) {
                 is Resource.Success -> {
                     userPreferencesDataStore.setLoggedIn(true)
                     _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
@@ -118,7 +114,8 @@ class AuthViewModel @Inject constructor(
                 current.email, current.password, current.displayName, current.phone
             )
 
-            when (val result = createAccountUseCase(params)) {
+            // FIX: Access through authUseCases
+            when (val result = authUseCases.createAccount(params)) {
                 is Resource.Success -> {
                     userPreferencesDataStore.setLoggedIn(true)
                     _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
@@ -134,7 +131,8 @@ class AuthViewModel @Inject constructor(
     private fun sendPasswordReset() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            when (val result = forgotPasswordUseCase(_uiState.value.email)) {
+            // FIX: Access through authUseCases
+            when (val result = authUseCases.forgotPassword(_uiState.value.email)) {
                 is Resource.Success -> {
                     _uiState.update { it.copy(isLoading = false, isPasswordResetEmailSent = true) }
                 }
@@ -148,13 +146,13 @@ class AuthViewModel @Inject constructor(
 
     private fun logout() {
         viewModelScope.launch {
-            logoutUseCase(Unit)
+            // FIX: Access through authUseCases
+            authUseCases.logout(Unit)
             userPreferencesDataStore.clearAll()
             _uiState.update { AuthUiState() }
         }
     }
 
-    // Helper to convert your AppError objects into user-friendly strings
     private fun mapError(error: AppError): String {
         return when (error) {
             is AppError.Validation -> error.message
@@ -167,7 +165,8 @@ class AuthViewModel @Inject constructor(
 
     private fun observeAuthState() {
         viewModelScope.launch {
-            observeAuthStateUseCase(Unit).collect { user ->
+            // FIX: Access through authUseCases
+            authUseCases.observeAuthState(Unit).collect { user ->
                 _uiState.update { it.copy(isLoggedIn = user != null) }
             }
         }

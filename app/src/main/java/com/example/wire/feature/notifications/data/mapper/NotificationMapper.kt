@@ -1,6 +1,6 @@
 package com.example.wire.feature.notifications.data.mapper
 
-import com.example.wire.feature.notifications.data.local.NotificationEntity
+import com.example.wire.core.database.entity.NotificationEntity
 import com.example.wire.feature.notifications.data.remote.dto.NotificationDto
 import com.example.wire.feature.notifications.domain.model.WireNotification
 import com.example.wire.feature.notifications.domain.model.NotificationType

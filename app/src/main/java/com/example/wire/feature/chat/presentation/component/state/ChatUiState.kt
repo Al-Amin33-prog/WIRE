@@ -18,5 +18,7 @@ data class ChatUiState(
     val error: String? = null,
     val isPeerTyping: Boolean = false,
     val peerLastActive:String ="",
-    val isPeerOnline: Boolean = false
+    val isPeerOnline: Boolean = false,
+    val selectedMessageId: String? = null,
+    val showMessageActions: Boolean = false
 )

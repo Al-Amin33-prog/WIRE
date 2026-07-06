@@ -13,4 +13,10 @@ sealed interface ChatUiEvent {
     object Disconnect : ChatUiEvent
     data class LoadHistory(val chatId: String) : ChatUiEvent
     object Refresh : ChatUiEvent
+    data class MessageLongClick(val messageId: String) : ChatUiEvent
+    object DismissMessageActions : ChatUiEvent
+    data class DeleteMessage(val messageId: String) : ChatUiEvent
+
+
+
 }

@@ -19,6 +19,7 @@ import com.example.wire.feature.chat.presentation.component.state.ChatUiState
 import com.example.wire.feature.chat.presentation.screen.chat_list.ChatInputBar
 import com.example.wire.feature.payments.presentation.component.PaymentMessageBubble
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConversationContent(
     uiState: ChatUiState,
@@ -58,11 +59,31 @@ fun ConversationContent(
 
             items(uiState.messages) { message ->
                 val isMe = message.senderId == "me" // Replace with actual logic
+                // Inside ConversationContent items(uiState.messages)
                 MessageBubble(
                     message = message,
-                    isMe = isMe,
-                    onLongClick = { onLongClick(message.id) }
+                    isMe = message.senderId == "me",
+                    onLongClick = {
+                        onEvent(ChatUiEvent.MessageLongClick(message.id))
+                    }
                 )
+
+// Add a ModalBottomSheet or Dialog at the bottom of ConversationContent
+                if (uiState.showMessageActions) {
+                    ModalBottomSheet(
+                        onDismissRequest = { onEvent(ChatUiEvent.DismissMessageActions) }
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                            TextButton(onClick = { /* Implement Copy */ }) { Text("Copy Text") }
+                            TextButton(onClick = {
+                                uiState.selectedMessageId?.let { onEvent(ChatUiEvent.DeleteMessage(it)) }
+                            }) {
+                                Text("Delete Message", color = Color.Red)
+                            }
+                        }
+                    }
+                }
+
             }
 
             // DEMO: Payment Message Bubble (Matching your screenshot)

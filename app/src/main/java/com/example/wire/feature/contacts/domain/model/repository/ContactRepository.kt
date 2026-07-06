@@ -1,6 +1,4 @@
-package com.example.wire.feature.contacts.data.repository
-
-
+package com.example.wire.feature.contacts.domain.model.repository
 
 import com.example.wire.feature.contacts.domain.model.ContactUser
 import kotlinx.coroutines.flow.Flow

@@ -5,6 +5,7 @@ import com.example.wire.core.database.dao.MessageDao
 import com.example.wire.core.network.notification.NotificationHandler
 import com.example.wire.core.network.websocket.WebSocketManager
 import com.example.wire.core.network.websocket.WebSocketProcessor
+import com.example.wire.core.worker.WorkScheduler
 import com.example.wire.feature.chat.data.processor.ChatMessageProcessor
 import com.example.wire.feature.chat.data.remote.dto.ChatApiService
 import com.example.wire.feature.chat.data.repository.ChatRepositoryImpl
@@ -35,9 +36,16 @@ object ChatModule {
         api: ChatApiService,
         messageDao: MessageDao,
         chatDao: ChatDao,
-        webSocketManager: WebSocketManager
+        webSocketManager: WebSocketManager,
+        workScheduler: WorkScheduler
     ): ChatRepository {
-        return ChatRepositoryImpl(api, webSocketManager, messageDao, chatDao)
+        return ChatRepositoryImpl(
+            api,
+            webSocketManager,
+            messageDao,
+            chatDao,
+            workScheduler
+            )
     }
 
     @Provides
@@ -48,7 +56,8 @@ object ChatModule {
             disconnectFromChat = DisconnectFromChatUseCase(repository),
             observeMessages = ObserveMessagesUseCase(repository),
             sendMessage = SendMessageUseCase(repository),
-            loadChatHistory = LoadChatHistoryUseCase(repository)
+            loadChatHistory = LoadChatHistoryUseCase(repository),
+            deleteMessage = DeleteMessageUseCase(repository)
         )
     }
     @Provides

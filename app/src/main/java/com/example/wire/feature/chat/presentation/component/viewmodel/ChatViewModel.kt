@@ -52,6 +52,26 @@ class ChatViewModel @Inject constructor(
                     syncRepository.syncAll()
                 }
             }
+            is ChatUiEvent.MessageLongClick -> {
+                _uiState.update {
+                    it.copy(
+                        selectedMessageId = event.messageId,
+                        showMessageActions = true
+                    )
+                }
+            }
+            is ChatUiEvent.DismissMessageActions -> {
+                _uiState.update {
+                    it.copy(
+                        selectedMessageId = null,
+                        showMessageActions = false
+                    )
+                }
+            }
+            is ChatUiEvent.DeleteMessage -> {
+                deleteMessage(event.messageId)
+
+            }
         }
     }
 
@@ -152,6 +172,29 @@ class ChatViewModel @Inject constructor(
         super.onCleared()
         viewModelScope.launch(NonCancellable) {
             chatUseCases.disconnectFromChat()
+        }
+    }
+    private fun deleteMessage(messageId: String) {
+        viewModelScope.launch {
+            //1. Optimistic UI: Close the menu immediately
+            _uiState.update {
+                it.copy(
+                    showMessageActions = false,
+                    selectedMessageId = null
+                )
+            }
+
+            // 2. Execute deletion logic via UseCase
+            // We assume you will add 'deleteMessage' to your ChatUseCases bundle
+            when (val result = chatUseCases.deleteMessage(currentChatId, messageId)) {
+                is Resource.Success -> {
+                    // Database is updated, Flow observation handles the UI update
+                }
+                is Resource.Error -> {
+                    _uiState.update { it.copy(error = mapError(result.error)) }
+                }
+                is Resource.Loading -> { }
+            }
         }
     }
 }

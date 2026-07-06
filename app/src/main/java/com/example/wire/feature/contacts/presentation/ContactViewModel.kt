@@ -2,7 +2,7 @@ package com.example.wire.feature.contacts.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.wire.feature.contacts.data.repository.ContactRepository
+import com.example.wire.feature.contacts.domain.model.repository.ContactRepository
 import com.example.wire.feature.contacts.domain.model.usescase.GetContactsUseCase // Updated
 
 import dagger.hilt.android.lifecycle.HiltViewModel
