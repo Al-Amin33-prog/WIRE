@@ -9,7 +9,7 @@ import java.util.UUID
 
 fun MessageDto.toDomain(): Message {
     return Message(
-        id = this.id ?: UUID.randomUUID().toString(),
+        id = this.id,
         senderId = this.senderId,
         content = this.content,
         timestamp = this.timestamp,
@@ -30,7 +30,7 @@ fun MessageDto.toDomain(): Message {
 
 fun MessageDto.toEntity(chatId: String): MessageEntity {
     return MessageEntity(
-        id = this.id ?: UUID.randomUUID().toString(),
+        id = this.id,
         chatId = chatId,
         senderId = this.senderId,
         content = this.content,
