@@ -15,12 +15,17 @@ android {
     compileSdk = 35
 
     defaultConfig {
+       // val stripeKey = project.findProperty("pk_test_51TpTC7RwhaV5daLPo13r1viAMtXjdrCr67NS6KaZYQmjrTwqGW2LOxpRibwmabI0P11i77gNMXOs7zp9b3MoJ5xv00HY6He5CJ") ?: ""
         applicationId = "com.example.wire"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+      //  buildConfigField("String", "STRIPE_PUBLISHABLE_KEY", stripeKey.toString())
+    }
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -54,7 +59,7 @@ android {
             excludes += "/META-INF/LICENSE-notice.md"
         }
     }
-    
+
     // Some versions of Gradle need the extension configured this way
     extensions.configure<androidx.room.gradle.RoomExtension> {
         schemaDirectory("$projectDir/schemas")
@@ -77,7 +82,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.splash.screen)
-    implementation(libs.biometric) 
+    implementation(libs.biometric)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
@@ -109,7 +114,7 @@ dependencies {
 
 // --- ADD THESE TWO LINES ---
 
-            testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.androidx.compose.ui.test.junit4)
     testImplementation(libs.androidx.test.core)
 
 
