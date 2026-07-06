@@ -10,6 +10,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+
+
+
 class ForgotPasswordUseCaseTest {
 
     private val repository = mockk<AuthRepository>()
@@ -19,6 +22,7 @@ class ForgotPasswordUseCaseTest {
     fun `invoke with invalid email format returns validation error`() = runBlocking {
         val result = useCase("invalid-email")
 
+        // Asserting on your custom Resource sealed class
         assertTrue(result is Resource.Error)
         val error = (result as Resource.Error).error
         assertTrue(error is AppError.Validation)
@@ -27,7 +31,8 @@ class ForgotPasswordUseCaseTest {
 
     @Test
     fun `invoke with valid email returns success resource`() = runBlocking {
-        coEvery { repository.sendPasswordResetEmail(any()) } returns Result.success(Unit)
+        // FIX: Return Resource.Success instead of Result.success
+        coEvery { repository.sendPasswordResetEmail(any()) } returns Resource.Success(Unit)
 
         val result = useCase("test@example.com")
 

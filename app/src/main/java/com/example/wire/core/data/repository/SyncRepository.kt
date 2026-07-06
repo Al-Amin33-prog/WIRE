@@ -1,16 +1,15 @@
 package com.example.wire.core.data.repository
 
-// 1. REMOVE: import androidx.compose.foundation.gestures.forEach
-// Use standard Kotlin forEach (no import needed usually)
+
 
 import com.example.wire.core.common.util.PerformanceMonitor
 import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
+import com.example.wire.core.database.dao.NotificationDao
 import com.example.wire.core.database.entity.ChatEntity
 import com.example.wire.feature.chat.data.remote.dto.ChatApiService
 import com.example.wire.feature.chat.data.mapper.toEntity
 import com.example.wire.feature.contacts.data.repository.remote.ContactApiService
-import com.example.wire.feature.notifications.data.local.NotificationDao
 import com.example.wire.feature.notifications.data.remote.NotificationApiService
 import com.example.wire.feature.notifications.data.mapper.toEntity as toNotificationEntity
 import kotlinx.coroutines.Dispatchers

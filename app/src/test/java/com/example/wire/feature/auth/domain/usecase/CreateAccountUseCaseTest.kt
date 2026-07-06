@@ -44,9 +44,16 @@ class CreateAccountUseCaseTest {
     fun `invoke with valid data returns success resource`() = runBlocking {
         val email = "test@example.com"
         val user = AuthUser(
-            "123", email, "Test User", false,"token", "12345678", )
+            uid = "123",
+            email = email,
+            displayName = "Test User",
+            isEmailVerified = false,
+            token = "token",
+            phone = "12345678"
+        )
 
-        coEvery { repository.register(any(), any(), any(), any()) } returns Result.success(user)
+        // FIX: Mocking the repository to return the new Resource type
+        coEvery { repository.register(any(), any(), any(), any()) } returns Resource.Success(user)
 
         val params = CreateAccountUseCase.Params(email, "password123", "Test User", "12345678")
         val result = useCase(params)
@@ -57,7 +64,10 @@ class CreateAccountUseCaseTest {
 
     @Test
     fun `invoke with repository failure returns network unknown error`() = runBlocking {
-        coEvery { repository.register(any(), any(), any(), any()) } returns Result.failure(Exception("Email taken"))
+        // FIX: Mocking the repository to return Resource.Error directly
+        val errorMessage = "Email taken"
+        coEvery { repository.register(any(), any(), any(), any()) } returns
+                Resource.Error(AppError.Network.Unknown(errorMessage))
 
         val params = CreateAccountUseCase.Params("test@example.com", "password123", "Test User", "12345678")
         val result = useCase(params)
@@ -65,6 +75,7 @@ class CreateAccountUseCaseTest {
         assertTrue(result is Resource.Error)
         val error = (result as Resource.Error).error
         assertTrue(error is AppError.Network.Unknown)
-        assertEquals("Email taken", (error as AppError.Network.Unknown).message)
+        assertEquals(errorMessage, (error as AppError.Network.Unknown).message)
     }
+
 }

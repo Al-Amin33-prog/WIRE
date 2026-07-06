@@ -14,23 +14,12 @@ class GoogleSignInUseCase @Inject constructor(
 ) : BaseUseCase<String, Resource<AuthUser>>() {
 
     override suspend fun invoke(params: String): Resource<AuthUser> {
+        // 1. Validation
         if (params.isBlank()) {
             return Resource.Error(AppError.Validation("Google token cannot be empty"))
         }
 
-        return try {
-            val result = authRepository.loginWithGoogle(params)
-            if (result.isSuccess) {
-                Resource.Success(result.getOrThrow())
-            } else {
-                Resource.Error(AppError.Network.Unknown(result.exceptionOrNull()?.message))
-            }
-        } catch (e: SocketTimeoutException) {
-            Resource.Error(AppError.Network.Timeout)
-        } catch (e: IOException) {
-            Resource.Error(AppError.Network.NoInternet)
-        } catch (e: Exception) {
-            Resource.Error(AppError.Network.Unknown(e.message))
-        }
+        // 2. Delegate to Repository
+        return authRepository.loginWithGoogle(params)
     }
 }
