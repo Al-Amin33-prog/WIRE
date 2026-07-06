@@ -12,12 +12,8 @@ class SendMessageUseCase @Inject constructor(
         if (content.isBlank()) {
             return Resource.Error(AppError.Validation("Message cannot be empty"))
         }
+        return  repository.sendMessage(chatId = chatId, content = content)
 
-        return try {
-            repository.sendMessage(chatId = chatId, content = content)
-            Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Error(AppError.Network.Unknown(e.message))
-        }
+
     }
 }

@@ -1,6 +1,6 @@
 package com.example.wire.feature.contacts.domain.model.usescase
 
-import com.example.wire.feature.contacts.data.repository.ContactRepository
+import com.example.wire.feature.contacts.domain.model.repository.ContactRepository
 import javax.inject.Inject
 
 class GetContactsUseCase @Inject constructor(

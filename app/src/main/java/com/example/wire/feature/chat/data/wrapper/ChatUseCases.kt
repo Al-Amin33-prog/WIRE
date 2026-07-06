@@ -1,6 +1,7 @@
 package com.example.wire.feature.chat.data.wrapper
 
 import com.example.wire.feature.chat.domain.usecase.ConnectToChatUseCase
+import com.example.wire.feature.chat.domain.usecase.DeleteMessageUseCase
 import com.example.wire.feature.chat.domain.usecase.DisconnectFromChatUseCase
 import com.example.wire.feature.chat.domain.usecase.LoadChatHistoryUseCase
 import com.example.wire.feature.chat.domain.usecase.ObserveMessagesUseCase
@@ -12,5 +13,6 @@ data class ChatUseCases @Inject constructor(
     val disconnectFromChat: DisconnectFromChatUseCase,
     val loadChatHistory: LoadChatHistoryUseCase,
     val observeMessages: ObserveMessagesUseCase,
-    val sendMessage: SendMessageUseCase
+    val sendMessage: SendMessageUseCase,
+    val deleteMessage: DeleteMessageUseCase
 )
