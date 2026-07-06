@@ -6,7 +6,9 @@ import com.example.wire.core.network.notification.NotificationHandler
 import com.example.wire.core.network.websocket.WebSocketManager
 import com.example.wire.core.network.websocket.WebSocketProcessor
 import com.example.wire.core.worker.WorkScheduler
+import com.example.wire.feature.auth.domain.repository.AuthRepository
 import com.example.wire.feature.chat.data.processor.ChatMessageProcessor
+import com.example.wire.feature.chat.data.processor.DeleteMessageProcessor
 import com.example.wire.feature.chat.data.remote.dto.ChatApiService
 import com.example.wire.feature.chat.data.repository.ChatRepositoryImpl
 import com.example.wire.feature.chat.data.wrapper.ChatUseCases
@@ -37,14 +39,16 @@ object ChatModule {
         messageDao: MessageDao,
         chatDao: ChatDao,
         webSocketManager: WebSocketManager,
-        workScheduler: WorkScheduler
+        workScheduler: WorkScheduler,
+        authRepository: AuthRepository
     ): ChatRepository {
         return ChatRepositoryImpl(
             api,
             webSocketManager,
             messageDao,
             chatDao,
-            workScheduler
+            workScheduler,
+            authRepository
             )
     }
 
@@ -57,7 +61,9 @@ object ChatModule {
             observeMessages = ObserveMessagesUseCase(repository),
             sendMessage = SendMessageUseCase(repository),
             loadChatHistory = LoadChatHistoryUseCase(repository),
-            deleteMessage = DeleteMessageUseCase(repository)
+            deleteMessage = DeleteMessageUseCase(repository),
+            markChatAsRead = MarkChatAsReadUseCase(repository),
+            editMessage = EditMessageUseCase(repository)
         )
     }
     @Provides
@@ -68,5 +74,13 @@ object ChatModule {
         notificationHandler: NotificationHandler
     ): WebSocketProcessor {
         return ChatMessageProcessor(messageDao, chatDao, notificationHandler)
+    }
+
+    @Provides
+    @IntoSet
+    fun provideDeleteMessageProcessor(
+        messageDao: MessageDao
+    ): WebSocketProcessor {
+        return DeleteMessageProcessor(messageDao)
     }
 }

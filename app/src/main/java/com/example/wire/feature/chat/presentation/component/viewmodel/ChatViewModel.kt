@@ -119,6 +119,7 @@ class ChatViewModel @Inject constructor(
     private fun loadHistory(chatId: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
+            chatUseCases.markChatAsRead(chatId)
 
             // FIX: Handle the Resource result
             when (val result = chatUseCases.loadChatHistory(chatId)) {
