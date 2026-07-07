@@ -3,10 +3,13 @@ package com.example.wire.feature.notifications.data.local
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
 import com.example.wire.R
+import com.example.wire.app.MainActivity
+import com.example.wire.core.common.constants.NotificationConstants
 import com.example.wire.core.network.notification.NotificationHandler
 import com.example.wire.feature.chat.data.receiver.ChatNotificationReceiver
 import com.example.wire.feature.notifications.domain.model.NotificationType
@@ -18,14 +21,17 @@ class NotificationHandlerImpl @Inject constructor(
 
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+    // We convert the launcher icon to a Bitmap once to save CPU on your 1.2GHz machine
+    private val appLogoBitmap by lazy {
+        BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher)
+    }
+
     override fun showSystemAlert(title: String, message: String, type: NotificationType) {
-        val channelId = "wire_alerts"
-        // ... (Your existing intent and pendingIntent logic)
+        createChannel(NotificationConstants.CHANNEL_ALERTS, "Wire Alerts")
 
-        createChannel(channelId, "Wire Alerts")
-
-        val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.notification_important_24px)
+        val notification = NotificationCompat.Builder(context, NotificationConstants.CHANNEL_ALERTS)
+            .setSmallIcon(R.drawable.ic_wire_stat_bar)
+            .setLargeIcon(appLogoBitmap)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -35,17 +41,15 @@ class NotificationHandlerImpl @Inject constructor(
         notificationManager.notify(System.currentTimeMillis().toInt(), notification)
     }
 
-    // MOVE THIS OUTSIDE showSystemAlert
     override fun showChatNotification(chatId: String, senderName: String, message: String) {
-        val channelId = "chat_channel"
-        createChannel(channelId, "Messages")
+        createChannel(NotificationConstants.CHANNEL_CHAT, "Messages")
 
         val remoteInput = RemoteInput.Builder("KEY_TEXT_REPLY")
             .setLabel("Reply")
             .build()
 
         val replyIntent = Intent(context, ChatNotificationReceiver::class.java).apply {
-            action = "ACTION_REPLY"
+            action = NotificationConstants.ACTION_REPLY
             putExtra("CHAT_ID", chatId)
         }
 
@@ -61,8 +65,9 @@ class NotificationHandlerImpl @Inject constructor(
             .addRemoteInput(remoteInput)
             .build()
 
-        val builder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.notification_important_24px) // Use your app icon
+        val builder = NotificationCompat.Builder(context, NotificationConstants.CHANNEL_CHAT)
+            .setSmallIcon(R.drawable.ic_wire_stat_bar) // FIXED: Using your App Icon
+            .setLargeIcon(appLogoBitmap)
             .setContentTitle(senderName)
             .setContentText(message)
             .addAction(replyAction)
@@ -70,6 +75,40 @@ class NotificationHandlerImpl @Inject constructor(
             .setPriority(NotificationCompat.PRIORITY_HIGH)
 
         notificationManager.notify(chatId.hashCode(), builder.build())
+    }
+
+    override fun showPaymentRequestNotification(
+        requestId: String,
+        senderName: String,
+        amount: String
+    ) {
+        createChannel(NotificationConstants.CHANNEL_GENERAL, "General Notifications")
+
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            action = NotificationConstants.ACTION_PAYMENT_REQUEST
+            putExtra("REQUEST_ID", requestId)
+            putExtra("AMOUNT", amount)
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            requestId.hashCode(),
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val notification = NotificationCompat.Builder(context, NotificationConstants.CHANNEL_GENERAL)
+            .setSmallIcon(R.drawable.ic_wire_stat_bar) // FIXED: Using your App Icon
+            .setLargeIcon(appLogoBitmap)
+            .setContentTitle("Payment Request 💰")
+            .setContentText("$senderName requested $$amount")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        notificationManager.notify(requestId.hashCode(), notification)
     }
 
     private fun createChannel(id: String, name: String) {
