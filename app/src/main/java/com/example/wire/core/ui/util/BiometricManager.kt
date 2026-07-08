@@ -55,8 +55,10 @@ class WireBiometricManager @Inject constructor(
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(title)
             .setSubtitle(subtitle)
-            .setNegativeButtonText("Use password instead")
-            .setAllowedAuthenticators(BIOMETRIC_STRONG)
+            .setAllowedAuthenticators(
+                androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG or
+                androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
+            )
             .build()
 
         BiometricPrompt(activity, executor, callback)

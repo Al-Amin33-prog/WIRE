@@ -83,6 +83,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.splash.screen)
     implementation(libs.biometric)
+    implementation(libs.stripe.android)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
