@@ -23,6 +23,8 @@ class UserPreferencesDataStore @Inject constructor(
         private val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
         private val IS_BIOMETRIC_ENABLED = booleanPreferencesKey("is_biometric_enabled")
         private val SAVED_USER_EMAIL = stringPreferencesKey("saved_user_email")
+
+        private val BIOMETRIC_TYPE = stringPreferencesKey("biometric_type")
     }
 
     val isLoggedIn: Flow<Boolean> = context.dataStore.data
@@ -33,6 +35,9 @@ class UserPreferencesDataStore @Inject constructor(
 
     val savedUserEmail: Flow<String> = context.dataStore.data
         .map { preferences -> preferences[SAVED_USER_EMAIL] ?: "" }
+
+    val selectedBiometricType: Flow<String> = context.dataStore.data
+        .map{preferences -> preferences[BIOMETRIC_TYPE] ?: "NONE"}
 
     suspend fun setLoggedIn(value: Boolean) {
         context.dataStore.edit { preferences -> preferences[IS_LOGGED_IN] = value }
