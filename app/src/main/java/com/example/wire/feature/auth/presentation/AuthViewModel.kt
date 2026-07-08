@@ -14,13 +14,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authUseCases: AuthUseCases, // Bundled wrapper
+    private val authUseCases: AuthUseCases,
     private val biometricManager: WireBiometricManager,
     private val userPreferencesDataStore: UserPreferencesDataStore
 ) : ViewModel() {
@@ -31,6 +32,7 @@ class AuthViewModel @Inject constructor(
     init {
         observeAuthState()
         checkBiometricAvailability()
+        checkBiometricButtonVisibility()
     }
 
     private fun checkBiometricAvailability() {
@@ -62,6 +64,16 @@ class AuthViewModel @Inject constructor(
             is AuthUiEvent.GoogleSignInResult -> handleGoogleSignIn(event.idToken)
             is AuthUiEvent.GoogleSignInFailed -> _uiState.update {
                 it.copy(errorMessage = event.reason, triggerGoogleSignIn = false)
+            }
+            is AuthUiEvent.EnrollBiometrics -> {
+                viewModelScope.launch {
+                    userPreferencesDataStore.setBiometricEnabled(event.value)
+                    _uiState.update { it.copy(isBiometricEnabled = event.value) }
+                     _uiState.update { it.copy(
+                         showBiometricEnrollment = false,
+                         isLoggedIn = true
+                     ) }
+                }
             }
         }
     }
@@ -180,4 +192,43 @@ class AuthViewModel @Inject constructor(
             onFailed = { onEvent(AuthUiEvent.BiometricAuthFailed("Not recognized")) }
         )
     }
+
+
+
+    private fun handleSuccessfulAuth(email: String) {
+        viewModelScope.launch {userPreferencesDataStore.setSavedEmail(email)
+
+            // 1. Check if hardware supports Biometrics
+            val isHardwareAvailable = biometricManager.isBiometricAvailable()
+
+            // 2. Check if user already enabled it previously
+            val isAlreadyEnabled = userPreferencesDataStore.isBiometricEnabled.first()
+
+            if (isHardwareAvailable && !isAlreadyEnabled) {
+                // STOP NAVIGATION: Show the Setup Screen instead
+                _uiState.update { it.copy(
+                    showBiometricEnrollment = true,
+                    isLoading = false
+                )}
+            } else {
+                // ALREADY SETUP: Go straight to Chat
+                _uiState.update { it.copy(isLoggedIn = true, isLoading = false) }
+            }
+        }
+    }
+
+    private fun checkBiometricButtonVisibility() {
+        viewModelScope.launch {
+            // We only show the button on the Login screen if:
+            // 1. Hardware exists AND 2. User has already opted-in (saved in DataStore)
+            val isHardwareAvailable = biometricManager.isBiometricAvailable()
+            userPreferencesDataStore.isBiometricEnabled.collect { isEnabled ->
+                _uiState.update { it.copy(
+                    isBiometricButtonVisible = isHardwareAvailable && isEnabled
+                )}
+            }
+        }
+    }
+
+
 }
