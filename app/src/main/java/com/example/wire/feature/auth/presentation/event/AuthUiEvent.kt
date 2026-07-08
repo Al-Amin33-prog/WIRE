@@ -17,4 +17,6 @@ sealed class AuthUiEvent {
     data class GoogleSignInResult(val idToken: String) : AuthUiEvent()
     object GoogleSignInClicked : AuthUiEvent()
     data class GoogleSignInFailed(val reason: String) : AuthUiEvent()
+
+    data class EnrollBiometrics(val value: Boolean) : AuthUiEvent()
 }

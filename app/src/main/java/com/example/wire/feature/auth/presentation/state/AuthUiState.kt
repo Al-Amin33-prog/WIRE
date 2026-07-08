@@ -13,5 +13,17 @@ data class AuthUiState(
     val isBiometricEnabled: Boolean = false,
     val showBiometricPrompt: Boolean = false,
     val phone: String = "",
-    val triggerGoogleSignIn: Boolean = false
+    val triggerGoogleSignIn: Boolean = false,
+    val isBiometricButtonVisible: Boolean = false,
+    val showBiometricEnrollment: Boolean = false, // To trigger the "Setup" screen
+    val availableBiometricType: BiometricType = BiometricType.NONE,
+    val selectedBiometricType: BiometricType = BiometricType.NONE,
+    val isRegistrationComplete: Boolean = false
 )
+
+enum class BiometricType {
+    FINGERPRINT,
+    FACE_ID,
+    BOTH,
+    NONE
+}
