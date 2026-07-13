@@ -10,7 +10,7 @@ interface AuthApiService {
     @POST("api/auth/sync-user")
     suspend fun syncUser(): Response<Unit>
 
-    // In AuthApiService.kt
+
     @POST("auth/sync")
     suspend fun syncUser(@Body user: AuthUserDto): Response<Unit>
 }

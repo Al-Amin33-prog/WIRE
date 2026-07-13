@@ -6,6 +6,7 @@ import com.example.wire.feature.auth.domain.repository.AuthRepository
 import com.example.wire.feature.auth.domain.usecase.AuthUseCases
 import com.example.wire.feature.auth.domain.usecase.CreateAccountUseCase
 import com.example.wire.feature.auth.domain.usecase.ForgotPasswordUseCase
+import com.example.wire.feature.auth.domain.usecase.GetCurrentUserUseCase
 import com.example.wire.feature.auth.domain.usecase.GoogleSignInUseCase
 import com.example.wire.feature.auth.domain.usecase.LoginUseCase
 import com.example.wire.feature.auth.domain.usecase.LogoutUseCase
@@ -29,6 +30,7 @@ abstract class AuthModule {
     ): AuthRepository
 
     companion object {
+
         @Provides
         @Singleton
         fun provideAuthUseCases(repository: AuthRepository): AuthUseCases {
@@ -38,7 +40,8 @@ abstract class AuthModule {
                 logout = LogoutUseCase(repository),
                 observeAuthState = ObserveAuthStateUseCase(repository),
                 forgotPassword = ForgotPasswordUseCase(repository),
-                googleSignIn = GoogleSignInUseCase(repository)
+                googleSignIn = GoogleSignInUseCase(repository),
+                getCurrentUser = GetCurrentUserUseCase(repository)
             )
         }
 

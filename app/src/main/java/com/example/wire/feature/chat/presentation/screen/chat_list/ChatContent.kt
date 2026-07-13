@@ -34,6 +34,7 @@ fun ChatContent(
             HeaderSection(
                 userName = uiState.displayName,
                 onNotificationClick = onNotificationClick,
+              //  modifier = Modifier.systemBarsPadding()
 
                 )
         },
@@ -53,6 +54,7 @@ fun ChatContent(
     ) { padding ->
         LazyColumn(
             modifier = Modifier
+                //.systemBarsPadding()
                 .fillMaxSize()
                 .padding(padding)
                 .padding(horizontal = 20.dp)
@@ -83,7 +85,7 @@ fun ChatContent(
             // 4. Chat List
             items(uiState.messages) { message ->
                 ChatItem(
-                    name = "Sarah K.", // Demo data for now
+                    name = "Shaba ", // Demo data for now
                     lastMessage = "Sent you $50.00",
                     time = "2m",
                     unreadCount = 2,

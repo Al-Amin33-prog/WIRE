@@ -10,6 +10,7 @@ import com.example.wire.core.ui.util.WireBiometricManager
 import com.example.wire.feature.auth.domain.usecase.*
 import com.example.wire.feature.auth.presentation.event.AuthUiEvent
 import com.example.wire.feature.auth.presentation.state.AuthUiState
+import com.example.wire.feature.chat.data.wrapper.ChatUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +24,8 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val authUseCases: AuthUseCases,
     private val biometricManager: WireBiometricManager,
-    private val userPreferencesDataStore: UserPreferencesDataStore
+    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val chatUseCases: ChatUseCases
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -86,6 +88,9 @@ class AuthViewModel @Inject constructor(
                 is Resource.Success -> {
                     userPreferencesDataStore.setLoggedIn(true)
                     _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
+                    val user = authUseCases.getCurrentUser()
+                    val email = user?.email ?: ""
+                    handleSuccessfulAuth(email)
                 }
                 is Resource.Error -> {
                     _uiState.update { it.copy(isLoading = false, errorMessage = mapError(result.error)) }
@@ -105,6 +110,7 @@ class AuthViewModel @Inject constructor(
                 is Resource.Success -> {
                     userPreferencesDataStore.setLoggedIn(true)
                     _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
+                    handleSuccessfulAuth(_uiState.value.email)
                 }
                 is Resource.Error -> {
                     _uiState.update { it.copy(isLoading = false, errorMessage = mapError(result.error)) }
@@ -131,6 +137,7 @@ class AuthViewModel @Inject constructor(
                 is Resource.Success -> {
                     userPreferencesDataStore.setLoggedIn(true)
                     _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
+                    handleSuccessfulAuth(_uiState.value.email)
                 }
                 is Resource.Error -> {
                     _uiState.update { it.copy(isLoading = false, errorMessage = mapError(result.error)) }
@@ -161,6 +168,7 @@ class AuthViewModel @Inject constructor(
             // FIX: Access through authUseCases
             authUseCases.logout(Unit)
             userPreferencesDataStore.clearAll()
+            chatUseCases.disconnectFromChat()
             _uiState.update { AuthUiState() }
         }
     }
@@ -212,6 +220,7 @@ class AuthViewModel @Inject constructor(
                 )}
             } else {
                 // ALREADY SETUP: Go straight to Chat
+                userPreferencesDataStore.setLoggedIn(true)
                 _uiState.update { it.copy(isLoggedIn = true, isLoading = false) }
             }
         }

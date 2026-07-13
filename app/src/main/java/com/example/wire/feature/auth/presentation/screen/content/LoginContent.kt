@@ -46,6 +46,7 @@ fun LoginContent(
 
     Column(
         modifier = Modifier
+            .systemBarsPadding()
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             // This prevents "Overlap" - the user can scroll if the screen is too short
@@ -180,7 +181,10 @@ fun LoginContent(
         }
 
         // --- BIOMETRIC OPTION ---
-        if (uiState.isBiometricAvailable && uiState.isBiometricEnabled) {
+        // Find where you have the Biometric Button and change the condition:
+
+// ONLY show this if hardware is available AND user previously opted-in
+        if (uiState.isBiometricButtonVisible) {
             Spacer(modifier = Modifier.height(12.dp))
             OutlinedButton(
                 onClick = { onEvent(AuthUiEvent.BiometricLoginClicked) },
@@ -194,6 +198,7 @@ fun LoginContent(
                 Text(stringResource(R.string.login_biometric_button))
             }
         }
+
 
         Spacer(modifier = Modifier.height(24.dp))
 

@@ -69,7 +69,9 @@ fun AppNavHost(
             ConversationScreen(
                 chatId = chatId,
                 onBackClick = { navController.popBackStack() },
-                onLongClick = { /* Handle delete/edit */ }
+                onLongClick = { /* Handle delete/edit */ },
+                navController = navController
+
             )
         }
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.provider.ContactsContract
 import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.entity.ChatEntity
+import com.example.wire.core.domain.dispatcher.CoroutineDispatchers
 import com.example.wire.feature.contacts.domain.model.ContactUser
 import com.example.wire.feature.contacts.data.repository.remote.ContactApiService
 import com.example.wire.feature.contacts.domain.model.repository.ContactRepository
@@ -17,7 +18,7 @@ import javax.inject.Inject
 class ContactRepositoryImpl @Inject constructor(
     private val chatDao: ChatDao,
     private val api: ContactApiService,
-
+    private val dispatcher: CoroutineDispatchers,
     @ApplicationContext private val context: Context
 ) : ContactRepository {
 
@@ -35,7 +36,7 @@ class ContactRepositoryImpl @Inject constructor(
     }
 
     override suspend fun syncContacts() {
-        withContext(Dispatchers.IO) {
+        withContext(dispatcher.io) {
             try {
 
                 val phoneNumbers = getLocalPhoneContacts()

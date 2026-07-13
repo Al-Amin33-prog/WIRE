@@ -2,6 +2,7 @@ package com.example.wire.feature.chat.domain.repository
 
 
 import com.example.wire.core.common.util.Resource
+import com.example.wire.core.network.websocket.WebSocketState
 import com.example.wire.feature.chat.domain.model.Message
 import kotlinx.coroutines.flow.Flow
 
@@ -35,6 +36,13 @@ interface ChatRepository {
         messageId: String,
         newContent: String
     ): Resource<Unit>
+
+    fun observeConnectionState(): Flow<WebSocketState>
+    fun observeTypingState(): Flow<Boolean>
+
+
+
+
 
 
 }

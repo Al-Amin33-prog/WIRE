@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.wire.core.common.util.AppError
 import com.example.wire.core.common.util.Resource
 import com.example.wire.core.data.repository.SyncRepository
+import com.example.wire.core.network.websocket.WebSocketState
 import com.example.wire.feature.auth.domain.repository.AuthRepository
 import com.example.wire.feature.chat.data.wrapper.ChatUseCases
 import com.example.wire.feature.chat.presentation.component.event.ChatUiEvent
@@ -31,6 +32,7 @@ class ChatViewModel @Inject constructor(
         onEvent(ChatUiEvent.LoadHistory(currentChatId))
         connectAndObserve()
         loadUserProfile()
+        observeWebSocketStatus()
     }
 
     fun onEvent(event: ChatUiEvent) {
@@ -74,12 +76,37 @@ class ChatViewModel @Inject constructor(
             }
         }
     }
+    private fun observeWebSocketStatus() {
+        // 1. Observe Connection State (Connecting, Connected, Disconnected)
+        chatUseCases.observeConnectionState()
+            .onEach { state ->
+                _uiState.update { it.copy(
+                    connectionState = state,
+                    isConnected = state is WebSocketState.Connected,
+                    isConnecting = state is WebSocketState.Connecting
+                ) }
+            }
+            .launchIn(viewModelScope)
+
+        // 2. Observe Typing State
+        chatUseCases.observeTypingState()
+            .onEach { typing ->
+                _uiState.update { it.copy(isPeerTyping = typing) }
+            }
+            .launchIn(viewModelScope)
+    }
+
+
+
 
     private fun loadUserProfile() {
         viewModelScope.launch {
             val user = authRepository.getCurrentUser()
             val name = user?.displayName ?: "User"
-            _uiState.update { it.copy(displayName = name) }
+            val currentUserUid = user?.uid ?: ""
+            _uiState.update { it.copy(
+                currentUserUid = currentUserUid,
+                displayName = name) }
         }
     }
 

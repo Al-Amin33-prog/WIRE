@@ -20,7 +20,8 @@ data class Message(
 )
 
 enum class MessageType {
-    TEXT, IMAGE, VIDEO, FILE
+    TEXT, IMAGE, VIDEO, FILE,PAYMENT, REQUEST,MEDIA
+
 }
 enum class MessageStatus {
     SENDING, SENT, DELIVERED, READ, ERROR

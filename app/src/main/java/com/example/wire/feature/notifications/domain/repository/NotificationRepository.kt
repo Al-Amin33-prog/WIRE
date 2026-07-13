@@ -10,4 +10,5 @@ interface NotificationRepository {
     suspend fun saveNotification(notification: WireNotification)
     suspend fun markAsRead(id: String)
     suspend fun clearAll()
+    suspend fun syncNotifications()
 }

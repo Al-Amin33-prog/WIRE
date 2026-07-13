@@ -3,6 +3,7 @@ package com.example.wire.feature.contacts.presentation
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -17,7 +18,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.example.wire.R
 import com.example.wire.feature.contacts.components.ContactItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,7 +35,7 @@ fun ContactSelectionContent(
         containerColor = MaterialTheme.colorScheme.background, // Cream Background
         topBar = {
             TopAppBar(
-                title = { Text("Select Contact", fontWeight = FontWeight.Black) },
+                title = { Text(stringResource(R.string.select_contact), fontWeight = FontWeight.Black) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -44,7 +47,13 @@ fun ContactSelectionContent(
             )
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+        Column(
+            modifier =
+                Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+                    .systemBarsPadding()
+        ) {
             if (uiState.isPermissionDenied) {
                 PermissionDeniedContent(onGrantClick = onGrantPermissionClick)
             } else {

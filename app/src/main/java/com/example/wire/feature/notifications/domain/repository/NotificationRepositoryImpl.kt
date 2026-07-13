@@ -1,8 +1,6 @@
 package com.example.wire.feature.notifications.domain.repository
 
-
-
-import com.example.wire.feature.notifications.data.local.NotificationDao
+import com.example.wire.core.database.dao.NotificationDao
 import com.example.wire.core.database.entity.NotificationEntity
 import com.example.wire.feature.notifications.data.remote.NotificationApiService
 import com.example.wire.feature.notifications.domain.model.NotificationType
@@ -16,9 +14,9 @@ class NotificationRepositoryImpl @Inject constructor(
     private val dao: NotificationDao
 ) : NotificationRepository {
 
-    // Logic to observe Room
+    // 1. THE SSOT: Observe local database only.
+    // The UI will react automatically when the API updates the DB.
     override fun getNotifications(): Flow<List<WireNotification>> {
-
         return dao.getAllNotifications().map { entities ->
             entities.map { entity ->
                 WireNotification(
@@ -37,21 +35,43 @@ class NotificationRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveNotification(notification: WireNotification) {
+    // 2. USING THE API: Fetch from server and update local storage
+    override suspend fun syncNotifications() {
+        try {
+            val remoteNotifications = api.getNotificationHistory()
+            remoteNotifications.forEach { dto ->
+                // Map DTO to Entity and insert into Room
+                val entity = NotificationEntity(
+                    id = dto.id,
+                    title = dto.title,
+                    content = dto.content,
+                    type = dto.type,
+                    timestamp = dto.timestamp,
+                    isRead = false // New syncs are unread by default
+                )
+                dao.insertNotification(entity)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
-       val entity = NotificationEntity(
-           id = notification.id,
-           title = notification.title,
-           content = notification.content,
-           type = notification.type.name,
-           timestamp = notification.timestamp,
-           isRead = notification.isRead
-       )
+    override suspend fun saveNotification(notification: WireNotification) {
+        val entity = NotificationEntity(
+            id = notification.id,
+            title = notification.title,
+            content = notification.content,
+            type = notification.type.name,
+            timestamp = notification.timestamp,
+            isRead = notification.isRead
+        )
         dao.insertNotification(entity)
     }
 
     override suspend fun markAsRead(id: String) {
         dao.markAsRead(id)
+        // OPTIONAL: Tell the API Sarah read the notification
+        // try { api.markAsRead(id) } catch(e: Exception) {}
     }
 
     override suspend fun clearAll() {

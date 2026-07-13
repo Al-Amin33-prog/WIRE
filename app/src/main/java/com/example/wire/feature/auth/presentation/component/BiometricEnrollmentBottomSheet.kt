@@ -25,9 +25,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.wire.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,7 +57,7 @@ fun BiometricEnrollmentBottomSheet(
             ) {
                 Icon(
                     imageVector = Icons.Default.Fingerprint,
-                    contentDescription = null,
+                    contentDescription = "fingerPrint",
                     modifier = Modifier
                         .padding(20.dp)
                         .fillMaxSize(),
@@ -66,14 +68,14 @@ fun BiometricEnrollmentBottomSheet(
             Spacer(Modifier.height(24.dp))
 
             Text(
-                text = "Enable Biometric Login",
+                text = stringResource(R.string.enable_biometric_login),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
             Text(
-                text = "Use your fingerprint or Face ID for faster login and secure payments next time.",
+                text = stringResource(R.string.fingerprint_or_face_id_for),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -94,7 +96,11 @@ fun BiometricEnrollmentBottomSheet(
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text("Enable Biometrics", fontWeight = FontWeight.Bold)
+                Text(
+                    stringResource(R.string.enable_biometric)
+                    ,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
             // Secondary Action
@@ -104,7 +110,7 @@ fun BiometricEnrollmentBottomSheet(
                     .fillMaxWidth()
                     .padding(top = 8.dp)
             ) {
-                Text("Maybe Later", color = MaterialTheme.colorScheme.outline)
+                Text(stringResource(R.string.maybe_later), color = MaterialTheme.colorScheme.outline)
             }
         }
     }

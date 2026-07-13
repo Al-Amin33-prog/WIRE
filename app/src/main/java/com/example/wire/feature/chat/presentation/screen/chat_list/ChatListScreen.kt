@@ -20,14 +20,18 @@ fun ChatListScreen(
 
     val uiState by viewModel.uiState.collectAsState()
 
+    WireTheme {
 
-    ChatContent(
-        uiState = uiState,
-        onEvent = viewModel::onEvent,
-        onChatClick = onChatClick,
-        onNotificationClick = onNotificationClick,
-       onFabClick = onFabClick,
-    )
+        ChatContent(
+            uiState = uiState,
+            onEvent = viewModel::onEvent,
+            onChatClick = onChatClick,
+            onNotificationClick = onNotificationClick,
+            onFabClick = onFabClick,
+        )
+    }
+
+
 }
 
 @Preview

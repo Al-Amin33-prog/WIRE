@@ -11,6 +11,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.wire.R
 import com.example.wire.core.ui.util.LocalFragmentActivity
 import com.example.wire.feature.auth.presentation.AuthViewModel
+import com.example.wire.feature.auth.presentation.component.BiometricEnrollmentBottomSheet
 import com.example.wire.feature.auth.presentation.event.AuthUiEvent
 import com.example.wire.feature.auth.presentation.screen.content.LoginContent
 import com.example.wire.feature.auth.presentation.state.AuthUiState
@@ -65,11 +66,24 @@ fun LoginScreen(
         }
     }
 
+
+        if (uiState.showBiometricPrompt) {
+            BiometricEnrollmentBottomSheet(
+                onEnroll = { enabled ->
+                    viewModel.onEvent(AuthUiEvent.EnrollBiometrics(enabled))
+                },
+                onDismiss = { viewModel.onEvent(AuthUiEvent.EnrollBiometrics(false)) }
+            )
+        }
+
     LaunchedEffect(uiState.showBiometricPrompt) {
         if (uiState.showBiometricPrompt) {
-            viewModel.showBiometricPrompt(activity)
+            activity?.let {
+                viewModel.showBiometricPrompt(it)
+            }
         }
     }
+
 
     LaunchedEffect(uiState.isLoggedIn) {
         if (uiState.isLoggedIn) onLoginSuccess()

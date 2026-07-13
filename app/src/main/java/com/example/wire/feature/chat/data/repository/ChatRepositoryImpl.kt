@@ -5,6 +5,7 @@ import com.example.wire.core.common.util.Resource
 import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
 import com.example.wire.core.network.websocket.WebSocketManager
+import com.example.wire.core.network.websocket.WebSocketState
 import com.example.wire.core.worker.WorkScheduler
 import com.example.wire.feature.auth.domain.repository.AuthRepository
 import com.example.wire.feature.chat.data.remote.dto.ChatApiService
@@ -131,6 +132,14 @@ class ChatRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Resource.Error(AppError.Network.Unknown(e.message))
         }
+    }
+
+    override fun observeConnectionState(): Flow<WebSocketState> {
+        return webSocketManager.connectionState()
+    }
+
+    override fun observeTypingState(): Flow<Boolean> {
+        return webSocketManager.isTyping()
     }
 
 }

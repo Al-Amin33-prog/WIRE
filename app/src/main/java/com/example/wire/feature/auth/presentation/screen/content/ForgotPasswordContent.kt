@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -62,6 +63,7 @@ fun ForgotPasswordContent(
     ) { padding ->
         Column(
             modifier = Modifier
+                .systemBarsPadding()
                 .fillMaxSize()
                 .padding(padding)
                 .padding(horizontal = 28.dp)
@@ -96,7 +98,7 @@ fun ForgotPasswordContent(
                 OutlinedTextField(
                     value = uiState.email,
                     onValueChange = { onEvent(AuthUiEvent.EmailChanged(it)) },
-                    placeholder = { Text("Enter your email") },
+                    placeholder = { Text(stringResource(R.string.enter_your_email)) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     singleLine = true
@@ -116,7 +118,7 @@ fun ForgotPasswordContent(
                     if (uiState.isLoading) {
                         CircularProgressIndicator()
                     } else {
-                        Text("Send Reset Link", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.send_reset_link), fontWeight = FontWeight.Bold)
                     }
                 }
             }

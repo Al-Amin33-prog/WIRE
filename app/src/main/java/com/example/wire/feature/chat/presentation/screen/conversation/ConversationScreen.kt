@@ -8,6 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.wire.core.ui.theme.WireTheme
 import com.example.wire.feature.chat.domain.model.Message
 import com.example.wire.feature.chat.domain.model.MessageType
@@ -18,6 +19,7 @@ import com.example.wire.feature.chat.presentation.component.viewmodel.ChatViewMo
 @Composable
 fun ConversationScreen(
     chatId: String,
+    navController: NavController,
     onBackClick: () -> Unit,
     onLongClick: ()-> Unit,
     viewModel: ChatViewModel = hiltViewModel()
@@ -31,24 +33,34 @@ fun ConversationScreen(
     }
 
     // This is where you call your existing ConversationContent
-    ConversationContent(
-        uiState = uiState,
-        onEvent = viewModel::onEvent,
-        onBackClick = onBackClick,
-        onLongClick = {
+    WireTheme {
+        ConversationContent(
+            uiState = uiState,
+            onEvent = viewModel::onEvent,
+            onBackClick = onBackClick,
+            onLongClick = {
 
-        }
+            },
+            onNavigateToSendMoney = {id, name ->
+                navController.navigate("send?recipientId=$id&recipientName=$name")
 
-    )
+            },
+            onNavigateToRequestMoney = {id , name ->
+                navController.navigate("send?recipientId=$id&recipientName=$name&mode=REQUEST")
+            }
+
+        )
+    }
+
 }
 
-@Preview(showBackground = true, name = "NovaPay Light Mode")
+@Preview(showBackground = true, name = "Wire Light Mode")
 @Composable
 fun ConversationScreenPreviewLight() {
     WireTheme(darkTheme = false) {
         ConversationContent(
             uiState = ChatUiState(
-                displayName = "Sarah K.",
+                displayName = "Shaba.",
                 // Ensure 'me' and 'other' IDs are distinct for alignment
                 messages = listOf(
          Message(
@@ -69,7 +81,9 @@ fun ConversationScreenPreviewLight() {
             ),
             onEvent = {},
             onBackClick = {},
-            onLongClick = {}
+            onLongClick = {},
+            onNavigateToSendMoney = { _, _ -> },
+            onNavigateToRequestMoney = {_,_->}
         )
     }
 }

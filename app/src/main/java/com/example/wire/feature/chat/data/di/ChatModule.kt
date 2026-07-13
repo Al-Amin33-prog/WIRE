@@ -63,7 +63,9 @@ object ChatModule {
             loadChatHistory = LoadChatHistoryUseCase(repository),
             deleteMessage = DeleteMessageUseCase(repository),
             markChatAsRead = MarkChatAsReadUseCase(repository),
-            editMessage = EditMessageUseCase(repository)
+            editMessage = EditMessageUseCase(repository),
+            observeConnectionState = ObserveConnectionStateUseCase(repository),
+            observeTypingState = ObserveTypingStateUseCase(repository)
         )
     }
     @Provides
