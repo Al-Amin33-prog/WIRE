@@ -1,6 +1,5 @@
 package com.example.wire.core.navigation.main
 
-import com.example.wire.feature.notifications.presentation.screen.NotificationsScreen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -12,20 +11,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.wire.app.navigation.NavigatorImpl
 import com.example.wire.core.navigation.routes.BottomNavItem
-import com.example.wire.core.navigation.routes.Routes // Added missing import
-import com.example.wire.feature.chat.presentation.screen.chat_list.ChatListScreen // Added missing import
+import com.example.wire.core.navigation.routes.Routes
+import com.example.wire.feature.chat.presentation.screen.chat_list.ChatListScreen
+import com.example.wire.feature.notifications.presentation.screen.NotificationsScreen
+import com.example.wire.feature.payments.presentation.screen.PaymentSuccessScreen
+import com.example.wire.feature.payments.presentation.screen.SendMoneyScreen
 import com.example.wire.feature.wallet.presentation.screen.WalletScreen
-
 
 @Composable
 fun MainScreen(navigatorImpl: NavigatorImpl) {
-    // This is the controller for the INNER navigation (Bottom Bar tabs)
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -41,10 +43,13 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.background,
-                tonalElevation = 8.dp
+                tonalElevation = 0.dp
             ) {
                 items.forEach { item ->
-                    val isSelected = currentDestination?.hierarchy?.any { it.route == item.route } == true
+                    // This logic ensures the 'Send' icon is highlighted when on the send route
+                    val isSelected = currentDestination?.hierarchy?.any {
+                        it.route?.startsWith(item.route) == true
+                    } == true
 
                     NavigationBarItem(
                         selected = isSelected,
@@ -64,60 +69,91 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
                                 tint = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray
                             )
                         },
-                        label = { Text(item.title, fontSize = 10.sp) }
+                        label = { Text(item.title, fontSize = 10.sp) },
+                        colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent)
                     )
                 }
             }
         }
     ) { padding ->
-        // FIX 1: Changed 'innerNavController' to 'navController' to match your declaration
         NavHost(
             navController = navController,
             startDestination = BottomNavItem.Chat.route,
             modifier = Modifier.padding(padding)
         ) {
+            // --- CHAT LIST ---
             composable(BottomNavItem.Chat.route) {
-                ChatListScreen(onChatClick = { chatId ->
-                    // FIX 2: Use the navigatorImpl (OUTER navigator) to go to the full-screen Conversation
-                    navigatorImpl.navController?.navigate(Routes.Conversation.createRoute(chatId))
-                },
-                    onNotificationClick = {
-                        navigatorImpl.navController?.navigate("notifications")
+                ChatListScreen(
+                    onChatClick = { chatId ->
+                        navigatorImpl.navController?.navigate(Routes.Conversation.createRoute(chatId))
                     },
+                    onNotificationClick = { navController.navigate("notifications") },
                     onFabClick = {
-                        navigatorImpl.navController?.navigate("contact_selection")
+                        // FAB defaults to "Send" mode
+                        navController.navigate("${BottomNavItem.Send.route}?mode=SEND")
                     }
                 )
-
             }
 
             composable("notifications") {
-                // FIX 3: Parameter names must match your NotificationsScreen declaration
-                NotificationsScreen(
-                    onBackClick = {
-                        // If they press back in activity, take them back to the chat tab
-                        navController.navigate(BottomNavItem.Chat.route)
-                    }
+                NotificationsScreen(onBackClick = { navController.popBackStack() })
+            }
+
+            composable(BottomNavItem.Wallet.route) {
+                WalletScreen(onBackClick = { navController.navigate(BottomNavItem.Chat.route) })
+            }
+
+            // --- THE UNIFIED SEND/REQUEST ROUTE ---
+            // This replaces the two messy blocks you had. It handles everything.
+            composable(
+                route = "${BottomNavItem.Send.route}?recipientId={recipientId}&recipientName={recipientName}&mode={mode}",
+                arguments = listOf(
+                    navArgument("recipientId") { defaultValue = "" },
+                    navArgument("recipientName") { defaultValue = "Recipient" },
+                    navArgument("mode") { defaultValue = "SEND" }
+                )
+            ) { backStackEntry ->
+                val recipientId = backStackEntry.arguments?.getString("recipientId") ?: ""
+                val recipientName = backStackEntry.arguments?.getString("recipientName") ?: "User"
+                val mode = backStackEntry.arguments?.getString("mode") ?: "SEND"
+                val amount = backStackEntry.arguments?.getString("amount") ?: ""
+
+                SendMoneyScreen(
+                    recipientId = recipientId,
+                    recipientName = recipientName,
+                    mode = mode,
+
+                    onBackClick = { navController.popBackStack() },
+                    onPaymentSuccess = { amount, name ->
+                        navController.navigate("payment_success/$amount/$name") {
+                            popUpTo(BottomNavItem.Send.route) { inclusive = true }
+                        }
+                    },
+                    amount = amount
                 )
             }
 
+            // --- PAYMENT SUCCESS ---
+            composable(
+                route = "payment_success/{amount}/{name}",
+                arguments = listOf(
+                    navArgument("amount") { type = NavType.StringType },
+                    navArgument("name") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val amount = backStackEntry.arguments?.getString("amount") ?: "0.00"
+                val name = backStackEntry.arguments?.getString("name") ?: "Recipient"
 
-            composable(BottomNavItem.Wallet.route) {
-                Box(Modifier.padding(16.dp)) {
-                    WalletScreen(
-                        onBackClick = {
-                            navController.navigate(BottomNavItem.Chat.route)
-                        }
-                    )
-                }
+                PaymentSuccessScreen(
+                    amount = amount,
+                    recipientName = name,
+                    onDoneClick = { navController.navigate(BottomNavItem.Chat.route) }
+                )
             }
-            composable(BottomNavItem.Send.route) {
-                Box(Modifier.padding(16.dp)) { Text("Contacts Coming Soon") }
-            }
+
             composable(BottomNavItem.Profile.route) {
-                Box(Modifier.padding(16.dp)) { Text("Profile Coming Soon") }
+                Box(Modifier.padding(24.dp)) { Text("Profile Coming Soon") }
             }
         }
     }
 }
-
