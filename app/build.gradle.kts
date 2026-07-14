@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics.plugin)
     alias(libs.plugins.room)
+    alias(libs.plugins.secrets)
 }
 
 android {
@@ -15,14 +16,14 @@ android {
     compileSdk = 35
 
     defaultConfig {
-       // val stripeKey = project.findProperty("pk_test_51TpTC7RwhaV5daLPo13r1viAMtXjdrCr67NS6KaZYQmjrTwqGW2LOxpRibwmabI0P11i77gNMXOs7zp9b3MoJ5xv00HY6He5CJ") ?: ""
+
         applicationId = "com.example.wire"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-      //  buildConfigField("String", "STRIPE_PUBLISHABLE_KEY", stripeKey.toString())
+
     }
     buildFeatures {
         buildConfig = true
@@ -89,6 +90,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
     implementation(libs.bundles.lifecycle)
+    implementation(libs.coil.compose)
 
     // Hilt
     implementation(libs.hilt.android)
@@ -133,4 +135,5 @@ dependencies {
     implementation(libs.androidx.work.runtime)
     implementation(libs.hilt.work)
     ksp(libs.hilt.work.compiler)
+
 }
