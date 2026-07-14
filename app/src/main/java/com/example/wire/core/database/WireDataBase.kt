@@ -6,10 +6,12 @@ import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
 import com.example.wire.core.database.dao.NotificationDao
 import com.example.wire.core.database.dao.TransactionDao
+import com.example.wire.core.database.dao.UserDao
 import com.example.wire.core.database.entity.ChatEntity    // ADD THIS IMPORT
 import com.example.wire.core.database.entity.MessageEntity // ADD THIS IMPORT
 import com.example.wire.core.database.entity.TransactionEntity
 import com.example.wire.core.database.entity.NotificationEntity
+import com.example.wire.core.database.entity.UserEntity
 
 
 @Database(
@@ -17,10 +19,11 @@ import com.example.wire.core.database.entity.NotificationEntity
         NotificationEntity::class,
         ChatEntity::class,
         MessageEntity::class,
-        TransactionEntity::class
+        TransactionEntity::class,
+        UserEntity::class
 
     ],
-    version = 1,
+    version = 3,
     exportSchema = false
 )
 abstract class WireDatabase : RoomDatabase() {
@@ -29,4 +32,5 @@ abstract class WireDatabase : RoomDatabase() {
     abstract fun messageDao(): MessageDao
 
     abstract fun transactionDao(): TransactionDao
+    abstract fun userDao(): UserDao
 }
