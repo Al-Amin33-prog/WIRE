@@ -9,6 +9,7 @@ import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
 import com.example.wire.core.database.dao.NotificationDao
 import com.example.wire.core.database.dao.TransactionDao
+import com.example.wire.core.database.dao.UserDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,8 +30,14 @@ object DatabaseModule {
             context,
             WireDatabase::class.java,
             "wire_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
+
+    @Provides
+    @Singleton
+    fun provideUserDao(database: WireDatabase): UserDao = database.userDao()
 
 
     @Provides

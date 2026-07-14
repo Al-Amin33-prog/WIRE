@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.wire.core.navigation.main.MainScreen
 import com.example.wire.core.navigation.routes.Routes
+import com.example.wire.feature.auth.presentation.authgate.AuthGate
 import com.example.wire.feature.auth.presentation.screen.ForgotPasswordScreen
 import com.example.wire.feature.auth.presentation.screen.LoginScreen
 import com.example.wire.feature.auth.presentation.screen.SignUpScreen
@@ -16,7 +17,7 @@ import com.example.wire.feature.contacts.presentation.ContactSelectionScreen
 @Composable
 fun AppNavHost(
     navigatorImpl: NavigatorImpl,
-    startDestination: String = Routes.Login.route
+    startDestination: String = Routes.AuthGate.route
 ) {
     val navController = navigatorImpl.navController ?: return
 
@@ -24,23 +25,60 @@ fun AppNavHost(
         navController = navController,
         startDestination = startDestination
     ) {
+
+        composable(Routes.AuthGate.route) {
+
+            AuthGate(
+
+                onAuthenticated = {
+
+                    navController.navigate("main_shell") {
+
+                        popUpTo(Routes.AuthGate.route) {
+
+                            inclusive = true
+
+                        }
+                    }
+
+                },
+
+                onUnauthenticated = {
+
+                    navController.navigate(Routes.Login.route) {
+
+                        popUpTo(Routes.AuthGate.route) {
+
+                            inclusive = true
+
+                        }
+                    }
+
+                }
+
+            )
+
+        }
         // --- AUTH GROUP ---
         composable(Routes.Login.route) {
             LoginScreen(
-                onNavigateToSignUp = { navController.navigate(Routes.SignUp.route) },
-                onNavigateToForgotPassword = { navController.navigate("forgot_password") },
-                // SUCCESS: Navigate to MainScreen (which contains the Bottom Bar)
-                onLoginSuccess = {
-                    navController.navigate("main_shell") {
-                        popUpTo(Routes.Login.route) { inclusive = true }
-                    }
-                }
+                onNavigateToSignUp = {
+                    navController.navigate(Routes.SignUp.route)
+                                     },
+                onNavigateToForgotPassword = {
+
+                    navController.navigate("forgot_password")
+
+                                             },
+
             )
         }
 
         composable(Routes.SignUp.route) {
             SignUpScreen(
-                onNavigateToLogin = { navController.popBackStack() },
+                onNavigateToLogin = {
+                    navController.popBackStack()
+                                    },
                 onSignUpSuccess = {
                     navController.navigate("main_shell") {
                         popUpTo(Routes.SignUp.route) { inclusive = true }
@@ -50,7 +88,11 @@ fun AppNavHost(
         }
 
         composable("forgot_password") {
-            ForgotPasswordScreen(onNavigateBack = { navController.popBackStack() })
+            ForgotPasswordScreen(
+                onNavigateBack = {
+                navController.popBackStack()
+            }
+            )
         }
 
         // --- MAIN APP SHELL (Bottom Bar Lives Here) ---
@@ -80,7 +122,8 @@ fun AppNavHost(
             ContactSelectionScreen(
                 onContactSelected = { userId ->
                     // Navigate directly to conversation
-                    navController.navigate(Routes.Conversation.createRoute(userId)) {
+                    navController
+                        .navigate(Routes.Conversation.createRoute(userId)) {
                         // Remove selection screen from backstack so back goes to ChatList
                         popUpTo("contact_selection") { inclusive = true }
                     }
