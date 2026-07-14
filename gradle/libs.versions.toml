@@ -47,6 +47,8 @@ robolectric                 = "4.13"
 navigationTesting           = "2.8.5"
 mockwebserver               = "4.12.0"
 testCore                    = "1.6.1"
+secretsPlugin = "2.0.1"
+
 
 [libraries]
 # ── AndroidX ──────────────────────────────────────────────────
@@ -214,3 +216,4 @@ google-services                 = { id = "com.google.gms.google-services", versi
 firebase-crashlytics-plugin     = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
 kotlin-android                  = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 room                            = { id = "androidx.room", version.ref = "room" }
+secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsPlugin" }

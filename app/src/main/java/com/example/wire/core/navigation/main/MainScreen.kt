@@ -1,11 +1,12 @@
 package com.example.wire.core.navigation.main
 
-import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,6 +25,9 @@ import com.example.wire.feature.chat.presentation.screen.chat_list.ChatListScree
 import com.example.wire.feature.notifications.presentation.screen.NotificationsScreen
 import com.example.wire.feature.payments.presentation.screen.PaymentSuccessScreen
 import com.example.wire.feature.payments.presentation.screen.SendMoneyScreen
+import com.example.wire.feature.profile.presentation.screen.EditProfileScreen
+import com.example.wire.feature.profile.presentation.screen.ProfileScreen
+import com.example.wire.feature.settings.presentation.SettingsScreen
 import com.example.wire.feature.wallet.presentation.screen.WalletScreen
 
 @Composable
@@ -34,9 +38,10 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
 
     val items = listOf(
         BottomNavItem.Chat,
+        BottomNavItem.Send,
         BottomNavItem.Wallet,
         BottomNavItem.Profile,
-        BottomNavItem.Send
+
     )
 
     Scaffold(
@@ -66,6 +71,11 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
                             Icon(
                                 imageVector = item.icon,
                                 contentDescription = item.title,
+                                modifier = if(item == BottomNavItem.Send){
+                                    Modifier.rotate(-90f)
+                                }else{
+                                    Modifier
+                                },
                                 tint = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray
                             )
                         },
@@ -106,11 +116,12 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
             // --- THE UNIFIED SEND/REQUEST ROUTE ---
             // This replaces the two messy blocks you had. It handles everything.
             composable(
-                route = "${BottomNavItem.Send.route}?recipientId={recipientId}&recipientName={recipientName}&mode={mode}",
+                route = "${BottomNavItem.Send.route}?recipientId={recipientId}&recipientName={recipientName}&mode={mode}&amount={amount}", // Added amount here
                 arguments = listOf(
                     navArgument("recipientId") { defaultValue = "" },
                     navArgument("recipientName") { defaultValue = "Recipient" },
-                    navArgument("mode") { defaultValue = "SEND" }
+                    navArgument("mode") { defaultValue = "SEND" },
+                    navArgument("amount") { defaultValue = "" } // THE FIX: Define amount as a navArgument
                 )
             ) { backStackEntry ->
                 val recipientId = backStackEntry.arguments?.getString("recipientId") ?: ""
@@ -122,14 +133,13 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
                     recipientId = recipientId,
                     recipientName = recipientName,
                     mode = mode,
-
+                    amount = amount, // Now this will correctly carry the value from notifications/bubbles
                     onBackClick = { navController.popBackStack() },
-                    onPaymentSuccess = { amount, name ->
-                        navController.navigate("payment_success/$amount/$name") {
+                    onPaymentSuccess = { paidAmount, name ->
+                        navController.navigate("payment_success/$paidAmount/$name") {
                             popUpTo(BottomNavItem.Send.route) { inclusive = true }
                         }
-                    },
-                    amount = amount
+                    }
                 )
             }
 
@@ -152,8 +162,28 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
             }
 
             composable(BottomNavItem.Profile.route) {
-                Box(Modifier.padding(24.dp)) { Text("Profile Coming Soon") }
+                ProfileScreen(
+                    onEditProfile = { navController.navigate("edit_profile") },
+                    onNavigateToSettings = { navController.navigate("settings") }
+
+                )
+            }
+
+            composable("edit_profile") {
+                EditProfileScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable("settings") {
+                SettingsScreen(
+                    onBackClick = { navController.popBackStack() },
+                    onLogoutSuccess = {
+                        navigatorImpl.navController?.navigate(Routes.AuthGate.route) {
+                            popUpTo(0)
+                        }
+                    }
+                )
+            }
             }
         }
     }
-}

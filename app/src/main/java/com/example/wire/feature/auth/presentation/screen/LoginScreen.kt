@@ -24,7 +24,7 @@ fun LoginScreen(
     viewModel: AuthViewModel = hiltViewModel(),
     onNavigateToSignUp: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
-    onLoginSuccess: () -> Unit
+
 ) {
 
 
@@ -85,9 +85,7 @@ fun LoginScreen(
     }
 
 
-    LaunchedEffect(uiState.isLoggedIn) {
-        if (uiState.isLoggedIn) onLoginSuccess()
-    }
+
 
     LoginContent(
         uiState = uiState,
