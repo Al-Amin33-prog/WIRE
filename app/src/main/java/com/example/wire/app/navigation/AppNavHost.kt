@@ -70,6 +70,13 @@ fun AppNavHost(
                     navController.navigate("forgot_password")
 
                                              },
+                onLoginSuccess = {
+                    navController.navigate("main_shell"){
+                        popUpTo(Routes.Login.route){
+                            inclusive = true
+                        }
+                    }
+                }
 
             )
         }
