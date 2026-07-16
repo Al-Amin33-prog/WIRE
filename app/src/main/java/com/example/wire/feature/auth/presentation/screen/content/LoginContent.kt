@@ -43,199 +43,207 @@ fun LoginContent(
 
 
     val scrollState = rememberScrollState()
-
-    Column(
-        modifier = Modifier
-            .systemBarsPadding()
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            // This prevents "Overlap" - the user can scroll if the screen is too short
-            .verticalScroll(scrollState)
-            .padding(horizontal = 28.dp, vertical = 20.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        // --- HEADER ---
-        Text(
-            text = stringResource(R.string.app_tagline),
-            fontSize = 42.sp,
-            lineHeight = 46.sp, // Slightly tighter line height
-            fontWeight = FontWeight.Black,
-            color = MaterialTheme.colorScheme.onBackground,
-            letterSpacing = 1.sp
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = stringResource(R.string.the_app_where_money_),
-            fontSize = 15.sp, // Slightly smaller for better fit
-            color = Color.Gray,
-            modifier = Modifier.fillMaxWidth(0.9f)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp)) // Reduced from 32
-
-        // --- EMAIL FIELD ---
-        Text(
-            text = stringResource(R.string.email),
-            style = MaterialTheme.typography.labelLarge,
-            color = Color.Gray
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        OutlinedTextField(
-            value = uiState.email,
-            onValueChange = { onEvent(AuthUiEvent.EmailChanged(it)) },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            singleLine = true,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.5f),
-                focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-            ),
-            placeholder = {
-                Text(stringResource(R.string.user_email_com), color = Color.Gray)
-            }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // --- PASSWORD FIELD ---
-        Text(
-            text = stringResource(R.string.password),
-            style = MaterialTheme.typography.labelLarge,
-            color = Color.Gray
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        OutlinedTextField(
-            value = uiState.password,
-            onValueChange = { onEvent(AuthUiEvent.PasswordChanged(it)) },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            singleLine = true,
-            visualTransformation = if (passwordVisible) VisualTransformation.None
-            else PasswordVisualTransformation(),
-            trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(
-                        imageVector = if (passwordVisible) Icons.Default.Visibility
-                        else Icons.Default.VisibilityOff,
-                        contentDescription = null,
-                        tint = Color.Gray
-                    )
-                }
-            },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.5f),
-                focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-            ),
-            placeholder = {
-                Text(stringResource(R.string.asteric))
-            }
-        )
-
-        // Forgot Password link
-        Text(
-            text = stringResource(R.string.login_forgot_password),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary,
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background
+    ) {padding ->
+        Column(
             modifier = Modifier
-                .padding(top = 8.dp)
-                .align(Alignment.End)
-                .clickable { onNavigateToForgotPassword() }
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // --- ERROR MESSAGE ---
-        uiState.errorMessage?.let { error ->
-            Text(
-                text = error,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
-
-        // --- LOGIN BUTTON ---
-        Button(
-            onClick = { onEvent(AuthUiEvent.LoginClicked) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            enabled = !uiState.isLoading,
-            shape = RoundedCornerShape(12.dp)
+                .systemBarsPadding()
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(scrollState)
+                .padding(padding),
+            verticalArrangement = Arrangement.Center
         ) {
-            if (uiState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
-            } else {
-                Text(stringResource(R.string.login_button_text), fontWeight = FontWeight.Bold)
-            }
-        }
+            // --- HEADER ---
+            Text(
+                text = stringResource(R.string.app_tagline),
+                fontSize = 42.sp,
+                lineHeight = 46.sp, // Slightly tighter line height
+                fontWeight = FontWeight.Black,
+                color = MaterialTheme.colorScheme.onBackground,
+                letterSpacing = 1.sp
+            )
 
-        // --- BIOMETRIC OPTION ---
-        // Find where you have the Biometric Button and change the condition:
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.the_app_where_money_),
+                fontSize = 15.sp, // Slightly smaller for better fit
+                color = Color.Gray,
+                modifier = Modifier.fillMaxWidth(0.9f)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp)) // Reduced from 32
+
+            // --- EMAIL FIELD ---
+            Text(
+                text = stringResource(R.string.email),
+                style = MaterialTheme.typography.labelLarge,
+
+                )
+            Spacer(modifier = Modifier.height(4.dp))
+            OutlinedTextField(
+                value = uiState.email,
+                onValueChange = { onEvent(AuthUiEvent.EmailChanged(it)) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                    unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.5f),
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                ),
+                placeholder = {
+                    Text(stringResource(R.string.user_email_com), color = Color.Gray)
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // --- PASSWORD FIELD ---
+            Text(
+                text = stringResource(R.string.password),
+                style = MaterialTheme.typography.labelLarge,
+                color = Color.Gray
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            OutlinedTextField(
+                value = uiState.password,
+                onValueChange = { onEvent(AuthUiEvent.PasswordChanged(it)) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true,
+                visualTransformation = if (passwordVisible) VisualTransformation.None
+                else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            imageVector = if (passwordVisible) Icons.Default.Visibility
+                            else Icons.Default.VisibilityOff,
+                            contentDescription = null,
+                            tint = Color.Gray
+                        )
+                    }
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                    unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.5f),
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                ),
+                placeholder = {
+                    Text(stringResource(R.string.asteric))
+                }
+            )
+
+            // Forgot Password link
+            Text(
+                text = stringResource(R.string.login_forgot_password),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .align(Alignment.End)
+                    .clickable { onNavigateToForgotPassword() }
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // --- ERROR MESSAGE ---
+            uiState.errorMessage?.let { error ->
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
+            // --- LOGIN BUTTON ---
+            Button(
+                onClick = { onEvent(AuthUiEvent.LoginClicked) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                enabled = !uiState.isLoading,
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
+                } else {
+                    Text(stringResource(R.string.login_button_text), fontWeight = FontWeight.Bold)
+                }
+
+
+                // --- BIOMETRIC OPTION ---
+                // Find where you have the Biometric Button and change the condition:
 
 // ONLY show this if hardware is available AND user previously opted-in
-        if (uiState.isBiometricButtonVisible) {
-            Spacer(modifier = Modifier.height(12.dp))
-            OutlinedButton(
-                onClick = { onEvent(AuthUiEvent.BiometricLoginClicked) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Icon(Icons.Default.Fingerprint, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.login_biometric_button))
-            }
-        }
+                if (uiState.isBiometricButtonVisible) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedButton(
+                        onClick = { onEvent(AuthUiEvent.BiometricLoginClicked) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(Icons.Default.Fingerprint, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(R.string.login_biometric_button))
+                    }
+                }
 
 
-        Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-        // --- FOOTER (Sign Up / Google) ---
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row {
-                Text(stringResource(R.string.login_no_account), color = Color.Gray)
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    text = stringResource(R.string.login_create_one),
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable { onNavigateToSignUp() }
-                )
-            }
+                // --- FOOTER (Sign Up / Google) ---
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row {
+                        Text(stringResource(R.string.login_no_account), color = Color.Gray)
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            text = stringResource(R.string.login_create_one),
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.clickable { onNavigateToSignUp() }
+                        )
+                    }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-            // Google Login
-            OutlinedButton(
-                onClick = { onEvent(AuthUiEvent.GoogleSignInClicked) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Image(
-                    painterResource(R.drawable.google__g__logo),
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(stringResource(R.string.login_google_button), color = MaterialTheme.colorScheme.onBackground)
+                    // Google Login
+                    OutlinedButton(
+                        onClick = { onEvent(AuthUiEvent.GoogleSignInClicked) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Image(
+                            painterResource(R.drawable.google__g__logo),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            stringResource(R.string.login_google_button),
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                }
             }
         }
     }
+
+
 }

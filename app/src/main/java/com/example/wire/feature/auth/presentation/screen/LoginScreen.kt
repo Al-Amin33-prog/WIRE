@@ -9,6 +9,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.wire.R
+import com.example.wire.core.ui.theme.WireTheme
 import com.example.wire.core.ui.util.LocalFragmentActivity
 import com.example.wire.feature.auth.presentation.AuthViewModel
 import com.example.wire.feature.auth.presentation.component.BiometricEnrollmentBottomSheet
@@ -24,6 +25,7 @@ fun LoginScreen(
     viewModel: AuthViewModel = hiltViewModel(),
     onNavigateToSignUp: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
+    onLoginSuccess: () -> Unit
 
 ) {
 
@@ -34,6 +36,11 @@ fun LoginScreen(
     val webClientId = stringResource(R.string.default_web_client_id)
 
     val uiState by viewModel.uiState.collectAsState()
+    LaunchedEffect(uiState.isLoggedIn) {
+        if (uiState.isLoggedIn){
+            onLoginSuccess()
+        }
+    }
 
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -83,16 +90,19 @@ fun LoginScreen(
             }
         }
     }
+    WireTheme {
+        LoginContent(
+            uiState = uiState,
+            onEvent = viewModel::onEvent,
+            onNavigateToSignUp = onNavigateToSignUp,
+            onNavigateToForgotPassword = onNavigateToForgotPassword
+        )
+    }
 
 
 
 
-    LoginContent(
-        uiState = uiState,
-        onEvent = viewModel::onEvent,
-        onNavigateToSignUp = onNavigateToSignUp,
-        onNavigateToForgotPassword = onNavigateToForgotPassword
-    )
+
 }
 
 @Preview(showBackground = true)
