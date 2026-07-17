@@ -35,6 +35,7 @@ class AuthViewModel @Inject constructor(
         observeAuthState()
         checkBiometricAvailability()
         checkBiometricButtonVisibility()
+
     }
 
     private fun checkBiometricAvailability() {
@@ -86,14 +87,15 @@ class AuthViewModel @Inject constructor(
             // FIX: Access through authUseCases
             when (val result = authUseCases.googleSignIn(idToken)) {
                 is Resource.Success -> {
-                    userPreferencesDataStore.setLoggedIn(true)
-                    _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
+                    //userPreferencesDataStore.setLoggedIn(true)
+                    _uiState.update { it.copy(isLoading = false) }
                     val user = authUseCases.getCurrentUser()
                     val email = user?.email ?: ""
                     handleSuccessfulAuth(email)
                 }
                 is Resource.Error -> {
-                    _uiState.update { it.copy(isLoading = false, errorMessage = mapError(result.error)) }
+                    _uiState.update { it.copy(isLoading = false,
+                        errorMessage = mapError(result.error)) }
                 }
                 is Resource.Loading -> { }
             }
@@ -103,17 +105,22 @@ class AuthViewModel @Inject constructor(
     private fun login() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val params = LoginUseCase.Params(_uiState.value.email, _uiState.value.password)
+            val params = LoginUseCase.Params(_uiState.value.email,
+                _uiState.value.password)
 
             // FIX: Access through authUseCases
             when (val result = authUseCases.login(params)) {
                 is Resource.Success -> {
-                    userPreferencesDataStore.setLoggedIn(true)
-                    _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
+                   // userPreferencesDataStore.setLoggedIn(true)
+                    _uiState.update {
+                        it.copy(isLoading = false,
+                        )
+                    }
                     handleSuccessfulAuth(_uiState.value.email)
                 }
                 is Resource.Error -> {
-                    _uiState.update { it.copy(isLoading = false, errorMessage = mapError(result.error)) }
+                    _uiState.update { it.copy(isLoading = false,
+                        errorMessage = mapError(result.error)) }
                 }
                 is Resource.Loading -> { }
             }
@@ -135,8 +142,9 @@ class AuthViewModel @Inject constructor(
             // FIX: Access through authUseCases
             when (val result = authUseCases.createAccount(params)) {
                 is Resource.Success -> {
-                    userPreferencesDataStore.setLoggedIn(true)
-                    _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
+                  //  userPreferencesDataStore.setLoggedIn(true)
+                    _uiState.update {
+                        it.copy(isLoading = false) }
                     handleSuccessfulAuth(_uiState.value.email)
                 }
                 is Resource.Error -> {
@@ -220,8 +228,8 @@ class AuthViewModel @Inject constructor(
                 )}
             } else {
                 // ALREADY SETUP: Go straight to Chat
-                userPreferencesDataStore.setLoggedIn(true)
-                _uiState.update { it.copy(isLoggedIn = true, isLoading = false) }
+                //userPreferencesDataStore.setLoggedIn(true)
+                _uiState.update { it.copy( isLoading = false) }
             }
         }
     }

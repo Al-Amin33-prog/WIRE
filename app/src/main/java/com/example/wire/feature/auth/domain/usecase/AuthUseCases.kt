@@ -9,5 +9,6 @@ data class AuthUseCases(
     val observeAuthState: ObserveAuthStateUseCase,
     val forgotPassword: ForgotPasswordUseCase,
     val googleSignIn: GoogleSignInUseCase,
-    val getCurrentUser: GetCurrentUserUseCase
+    val getCurrentUser: GetCurrentUserUseCase,
+
 )

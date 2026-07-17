@@ -19,10 +19,10 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun login(email: String, password: String): Resource<AuthUser> {
         return try {
-            val userDto = firebaseAuthDataSource.login(email, password)
-            // SYMPHONY: Handshake with backend
-            authApiService.syncUser()
-            Resource.Success(userDto.toDomain())
+            val user = firebaseAuthDataSource.login(email,password)
+            return  Resource.Success(user.toDomain())
+
+
         } catch (e: IOException) {
             Resource.Error(AppError.Network.NoInternet)
         } catch (e: Exception) {
@@ -73,6 +73,15 @@ class AuthRepositoryImpl @Inject constructor(
             authApiService.syncUser()
             Resource.Success(userDto.toDomain())
         } catch (e: Exception) {
+            Resource.Error(AppError.Network.Unknown(e.message))
+        }
+    }
+
+    override suspend fun syncUser(): Resource<Unit> {
+        return try{
+            authApiService.syncUser()
+            Resource.Success(Unit)
+        }catch (e: Exception){
             Resource.Error(AppError.Network.Unknown(e.message))
         }
     }
