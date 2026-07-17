@@ -44,15 +44,17 @@ fun LoginContent(
 
     val scrollState = rememberScrollState()
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets.safeDrawing
     ) {padding ->
         Column(
             modifier = Modifier
-                .systemBarsPadding()
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState)
+                .padding(horizontal = 28.dp, vertical = 20.dp)
                 .padding(padding),
+
+
             verticalArrangement = Arrangement.Center
         ) {
             // --- HEADER ---
@@ -179,6 +181,7 @@ fun LoginContent(
                 } else {
                     Text(stringResource(R.string.login_button_text), fontWeight = FontWeight.Bold)
                 }
+            }
 
 
                 // --- BIOMETRIC OPTION ---
@@ -246,4 +249,4 @@ fun LoginContent(
     }
 
 
-}
+

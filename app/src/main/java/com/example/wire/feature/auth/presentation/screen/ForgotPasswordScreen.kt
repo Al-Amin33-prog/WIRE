@@ -7,6 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.wire.core.ui.theme.WireTheme
 import com.example.wire.feature.auth.presentation.AuthViewModel
 import com.example.wire.feature.auth.presentation.screen.content.ForgotPasswordContent
 import com.example.wire.feature.auth.presentation.state.AuthUiState
@@ -17,12 +18,15 @@ fun ForgotPasswordScreen(
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    WireTheme{
+        ForgotPasswordContent(
+            uiState = uiState,
+            onEvent = viewModel::onEvent,
+            onNavigateBack = onNavigateBack
+        )
+    }
 
-    ForgotPasswordContent(
-        uiState = uiState,
-        onEvent = viewModel::onEvent,
-        onNavigateBack = onNavigateBack
-    )
+
 }
 
 

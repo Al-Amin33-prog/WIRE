@@ -3,16 +3,16 @@ package com.example.wire.feature.auth.presentation.screen.content
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,7 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.wire.R
-import com.example.wire.core.ui.theme.BrandNavy
 import com.example.wire.core.ui.theme.WireTheme
 import com.example.wire.feature.auth.presentation.event.AuthUiEvent
 import com.example.wire.feature.auth.presentation.state.AuthUiState
@@ -47,7 +46,8 @@ fun ForgotPasswordContent(
     onNavigateBack: () -> Unit
 ) {
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background, // Cream #F5F2ED
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
             TopAppBar(
                 title = {},
@@ -63,7 +63,6 @@ fun ForgotPasswordContent(
     ) { padding ->
         Column(
             modifier = Modifier
-                .systemBarsPadding()
                 .fillMaxSize()
                 .padding(padding)
                 .padding(horizontal = 28.dp)
@@ -112,7 +111,7 @@ fun ForgotPasswordContent(
                         .fillMaxWidth()
                         .height(52.dp),
                     enabled = !uiState.isLoading,
-                    colors = ButtonDefaults.buttonColors(containerColor = BrandNavy),
+                    //colors = ButtonDefaults.buttonColors(containerColor = BrandNavy),
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
                 ) {
                     if (uiState.isLoading) {
