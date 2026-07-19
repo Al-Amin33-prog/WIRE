@@ -22,6 +22,7 @@ import com.example.wire.app.navigation.NavigatorImpl
 import com.example.wire.core.navigation.routes.BottomNavItem
 import com.example.wire.core.navigation.routes.Routes
 import com.example.wire.feature.chat.presentation.screen.chat_list.ChatListScreen
+import com.example.wire.feature.contacts.presentation.ContactSelectionScreen
 import com.example.wire.feature.notifications.presentation.screen.NotificationsScreen
 import com.example.wire.feature.payments.presentation.screen.PaymentSuccessScreen
 import com.example.wire.feature.payments.presentation.screen.SendMoneyScreen
@@ -72,7 +73,7 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
                                 imageVector = item.icon,
                                 contentDescription = item.title,
                                 modifier = if(item == BottomNavItem.Send){
-                                    Modifier.rotate(-90f)
+                                    Modifier.rotate(-55f)
                                 }else{
                                     Modifier
                                 },
@@ -99,8 +100,7 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
                     },
                     onNotificationClick = { navController.navigate("notifications") },
                     onFabClick = {
-                        // FAB defaults to "Send" mode
-                        navController.navigate("${BottomNavItem.Send.route}?mode=SEND")
+                        navController.navigate("contact_selection")
                     }
                 )
             }
@@ -181,6 +181,14 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
                         navigatorImpl.navController?.navigate(Routes.AuthGate.route) {
                             popUpTo(0)
                         }
+                    }
+                )
+            }
+            composable("contact_selection"){
+                ContactSelectionScreen(
+                    onBackClick = {navController.popBackStack()},
+                    onContactSelected = { chatId ->
+                        navigatorImpl.navController?.navigate(Routes.Conversation.createRoute(chatId))
                     }
                 )
             }
