@@ -1,6 +1,7 @@
 package com.example.wire.core.di
 
 import android.os.Build
+import com.example.wire.core.common.constants.NetworkConstants
 import com.example.wire.core.network.interceptors.AuthAuthenticator
 import com.example.wire.core.network.interceptors.AuthInterceptor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -55,8 +56,8 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         // Automatically choose the correct IP address
-        val hostIp = if (isEmulator) "10.0.2.2" else "192.168.0.168"
-        val baseUrl = "http://$hostIp:8080/"
+        val hostIp = if (isEmulator) "10.0.2.2" else NetworkConstants.LOCAL_IP
+        val baseUrl = "http://$hostIp:${NetworkConstants.PORT}/"
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)
