@@ -111,8 +111,7 @@ fun ForgotPasswordContent(
                         .fillMaxWidth()
                         .height(52.dp),
                     enabled = !uiState.isLoading,
-                    //colors = ButtonDefaults.buttonColors(containerColor = BrandNavy),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     if (uiState.isLoading) {
                         CircularProgressIndicator()
