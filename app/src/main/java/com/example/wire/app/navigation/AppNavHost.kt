@@ -5,8 +5,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.wire.core.feature.security.presentation.screen.SecurityGate
 import com.example.wire.core.navigation.main.MainScreen
 import com.example.wire.core.navigation.routes.Routes
+import com.example.wire.core.ui.util.WireBiometricManager
 import com.example.wire.feature.auth.presentation.authgate.AuthGate
 import com.example.wire.feature.auth.presentation.screen.ForgotPasswordScreen
 import com.example.wire.feature.auth.presentation.screen.LoginScreen
@@ -17,7 +19,8 @@ import com.example.wire.feature.contacts.presentation.ContactSelectionScreen
 @Composable
 fun AppNavHost(
     navigatorImpl: NavigatorImpl,
-    startDestination: String = Routes.AuthGate.route
+    startDestination: String = Routes.AuthGate.route,
+    biometricManager: WireBiometricManager
 ) {
     val navController = navigatorImpl.navController ?: return
 
@@ -32,7 +35,7 @@ fun AppNavHost(
 
                 onAuthenticated = {
 
-                    navController.navigate("main_shell") {
+                    navController.navigate(Routes.SecurityGate.route) {
 
                         popUpTo(Routes.AuthGate.route) {
 
@@ -59,6 +62,18 @@ fun AppNavHost(
             )
 
         }
+       composable(Routes.SecurityGate.route){
+           SecurityGate(
+               onSecurityComplete = {
+                   navController.navigate(Routes.MainShell.route) {
+                       popUpTo(Routes.SecurityGate.route) {
+                           inclusive = true
+                       }
+                   }
+               },
+               biometricManager = biometricManager,
+           )
+       }
         // --- AUTH GROUP ---
         composable(Routes.Login.route) {
             LoginScreen(
@@ -71,7 +86,7 @@ fun AppNavHost(
 
                                              },
                 onLoginSuccess = {
-                    navController.navigate("main_shell"){
+                    navController.navigate(Routes.Login.route){
                         popUpTo(Routes.Login.route){
                             inclusive = true
                         }
@@ -103,7 +118,7 @@ fun AppNavHost(
         }
 
         // --- MAIN APP SHELL (Bottom Bar Lives Here) ---
-        composable("main_shell") {
+        composable(Routes.MainShell.route) {
             MainScreen(navigatorImpl = navigatorImpl)
         }
 
