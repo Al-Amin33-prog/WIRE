@@ -17,6 +17,12 @@ sealed interface ChatUiEvent {
     object DismissMessageActions : ChatUiEvent
     data class DeleteMessage(val messageId: String) : ChatUiEvent
 
+    data object DismissBiometricEnrollment: ChatUiEvent
+    data object EnableBiometricClicked:ChatUiEvent
+    data object BiometricAuthenticationSucceeded:ChatUiEvent
+    data class BiometricAuthenticationFailed(val reason: String):ChatUiEvent
+    data object BiometricPromptShown:ChatUiEvent
+
 
 
 }

@@ -15,7 +15,10 @@ fun ChatListScreen(
     onChatClick: (String) -> Unit,
     onNotificationClick: () -> Unit,
     onFabClick:() -> Unit,
-    viewModel: ChatViewModel = hiltViewModel()
+
+    viewModel: ChatViewModel = hiltViewModel(),
+
+
 ) {
 
     val uiState by viewModel.uiState.collectAsState()

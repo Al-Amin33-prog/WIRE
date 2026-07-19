@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.wire.core.common.util.AppError
 import com.example.wire.core.common.util.Resource
 import com.example.wire.core.data.repository.SyncRepository
+import com.example.wire.core.datastore.preferences.UserPreferencesDataStore
 import com.example.wire.core.network.websocket.WebSocketState
+import com.example.wire.core.ui.util.WireBiometricManager
 import com.example.wire.feature.auth.domain.repository.AuthRepository
 import com.example.wire.feature.chat.data.wrapper.ChatUseCases
 import com.example.wire.feature.chat.presentation.component.event.ChatUiEvent
@@ -20,7 +22,9 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor(
     private val chatUseCases: ChatUseCases,
     private val authRepository: AuthRepository,
-    private val syncRepository: SyncRepository
+    private val syncRepository: SyncRepository,
+    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val biometricManager: WireBiometricManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ChatUiState())
@@ -33,6 +37,7 @@ class ChatViewModel @Inject constructor(
         connectAndObserve()
         loadUserProfile()
         observeWebSocketStatus()
+        checkBiometricEnrollment()
     }
 
     fun onEvent(event: ChatUiEvent) {
@@ -74,6 +79,40 @@ class ChatViewModel @Inject constructor(
                 deleteMessage(event.messageId)
 
             }
+            ChatUiEvent.DismissBiometricEnrollment -> {
+                _uiState.update{
+                    it.copy(showBiometricEnrollment = false)
+                }
+            }
+            ChatUiEvent.BiometricAuthenticationSucceeded -> {
+               viewModelScope.launch {
+                   userPreferencesDataStore.setBiometricEnabled(true)
+                   _uiState.update {
+                       it.copy(
+                           showBiometricEnrollment = false
+                       )
+                   }
+               }
+            }
+            is ChatUiEvent.BiometricAuthenticationFailed -> {
+                _uiState.update {
+                    it.copy(
+                        errorMessage = event.reason
+                    )
+                }
+            }
+            ChatUiEvent.EnableBiometricClicked -> {
+              _uiState.update {
+                  it.copy(triggerBiometricPrompt = true)
+              }
+            }
+            ChatUiEvent.BiometricPromptShown -> {
+                _uiState.update {
+                    it.copy(triggerBiometricPrompt = false)
+                }
+            }
+
+
         }
     }
     private fun observeWebSocketStatus() {
@@ -223,6 +262,22 @@ class ChatViewModel @Inject constructor(
                 }
                 is Resource.Loading -> { }
             }
+        }
+    }
+    private fun checkBiometricEnrollment(){
+        viewModelScope.launch {
+            val hardWareAvailable = biometricManager.isBiometricAvailable()
+            val biometricEnabled = userPreferencesDataStore.isBiometricEnabled.first()
+            _uiState.update{
+                it.copy(
+                    showBiometricEnrollment = hardWareAvailable && !biometricEnabled
+                )
+            }
+        }
+    }
+    fun dismissBiometricEnrollment(){
+        _uiState.update{
+            it.copy(showBiometricEnrollment = false)
         }
     }
 }
