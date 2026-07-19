@@ -68,16 +68,7 @@ class AuthViewModel @Inject constructor(
             is AuthUiEvent.GoogleSignInFailed -> _uiState.update {
                 it.copy(errorMessage = event.reason, triggerGoogleSignIn = false)
             }
-            is AuthUiEvent.EnrollBiometrics -> {
-                viewModelScope.launch {
-                    userPreferencesDataStore.setBiometricEnabled(event.value)
-                    _uiState.update { it.copy(isBiometricEnabled = event.value) }
-                     _uiState.update { it.copy(
-                         showBiometricEnrollment = false,
-                         isLoggedIn = true
-                     ) }
-                }
-            }
+
         }
     }
 
@@ -223,7 +214,7 @@ class AuthViewModel @Inject constructor(
             if (isHardwareAvailable && !isAlreadyEnabled) {
                 // STOP NAVIGATION: Show the Setup Screen instead
                 _uiState.update { it.copy(
-                    showBiometricEnrollment = true,
+
                     isLoading = false
                 )}
             } else {
