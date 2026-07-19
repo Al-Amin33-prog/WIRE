@@ -6,141 +6,263 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.wire.R
 import com.example.wire.feature.auth.presentation.event.AuthUiEvent
 import com.example.wire.feature.auth.presentation.state.AuthUiState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpContent(
     uiState: AuthUiState,
     onEvent: (AuthUiEvent) -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .systemBarsPadding()
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState())
-            .padding(28.dp)
-    ) {
-        Spacer(modifier = Modifier.height(40.dp))
-
-        Text(
-            text = stringResource(R.string.signup_create_account),
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
-        Spacer(modifier = Modifier.height(28.dp))
-
-        OutlinedTextField(
-            value = uiState.displayName,
-            onValueChange = { onEvent(AuthUiEvent.DisplayNameChanged(it)) },
-            label = { Text(stringResource(R.string.signup_full_name)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = uiState.email,
-            onValueChange = { onEvent(AuthUiEvent.EmailChanged(it)) },
-            label = { Text(stringResource(R.string.login_email_label)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = uiState.phone,
-            onValueChange = { onEvent(AuthUiEvent.OnPhoneChange(it)) },
-            label = { Text(stringResource(R.string.signup_phone_number)) },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = uiState.password,
-            onValueChange = { onEvent(AuthUiEvent.PasswordChanged(it)) },
-            label = { Text(stringResource(R.string.login_password_label)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation()
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = uiState.confirmPassword,
-            onValueChange = { onEvent(AuthUiEvent.ConfirmPasswordChanged(it)) },
-            label = { Text(stringResource(R.string.signup_confirm_password)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation()
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        uiState.errorMessage?.let { error ->
-            Text(
-                text = error,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(bottom = 12.dp)
+    var passwordVisible by remember { mutableStateOf(false) }
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets.safeDrawing,
+        topBar = {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(onClick = onNavigateToLogin) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
-
-        Button(
-            onClick = { onEvent(AuthUiEvent.CreateAccountClicked) },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !uiState.isLoading
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = 28.dp, vertical = 20.dp)
+                .padding(padding)
         ) {
-            if (uiState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp))
-            } else {
-                Text(stringResource(R.string.signup_button_text))
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Text(
+                text = stringResource(R.string.signup_create_account),
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            Spacer(modifier = Modifier.height(28.dp))
+            Text(
+                // text = stringResource(R.string.full_name),
+                "FULL NAME",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+
+            OutlinedTextField(
+                value = uiState.displayName,
+                onValueChange = { onEvent(AuthUiEvent.DisplayNameChanged(it)) },
+                label = { Text(stringResource(R.string.signup_full_name)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                "EMAIL",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+
+            OutlinedTextField(
+                value = uiState.email,
+                onValueChange = { onEvent(AuthUiEvent.EmailChanged(it)) },
+                label = { Text(stringResource(R.string.user_email_com)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                //  text = stringResource(R.string.full_name),
+                "PHONE",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+
+            OutlinedTextField(
+                value = uiState.phone,
+                onValueChange = { onEvent(AuthUiEvent.OnPhoneChange(it)) },
+                label = { Text(stringResource(R.string.signup_phone_number)) },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                //  text = stringResource(R.string.full_name),
+                "PASSWORD",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+
+            OutlinedTextField(
+                value = uiState.password,
+                onValueChange = { onEvent(AuthUiEvent.PasswordChanged(it)) },
+                label = { Text(stringResource(R.string.login_password_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                visualTransformation = if (passwordVisible) VisualTransformation.None
+                else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            imageVector = if (passwordVisible) Icons.Default.Visibility
+                            else Icons.Default.VisibilityOff,
+                            contentDescription = null,
+                            tint = Color.Gray
+                        )
+                    }
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                    unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.5f),
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                //  text = stringResource(R.string.full_name),
+                " CONFIRM PASSWORD",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            OutlinedTextField(
+                value = uiState.confirmPassword,
+                onValueChange = { onEvent(AuthUiEvent.ConfirmPasswordChanged(it)) },
+                label = { Text(stringResource(R.string.signup_confirm_password)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                visualTransformation = if (passwordVisible) VisualTransformation.None
+                else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            imageVector = if (passwordVisible) Icons.Default.Visibility
+                            else Icons.Default.VisibilityOff,
+                            contentDescription = null,
+                            tint = Color.Gray
+                        )
+                    }
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                    unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.5f),
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                )
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            uiState.errorMessage?.let { error ->
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
             }
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = { onEvent(AuthUiEvent.CreateAccountClicked) },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !uiState.isLoading
+            ) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                } else {
+                    Text(stringResource(R.string.signup_button_text))
+                }
+            }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = stringResource(R.string.signup_already_have_account),
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-            )
-            Text(
-                text = stringResource(R.string.signup_sign_in),
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable { onNavigateToLogin() }
-            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.signup_already_have_account),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                )
+                Text(
+                    text = stringResource(R.string.signup_sign_in),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable { onNavigateToLogin() }
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    //stringResource(R.string.b)
+                    "By joining you agree to our Terms of Services Privacy Policy"
+                )
+            }
+
         }
     }
+
+
 }

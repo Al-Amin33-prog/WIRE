@@ -8,6 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.wire.core.ui.theme.WireTheme
 import com.example.wire.feature.auth.presentation.AuthViewModel
 import com.example.wire.feature.auth.presentation.screen.content.SignUpContent
 import com.example.wire.feature.auth.presentation.state.AuthUiState
@@ -23,12 +24,15 @@ fun SignUpScreen(
     LaunchedEffect(uiState.isLoggedIn) {
         if (uiState.isLoggedIn) onSignUpSuccess()
     }
+    WireTheme {
+        SignUpContent(
+            uiState = uiState,
+            onEvent = viewModel::onEvent,
+            onNavigateToLogin = onNavigateToLogin
+        )
+    }
 
-    SignUpContent(
-        uiState = uiState,
-        onEvent = viewModel::onEvent,
-        onNavigateToLogin = onNavigateToLogin
-    )
+
 }
 
 
