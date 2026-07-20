@@ -209,9 +209,9 @@ class AuthViewModel @Inject constructor(
             val isHardwareAvailable = biometricManager.isBiometricAvailable()
 
             // 2. Check if user already enabled it previously
-            val isAlreadyEnabled = userPreferencesDataStore.isBiometricEnabled.first()
+           // val isAlreadyEnabled = userPreferencesDataStore.isBiometricEnabled.first()
 
-            if (isHardwareAvailable && !isAlreadyEnabled) {
+            if (isHardwareAvailable /* && !isAlreadyEnabled*/) {
                 // STOP NAVIGATION: Show the Setup Screen instead
                 _uiState.update { it.copy(
 
@@ -226,16 +226,7 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun checkBiometricButtonVisibility() {
-        viewModelScope.launch {
-            // We only show the button on the Login screen if:
-            // 1. Hardware exists AND 2. User has already opted-in (saved in DataStore)
-            val isHardwareAvailable = biometricManager.isBiometricAvailable()
-            userPreferencesDataStore.isBiometricEnabled.collect { isEnabled ->
-                _uiState.update { it.copy(
-                    isBiometricButtonVisible = isHardwareAvailable && isEnabled
-                )}
-            }
-        }
+
     }
 
 
