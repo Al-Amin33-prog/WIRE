@@ -56,7 +56,9 @@ fun ChatInputBar(
                 Icon(
                     Icons.Default.AccountBalanceWallet,
                     contentDescription = "Wallet",
-                    tint = if (isWalletMenuExpanded) Color(0xFF9370DB) else Color(0xFFFFD700)
+                    tint = if (isWalletMenuExpanded)
+                        Color(0xFF9370DB)
+                    else Color(0xFFFFD700)
                 )
             }
 
@@ -75,11 +77,15 @@ fun ChatInputBar(
                     isWalletMenuExpanded = false
                     onRequestMoneyClick()
                 }) {
-                    Text(stringResource(R.string.request), color = Color.Gray, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.request),
+                        color = Color.Gray,
+                        fontWeight = FontWeight.Bold)
                 }
             } else {
                 IconButton(onClick = { /* Media logic */ }) {
-                    Icon(Icons.Default.Add, null, tint = Color.Gray)
+                    Icon(
+                        Icons.Default.Add,
+                        null, tint = Color.Gray)
                 }
             }
         }
@@ -106,9 +112,12 @@ fun ChatInputBar(
         // --- SEND ICON ---
         IconButton(
             onClick = onSend,
-            modifier = Modifier.background(MaterialTheme.colorScheme.primary, CircleShape)
+            modifier = Modifier.background(MaterialTheme
+                .colorScheme.primary, CircleShape)
         ) {
-            Icon(Icons.AutoMirrored.Filled.Send, null, tint = Color.White, modifier = Modifier.size(20.dp))
+            Icon(Icons.AutoMirrored.Filled.Send,
+                null, tint = Color.White,
+                modifier = Modifier.size(20.dp))
         }
     }
 }

@@ -85,14 +85,7 @@ class ChatViewModel @Inject constructor(
                 }
             }
             ChatUiEvent.BiometricAuthenticationSucceeded -> {
-               viewModelScope.launch {
-                   userPreferencesDataStore.setBiometricEnabled(true)
-                   _uiState.update {
-                       it.copy(
-                           showBiometricEnrollment = false
-                       )
-                   }
-               }
+
             }
             is ChatUiEvent.BiometricAuthenticationFailed -> {
                 _uiState.update {
@@ -267,10 +260,10 @@ class ChatViewModel @Inject constructor(
     private fun checkBiometricEnrollment(){
         viewModelScope.launch {
             val hardWareAvailable = biometricManager.isBiometricAvailable()
-            val biometricEnabled = userPreferencesDataStore.isBiometricEnabled.first()
+         //   val biometricEnabled = userPreferencesDataStore.isBiometricEnabled.first()
             _uiState.update{
                 it.copy(
-                    showBiometricEnrollment = hardWareAvailable && !biometricEnabled
+                   // showBiometricEnrollment = hardWareAvailable && !biometricEnabled
                 )
             }
         }
