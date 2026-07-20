@@ -13,45 +13,42 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "wire_prefs")
+
 
 @Singleton
 class UserPreferencesDataStore @Inject constructor(
-    @ApplicationContext private val context: Context
+    private val dataStore: DataStore<Preferences>
 ) {
     companion object {
         private val IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
-        private val IS_BIOMETRIC_ENABLED = booleanPreferencesKey("is_biometric_enabled")
+
         private val SAVED_USER_EMAIL = stringPreferencesKey("saved_user_email")
 
         private val BIOMETRIC_TYPE = stringPreferencesKey("biometric_type")
     }
 
-    val isLoggedIn: Flow<Boolean> = context.dataStore.data
+    val isLoggedIn: Flow<Boolean> = dataStore.data
         .map { preferences -> preferences[IS_LOGGED_IN] ?: false }
 
-    val isBiometricEnabled: Flow<Boolean> = context.dataStore.data
-        .map { preferences -> preferences[IS_BIOMETRIC_ENABLED] ?: false }
 
-    val savedUserEmail: Flow<String> = context.dataStore.data
+
+    val savedUserEmail: Flow<String> = dataStore.data
         .map { preferences -> preferences[SAVED_USER_EMAIL] ?: "" }
 
-    val selectedBiometricType: Flow<String> = context.dataStore.data
+    val selectedBiometricType: Flow<String> = dataStore.data
         .map{preferences -> preferences[BIOMETRIC_TYPE] ?: "NONE"}
 
     suspend fun setLoggedIn(value: Boolean) {
-        context.dataStore.edit { preferences -> preferences[IS_LOGGED_IN] = value }
+    dataStore.edit { preferences -> preferences[IS_LOGGED_IN] = value }
     }
 
-    suspend fun setBiometricEnabled(value: Boolean) {
-        context.dataStore.edit { preferences -> preferences[IS_BIOMETRIC_ENABLED] = value }
-    }
+
 
     suspend fun setSavedEmail(email: String) {
-        context.dataStore.edit { preferences -> preferences[SAVED_USER_EMAIL] = email }
+        dataStore.edit { preferences -> preferences[SAVED_USER_EMAIL] = email }
     }
 
     suspend fun clearAll() {
-        context.dataStore.edit { it.clear() }
+       dataStore.edit { it.clear() }
     }
 }
