@@ -7,12 +7,12 @@ import com.example.wire.core.database.dao.ChatDao
 import com.example.wire.core.database.dao.MessageDao
 import com.example.wire.core.database.dao.NotificationDao
 import com.example.wire.core.database.entity.ChatEntity
+import com.example.wire.core.domain.dispatcher.CoroutineDispatchers
 import com.example.wire.feature.chat.data.remote.dto.ChatApiService
 import com.example.wire.feature.chat.data.mapper.toEntity
 import com.example.wire.feature.contacts.data.repository.remote.ContactApiService
 import com.example.wire.feature.notifications.data.remote.NotificationApiService
 import com.example.wire.feature.notifications.data.mapper.toEntity as toNotificationEntity
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,16 +23,18 @@ interface SyncRepository {
 
 @Singleton
 class SyncRepositoryImpl @Inject constructor(
+
     private val chatApi: ChatApiService,
     private val contactApi: ContactApiService,
     private val notificationApi: NotificationApiService,
     private val messageDao: MessageDao,
     private val chatDao: ChatDao,
     private val notificationDao: NotificationDao,
-    private val performanceMonitor: PerformanceMonitor
+    private val performanceMonitor: PerformanceMonitor,
+    private val dispatcher: CoroutineDispatchers,
 ) : SyncRepository {
 
-    override suspend fun syncAll() = withContext(Dispatchers.IO) {
+    override suspend fun syncAll() = withContext(dispatcher.io) {
         val startTime = System.currentTimeMillis()
         try {
             // 1. Sync Notifications
