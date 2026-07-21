@@ -19,4 +19,5 @@ val DividerLight = Color(0xFFE5E5E5)
 
 
 val SuccessGreen = Color(0xFF2ECC71)
+
 val ErrorRed = Color(0xFFE74C3C)
