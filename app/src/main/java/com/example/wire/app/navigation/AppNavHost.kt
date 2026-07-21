@@ -30,79 +30,53 @@ fun AppNavHost(
     ) {
 
         composable(Routes.AuthGate.route) {
-
             AuthGate(
-
                 onAuthenticated = {
-
                     navController.navigate(Routes.SecurityGate.route) {
-
-                        popUpTo(Routes.AuthGate.route) {
-
-                            inclusive = true
-
-                        }
+                        popUpTo(Routes.AuthGate.route) { inclusive = true }
                     }
-
                 },
-
                 onUnauthenticated = {
-
                     navController.navigate(Routes.Login.route) {
-
-                        popUpTo(Routes.AuthGate.route) {
-
-                            inclusive = true
-
-                        }
+                        popUpTo(Routes.AuthGate.route) { inclusive = true }
                     }
-
                 }
-
             )
-
         }
-       composable(Routes.SecurityGate.route){
-           SecurityGate(
-               onSecurityComplete = {
-                   navController.navigate(Routes.MainShell.route) {
-                       popUpTo(Routes.SecurityGate.route) {
-                           inclusive = true
-                       }
-                   }
-               },
-               biometricManager = biometricManager,
-           )
-       }
+
+        composable(Routes.SecurityGate.route) {
+            SecurityGate(
+                onSecurityComplete = {
+                    navController.navigate(Routes.MainShell.route) {
+                        popUpTo(Routes.SecurityGate.route) { inclusive = true }
+                    }
+                },
+                biometricManager = biometricManager
+            )
+        }
+
         // --- AUTH GROUP ---
         composable(Routes.Login.route) {
             LoginScreen(
-                onNavigateToSignUp = {
-                    navController.navigate(Routes.SignUp.route)
-                                     },
+                onNavigateToSignUp = { navController.navigate(Routes.SignUp.route) },
                 onNavigateToForgotPassword = {
-
                     navController.navigate("forgot_password")
-
                                              },
                 onLoginSuccess = {
-                    navController.navigate(Routes.Login.route){
-                        popUpTo(Routes.Login.route){
-                            inclusive = true
-                        }
+                    // FIXED: Move forward to SecurityGate after login
+                    navController.navigate(Routes.SecurityGate.route) {
+                        popUpTo(Routes.Login.route) { inclusive = true }
                     }
                 }
-
             )
         }
 
         composable(Routes.SignUp.route) {
             SignUpScreen(
-                onNavigateToLogin = {
-                    navController.popBackStack()
-                                    },
+                onNavigateToLogin = { navController.popBackStack() },
                 onSignUpSuccess = {
-                    navController.navigate("main_shell") {
+                    // FIXED: Move forward to SecurityGate after signup
+                    navController.navigate(Routes.SecurityGate.route) {
                         popUpTo(Routes.SignUp.route) { inclusive = true }
                     }
                 }
@@ -110,19 +84,15 @@ fun AppNavHost(
         }
 
         composable("forgot_password") {
-            ForgotPasswordScreen(
-                onNavigateBack = {
-                navController.popBackStack()
-            }
-            )
+            ForgotPasswordScreen(onNavigateBack = { navController.popBackStack() })
         }
 
-        // --- MAIN APP SHELL (Bottom Bar Lives Here) ---
+        // --- MAIN APP SHELL ---
         composable(Routes.MainShell.route) {
             MainScreen(navigatorImpl = navigatorImpl)
         }
 
-        // --- FULL SCREEN ROUTES (No Bottom Bar) ---
+        // --- FULL SCREEN ROUTES ---
         composable(
             route = Routes.Conversation.route,
             arguments = listOf(
@@ -135,22 +105,18 @@ fun AppNavHost(
                 onBackClick = { navController.popBackStack() },
                 onLongClick = { /* Handle delete/edit */ },
                 navController = navController
-
             )
         }
-
 
         composable("contact_selection") {
             ContactSelectionScreen(
                 onContactSelected = { userId ->
-                    // Navigate directly to conversation
-                    navController
-                        .navigate(Routes.Conversation.createRoute(userId)) {
-                        // Remove selection screen from backstack so back goes to ChatList
+                    navController.navigate(Routes.Conversation.createRoute(userId)) {
                         popUpTo("contact_selection") { inclusive = true }
                     }
                 },
-                onBackClick = { navController.popBackStack() })
+                onBackClick = { navController.popBackStack() }
+            )
+        }
     }
-}
 }
