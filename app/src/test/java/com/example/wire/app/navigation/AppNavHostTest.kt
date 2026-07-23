@@ -6,6 +6,7 @@ import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.core.app.ApplicationProvider
 import com.example.wire.core.navigation.routes.Routes
+import com.example.wire.core.ui.util.WireBiometricManager
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -20,6 +21,7 @@ class AppNavHostTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
+    private lateinit var wireBiometric: WireBiometricManager
 
     private lateinit var navController: TestNavHostController
     private val navigator = NavigatorImpl()
@@ -32,7 +34,10 @@ class AppNavHostTest {
         composeTestRule.setContent {
             navController.navigatorProvider.addNavigator(ComposeNavigator())
             navigator.navController = navController
-            AppNavHost(navigatorImpl = navigator)
+            AppNavHost(
+                navigatorImpl = navigator,
+                biometricManager = wireBiometric
+            )
         }
     }
 
