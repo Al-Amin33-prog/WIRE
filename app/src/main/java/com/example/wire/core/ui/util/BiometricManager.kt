@@ -1,6 +1,7 @@
 package com.example.wire.core.ui.util
 
 import android.content.Context
+import android.os.Build
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
@@ -16,14 +17,16 @@ class WireBiometricManager @Inject constructor(
 ) {
     fun isBiometricAvailable(): Boolean {
         val manager = BiometricManager.from(context)
-        return manager.canAuthenticate(BIOMETRIC_STRONG) ==
+        return manager.canAuthenticate(
+            BIOMETRIC_STRONG or
+                    BiometricManager.Authenticators.DEVICE_CREDENTIAL) ==
                 BiometricManager.BIOMETRIC_SUCCESS
     }
 
     fun showBiometricPrompt(
         activity: FragmentActivity,
-        title: String = "Verify it's you",
-        subtitle: String = "Use your fingerprint or face to sign in",
+        title: String = "Enable Biometric Security",
+        subtitle: String = "Touch the fingerprint sensor to protect your Wire account",
         onSuccess: () -> Unit,
         onError: (String) -> Unit,
         onFailed: () -> Unit
@@ -43,7 +46,20 @@ class WireBiometricManager @Inject constructor(
                 errString: CharSequence
             ) {
                 super.onAuthenticationError(errorCode, errString)
-                onError(errString.toString())
+
+                when (errorCode) {
+
+                    BiometricPrompt.ERROR_NEGATIVE_BUTTON,
+                    BiometricPrompt.ERROR_USER_CANCELED,
+                    BiometricPrompt.ERROR_CANCELED -> {
+
+                        onError("CANCELLED")
+                    }
+
+                    else -> {
+                        onError(errString.toString())
+                    }
+                }
             }
 
             override fun onAuthenticationFailed() {
@@ -51,15 +67,19 @@ class WireBiometricManager @Inject constructor(
                 onFailed()
             }
         }
-
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+        val builder = BiometricPrompt.PromptInfo.Builder()
             .setTitle(title)
             .setSubtitle(subtitle)
-            .setAllowedAuthenticators(
-                androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG or
-                androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
-            )
-            .build()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+          builder.setAllowedAuthenticators(
+              BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+          )
+        }else{
+          builder.setDeviceCredentialAllowed(true)
+        }
+        val promptInfo = builder.build()
+
+
 
         BiometricPrompt(activity, executor, callback)
             .authenticate(promptInfo)
