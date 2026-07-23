@@ -11,7 +11,7 @@ class AuthInterceptor @Inject constructor(
     private val firebaseAuth: FirebaseAuth
 ) : Interceptor {
 
-    // Inside AuthInterceptor.kt - REFACTOR THIS:
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
