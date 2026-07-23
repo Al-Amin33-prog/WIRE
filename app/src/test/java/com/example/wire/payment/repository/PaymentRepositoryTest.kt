@@ -4,11 +4,13 @@ import com.example.wire.core.common.util.PerformanceMonitor
 import com.example.wire.core.database.dao.TransactionDao
 import com.example.wire.core.domain.dispatcher.CoroutineDispatchers // Ensure this is the right interface
 import com.example.wire.feature.payments.data.remote.PaymentApiService
+import com.example.wire.feature.payments.data.remote.StripeApiService
 import com.example.wire.feature.payments.data.repository.PaymentRepositoryImpl
 import com.example.wire.feature.payments.data.util.IdempotencyKeyGenerator
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -20,7 +22,9 @@ class PaymentRepositoryTest {
     private val api = mockk<PaymentApiService>(relaxed = true)
     private val generator = mockk<IdempotencyKeyGenerator>()
     private val performanceMonitor = mockk<PerformanceMonitor>(relaxed = true)
+    private val stripeApiService = mockk<StripeApiService>(relaxed = true)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private val testDispatcher = UnconfinedTestDispatcher()
 
     // THE FIX: Since CoroutineDispatchers is an interface, we create an anonymous object
@@ -39,7 +43,8 @@ class PaymentRepositoryTest {
             transactionDao = transactionDao,
             performanceMonitor = performanceMonitor,
             idempotencyKeyGenerator = generator,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            stripeApiService = stripeApiService
         )
     }
 
