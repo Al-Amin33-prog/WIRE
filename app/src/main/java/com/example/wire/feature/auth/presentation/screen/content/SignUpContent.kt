@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -56,6 +57,7 @@ fun SignUpContent(
     onNavigateToLogin: () -> Unit
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets.safeDrawing,
@@ -76,11 +78,12 @@ fun SignUpContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .background(MaterialTheme.colorScheme.background)
                 .padding(horizontal = 28.dp, vertical = 20.dp)
                 .padding(padding)
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             Text(
                 text = stringResource(R.string.signup_create_account),
@@ -90,10 +93,9 @@ fun SignUpContent(
 
             Spacer(modifier = Modifier.height(28.dp))
             Text(
-                // text = stringResource(R.string.full_name),
-                "FULL NAME",
+                text = stringResource(R.string.full_name),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary
+                color = Color.Gray
             )
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -102,14 +104,15 @@ fun SignUpContent(
                 onValueChange = { onEvent(AuthUiEvent.DisplayNameChanged(it)) },
                 label = { Text(stringResource(R.string.signup_full_name)) },
                 modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
                 singleLine = true
             )
 
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                "EMAIL",
+                stringResource(R.string.email),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary
+                color = Color.Gray
             )
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -118,6 +121,7 @@ fun SignUpContent(
                 onValueChange = { onEvent(AuthUiEvent.EmailChanged(it)) },
                 label = { Text(stringResource(R.string.user_email_com)) },
                 modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
                 singleLine = true
             )
 
@@ -126,7 +130,7 @@ fun SignUpContent(
                 //  text = stringResource(R.string.full_name),
                 "PHONE",
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary
+                color = Color.Gray
             )
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -135,15 +139,15 @@ fun SignUpContent(
                 onValueChange = { onEvent(AuthUiEvent.OnPhoneChange(it)) },
                 label = { Text(stringResource(R.string.signup_phone_number)) },
                 modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
             )
 
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                //  text = stringResource(R.string.full_name),
-                "PASSWORD",
+                text = stringResource(R.string.password),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary
+                color = Color.Gray
             )
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -153,6 +157,7 @@ fun SignUpContent(
                 label = { Text(stringResource(R.string.login_password_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                shape = RoundedCornerShape(12.dp),
                 visualTransformation = if (passwordVisible) VisualTransformation.None
                 else PasswordVisualTransformation(),
                 trailingIcon = {
@@ -178,10 +183,9 @@ fun SignUpContent(
             Spacer(modifier = Modifier.height(12.dp))
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                //  text = stringResource(R.string.full_name),
-                " CONFIRM PASSWORD",
+                text = stringResource(R.string.signup_confirm_password),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary
+                color = Color.Gray
             )
 
             OutlinedTextField(
@@ -256,8 +260,12 @@ fun SignUpContent(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    //stringResource(R.string.b)
-                    "By joining you agree to our Terms of Services Privacy Policy"
+                    stringResource(R.string.by_joining_in_u_agree),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelSmall
+
+
+
                 )
             }
 
