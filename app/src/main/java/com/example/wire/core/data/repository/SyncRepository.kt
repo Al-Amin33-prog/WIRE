@@ -3,16 +3,10 @@ package com.example.wire.core.data.repository
 
 
 import com.example.wire.core.common.util.PerformanceMonitor
-import com.example.wire.core.database.dao.ChatDao
-import com.example.wire.core.database.dao.MessageDao
-import com.example.wire.core.database.dao.NotificationDao
-import com.example.wire.core.database.entity.ChatEntity
 import com.example.wire.core.domain.dispatcher.CoroutineDispatchers
-import com.example.wire.feature.chat.data.remote.dto.ChatApiService
-import com.example.wire.feature.chat.data.mapper.toEntity
-import com.example.wire.feature.contacts.data.repository.remote.ContactApiService
-import com.example.wire.feature.notifications.data.remote.NotificationApiService
-import com.example.wire.feature.notifications.data.mapper.toEntity as toNotificationEntity
+import com.example.wire.core.domain.usecase.SyncChatsUseCase
+import com.example.wire.core.domain.usecase.SyncContactUseCase
+import com.example.wire.core.domain.usecase.SyncNotificationUseCase
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,13 +17,9 @@ interface SyncRepository {
 
 @Singleton
 class SyncRepositoryImpl @Inject constructor(
-
-    private val chatApi: ChatApiService,
-    private val contactApi: ContactApiService,
-    private val notificationApi: NotificationApiService,
-    private val messageDao: MessageDao,
-    private val chatDao: ChatDao,
-    private val notificationDao: NotificationDao,
+    private val syncNotifications: SyncNotificationUseCase,
+    private val syncContacts: SyncContactUseCase,
+    private val syncChats: SyncChatsUseCase,
     private val performanceMonitor: PerformanceMonitor,
     private val dispatcher: CoroutineDispatchers,
 ) : SyncRepository {
@@ -37,50 +27,10 @@ class SyncRepositoryImpl @Inject constructor(
     override suspend fun syncAll() = withContext(dispatcher.io) {
         val startTime = System.currentTimeMillis()
         try {
-            // 1. Sync Notifications
-            val remoteNotifications = notificationApi.getNotificationHistory()
-            remoteNotifications.forEach { dto ->
-                notificationDao.insertNotification(dto.toNotificationEntity())
-            }
+            syncNotifications()
+            syncContacts()
+            syncChats()
 
-            // 2. Sync Contacts
-            // FIXED: Use the correct method name and handle AuthUserDto fields
-            val registeredContacts = contactApi.getMatchedContacts()
-            registeredContacts.forEach { contactDto ->
-                chatDao.upsertChat(
-                    ChatEntity(
-                        chatId = contactDto.uid,
-                        contactName = contactDto.displayName ?: "Wire User",
-                        lastMessage = "Start a conversation", // Default for contacts
-                        timestamp = System.currentTimeMillis(),
-                        unreadCount = 0,
-                        avatarColor = -1,
-                        isContact = true
-                    )
-                )
-            }
-
-            // 3. Sync Recent Chats & Missed Messages
-            val recentChats = chatApi.getRecentChats()
-            recentChats.forEach { chatDto ->
-                chatDao.upsertChat(
-                    ChatEntity(
-                        chatId = chatDto.uid,
-                        contactName = chatDto.displayName ?: "User",
-                        lastMessage = chatDto.lastMessage ?: "",
-                        timestamp = chatDto.timestamp,
-                        unreadCount = 0,
-                        avatarColor = -1,
-                        isContact = true
-                    )
-                )
-
-                // Fetch and save actual messages
-                val messages = chatApi.getChatHistory(chatDto.uid)
-                messages.forEach { msgDto ->
-                    messageDao.insertMessage(msgDto.toEntity(chatId = chatDto.uid))
-                }
-            }
 
             // Record Performance
             val duration = System.currentTimeMillis() - startTime
