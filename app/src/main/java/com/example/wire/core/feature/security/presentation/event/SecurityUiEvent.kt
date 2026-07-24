@@ -12,4 +12,8 @@ sealed interface SecurityUiEvent {
     ): SecurityUiEvent
     data object DismissEnrollment : SecurityUiEvent
     data object BiometricAuthenticationSucceeded: SecurityUiEvent
+    data class ConfirmPinChanged(
+        val value: String
+    ): SecurityUiEvent
+
 }

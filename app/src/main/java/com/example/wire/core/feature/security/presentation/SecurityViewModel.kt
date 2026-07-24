@@ -1,13 +1,18 @@
 package com.example.wire.core.feature.security.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wire.core.feature.security.domain.usecase.SecurityUseCases
+import com.example.wire.core.feature.security.presentation.effect.SecurityUiEventEffect
 import com.example.wire.core.feature.security.presentation.event.SecurityUiEvent
 import com.example.wire.core.feature.security.presentation.state.SecurityStep
 import com.example.wire.core.feature.security.presentation.state.SecurityUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -19,108 +24,125 @@ class SecurityViewModel @Inject constructor(
 ): ViewModel(){
     private val _uiState = MutableStateFlow(SecurityUiState())
     val uiState = _uiState.asStateFlow()
+    private val _events = MutableSharedFlow<SecurityUiEventEffect>()
+    val events = _events.asSharedFlow()
 
     init {
-     determineSecurityFlow()
+        determineSecurityFlow()
     }
 
     fun onEvent(event: SecurityUiEvent){
         when(event){
             is SecurityUiEvent.PinChanged -> {
-                _uiState.update {
-                    it.copy(pin = event.value)
-                }
+                _uiState.update { it.copy(pin = event.value) }
+            }
+            is SecurityUiEvent.ConfirmPinChanged -> {
+                _uiState.update { it.copy(confirmPin = event.value, pinError = null) }
             }
             is SecurityUiEvent.CreatePinClicked -> {
-                createPin()
-            }
-            is SecurityUiEvent.DisableBiometricClicked -> {
-                viewModelScope.launch {
-                    securityUseCases.disableBiometric()
-
+                val state = _uiState.value
+                if (state.step == SecurityStep.SetPin) {
+                    _uiState.update {
+                        it.copy(
+                            step = SecurityStep.ConfirmPin,
+                            confirmPin = "",
+                            pinError = null
+                        )
+                    }
+                } else if (state.step == SecurityStep.ConfirmPin) {
+                    if (state.pin == state.confirmPin) {
+                        createPin()
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                confirmPin = "",
+                                pinError = "PINs do not match"
+                            )
+                        }
+                    }
                 }
             }
             is SecurityUiEvent.EnableBiometricClicked -> {
-                _uiState.update {
-                    it.copy(
-                        step = SecurityStep.RequestBiometricAuthentication
-                    )
+                _uiState.update { it.copy(biometricLoading = true) }
+                viewModelScope.launch {
+                    _events.emit(SecurityUiEventEffect.DismissBiometricSheet)
+                    delay(350)
+                    _events.emit(SecurityUiEventEffect.LaunchedBiometricPrompt)
                 }
-            }
-            is SecurityUiEvent.BiometricFailed -> {
-                _uiState.update {
-                    it.copy(
-                       errorMessage = event.message,
-                        step = SecurityStep.EnrollBiometric
-                    )
-                }
-
-            }
-            is SecurityUiEvent.DismissEnrollment -> {
-              skipBiometric()
             }
             is SecurityUiEvent.BiometricAuthenticationSucceeded -> {
                 enableBiometric()
             }
-        }
-    }
-    private fun enableBiometric(){
-        viewModelScope.launch {
-            securityUseCases.enableBiometric()
-            _uiState.update {
-                it.copy(
-                    biometricEnabled = true,
-                    step = SecurityStep.Completed
-                )
-            }
-        }
-    }
-    private fun skipBiometric(){
-        _uiState.update {
-            it.copy(
-               step = SecurityStep.Completed
-            )
-        }
-    }
-    private fun determineSecurityFlow(){
-        viewModelScope.launch {
-            val settings = securityUseCases.getSecuritySettings()
-            when{
-                !settings.hasPin->{
-                    _uiState.update {
-                        it.copy(
-                          hasPin = false,
-                            biometricEnabled = settings.isBiometricEnabled,
-                            step = SecurityStep.SetPin,
-                            isLoading = false
-                        )
-                    }
-                }else->{
-                    _uiState.update {
-                        it.copy(
-
-                            biometricEnabled = settings.isBiometricEnabled,
-                            step = SecurityStep.Completed,
-                            isLoading = false
-                        )
-                    }
+            is SecurityUiEvent.BiometricFailed -> {
+                _uiState.update { 
+                    it.copy(
+                        biometricLoading = false,
+                        errorMessage = if (event.message == "CANCELLED") null else event.message
+                    ) 
+                }
+                if (event.message != "CANCELLED") {
+                    skipBiometric() // Fallback to skip if it fails hard
                 }
             }
-
+            is SecurityUiEvent.DismissEnrollment -> {
+              skipBiometric()
+            }
+            else -> Unit
         }
     }
 
-
-    private fun createPin(){
+    private fun createPin() {
         viewModelScope.launch {
-            securityUseCases.createPin(
-                _uiState.value.pin
-            )
-            _uiState.update {
-                it.copy(
-                    hasPin = true,
-                   step = SecurityStep.EnrollBiometric
-                )
+            _uiState.update { it.copy(isLoading = true) }
+            securityUseCases.createPin(_uiState.value.pin)
+            
+            // After PIN, check if we should enroll biometrics
+            val settings = securityUseCases.getSecuritySettings()
+            if ( !settings.isBiometricEnabled) {
+                _uiState.update { 
+                    it.copy(
+                        hasPin = true,
+                        step = SecurityStep.EnrollBiometric,
+                        isLoading = false
+                    )
+                }
+            } else {
+                skipBiometric()
+            }
+        }
+    }
+
+    private fun enableBiometric() {
+        viewModelScope.launch {
+            securityUseCases.enableBiometric()
+            _uiState.update { it.copy(biometricLoading = false) }
+            delay(250)
+            _events.emit(SecurityUiEventEffect.NavigateToMainShell)
+        }
+    }
+
+    private fun skipBiometric() {
+        viewModelScope.launch {
+            _events.emit(SecurityUiEventEffect.NavigateToMainShell)
+        }
+    }
+
+    private fun determineSecurityFlow() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val settings = securityUseCases.getSecuritySettings()
+            
+            if (!settings.hasPin) {
+                _uiState.update {
+                    it.copy(
+                        hasPin = false,
+                        step = SecurityStep.SetPin,
+                        isLoading = false
+                    )
+                }
+            } else {
+                // User already has PIN, navigate immediately
+                _events.emit(SecurityUiEventEffect.NavigateToMainShell)
             }
         }
     }
