@@ -32,7 +32,7 @@ class DisableBiometricUseCaseTest {
             repository.disableBiometric()
         } just Runs
 
-        useCase()
+        useCase(Unit)
 
         coVerify {
             repository.disableBiometric()

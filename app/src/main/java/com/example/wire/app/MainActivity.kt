@@ -2,6 +2,7 @@ package com.example.wire.app
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
@@ -15,16 +16,21 @@ import com.example.wire.app.navigation.AppNavHost
 import com.example.wire.app.navigation.NavigatorImpl
 import com.example.wire.core.ui.theme.WireTheme
 import com.example.wire.core.ui.util.LocalFragmentActivity
+import com.example.wire.core.ui.util.WireBiometricManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
+
+    @Inject
+    lateinit var wireBiometricManager: WireBiometricManager
     
     @Inject
     lateinit var navigatorImpl: NavigatorImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("Startup","MainActivity started  ")
         installSplashScreen()
         super.onCreate(savedInstanceState)
         
@@ -54,7 +60,10 @@ class MainActivity : FragmentActivity() {
                     }
 
                     // 3. AppNavHost will now correctly find the navController
-                    AppNavHost(navigatorImpl = navigatorImpl)
+                    AppNavHost(
+                        navigatorImpl = navigatorImpl,
+                        biometricManager = wireBiometricManager
+                    )
                 }
             }
         }
