@@ -1,6 +1,6 @@
 package com.example.wire.core.feature.security.presentation
 
-import android.util.Log
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wire.core.feature.security.domain.usecase.SecurityUseCases
@@ -97,7 +97,9 @@ class SecurityViewModel @Inject constructor(
             securityUseCases.createPin(_uiState.value.pin)
             
             // After PIN, check if we should enroll biometrics
-            val settings = securityUseCases.getSecuritySettings()
+            val settings = securityUseCases.getSecuritySettings(
+                params = Unit
+            )
             if ( !settings.isBiometricEnabled) {
                 _uiState.update { 
                     it.copy(
@@ -114,7 +116,9 @@ class SecurityViewModel @Inject constructor(
 
     private fun enableBiometric() {
         viewModelScope.launch {
-            securityUseCases.enableBiometric()
+            securityUseCases.enableBiometric(
+                params = Unit
+            )
             _uiState.update { it.copy(biometricLoading = false) }
             delay(250)
             _events.emit(SecurityUiEventEffect.NavigateToMainShell)
@@ -130,7 +134,9 @@ class SecurityViewModel @Inject constructor(
     private fun determineSecurityFlow() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            val settings = securityUseCases.getSecuritySettings()
+            val settings = securityUseCases.getSecuritySettings(
+                params = Unit
+            )
             
             if (!settings.hasPin) {
                 _uiState.update {
