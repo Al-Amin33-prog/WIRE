@@ -2,13 +2,15 @@ package com.example.wire.core.feature.security.data.repository
 
 import com.example.wire.core.feature.security.data.crypto.Sha256PinHasher
 import com.example.wire.core.feature.security.data.local.SecurityLocalDataSource
+import com.example.wire.core.feature.security.data.remote.SecurityRemoteDataSource
 import com.example.wire.core.feature.security.domain.model.SecuritySettings
 import com.example.wire.core.feature.security.domain.repository.SecurityRepository
 import javax.inject.Inject
 
 class SecurityRepositoryImpl @Inject constructor(
     private val localDataSource: SecurityLocalDataSource,
-    private val pinHasher: Sha256PinHasher
+    private val pinHasher: Sha256PinHasher,
+    private val remoteDataSource: SecurityRemoteDataSource
 ): SecurityRepository{
     override suspend fun verifyPin(pin: String): Boolean {
        val storedHash = localDataSource.getPinHash()?: return false
@@ -20,22 +22,36 @@ class SecurityRepositoryImpl @Inject constructor(
 
     override suspend fun enableBiometric() {
         localDataSource.setBiometricEnabled(true)
+        remoteDataSource.updateBiometricStatus(true)
     }
 
     override suspend fun disableBiometric() {
         localDataSource.setBiometricEnabled(false)
+        remoteDataSource.updateBiometricStatus(false)
     }
 
     override suspend fun getSecuritySettings(): SecuritySettings {
-        return SecuritySettings(
-            hasPin = localDataSource.hasPin(),
-            isBiometricEnabled = localDataSource.isBiometricEnabled()
-        )
+        return try {
+            val remote = remoteDataSource.getSecuritySettings()
+            SecuritySettings(
+                hasPin = remote.hasPin,
+                isBiometricEnabled = remote.biometricEnabled
+            )
+        }  catch (e: Exception){
+            SecuritySettings(
+                hasPin = localDataSource.hasPin(),
+                isBiometricEnabled = localDataSource.isBiometricEnabled()
+            )
+        }
     }
 
     override suspend fun createPin(pin: String) {
         val hashedPin = pinHasher.hash(pin)
         localDataSource.savePinHash(hashedPin)
+        remoteDataSource.uploadPinHash(
+            hashedPin
+        )
+
     }
 
     override suspend fun hasPin(): Boolean {
