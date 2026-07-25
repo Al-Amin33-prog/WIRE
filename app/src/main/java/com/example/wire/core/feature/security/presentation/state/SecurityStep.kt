@@ -8,13 +8,10 @@ sealed interface SecurityStep {
 
     data object ConfirmPin : SecurityStep
 
-    data object PinCreated : SecurityStep
-
     data object EnrollBiometric : SecurityStep
 
     data object RequestBiometricAuthentication : SecurityStep
 
-    data object BiometricEnabled : SecurityStep
 
-    data object Completed : SecurityStep
+
 }

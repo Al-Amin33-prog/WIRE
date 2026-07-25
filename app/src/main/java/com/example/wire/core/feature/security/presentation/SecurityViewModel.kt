@@ -63,11 +63,17 @@ class SecurityViewModel @Inject constructor(
                 }
             }
             is SecurityUiEvent.EnableBiometricClicked -> {
-                _uiState.update { it.copy(biometricLoading = true) }
                 viewModelScope.launch {
-                    _events.emit(SecurityUiEventEffect.DismissBiometricSheet)
+                   _uiState.update {
+                       it.copy(
+                           biometricLoading = true,
+                           showBiometricSheet = false
+                       )
+                   }
                     delay(350)
-                    _events.emit(SecurityUiEventEffect.LaunchedBiometricPrompt)
+                    _events.emit(
+                        SecurityUiEventEffect.LaunchedBiometricPrompt
+                    )
                 }
             }
             is SecurityUiEvent.BiometricAuthenticationSucceeded -> {
@@ -77,17 +83,30 @@ class SecurityViewModel @Inject constructor(
                 _uiState.update { 
                     it.copy(
                         biometricLoading = false,
-                        errorMessage = if (event.message == "CANCELLED") null else event.message
+                        showBiometricSheet = true,
+                        errorMessage = if (event.message == "CANCELLED") null
+                        else event.message
                     ) 
                 }
-                if (event.message != "CANCELLED") {
-                    skipBiometric() // Fallback to skip if it fails hard
-                }
+
             }
             is SecurityUiEvent.DismissEnrollment -> {
+                _uiState.update {
+                    it.copy(
+                        showBiometricSheet = false
+                    )
+                }
               skipBiometric()
             }
-            else -> Unit
+            is SecurityUiEvent.BiometricSheetDismissed -> {
+                _uiState.update {
+                    it.copy(
+                        showBiometricSheet = false
+
+                    )
+                }
+            }
+
         }
     }
 
@@ -105,6 +124,7 @@ class SecurityViewModel @Inject constructor(
                     it.copy(
                         hasPin = true,
                         step = SecurityStep.EnrollBiometric,
+                        showBiometricSheet = true,
                         isLoading = false
                     )
                 }

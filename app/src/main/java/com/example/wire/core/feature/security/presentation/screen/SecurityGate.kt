@@ -6,9 +6,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.wire.core.feature.security.presentation.SecurityViewModel
@@ -29,9 +26,7 @@ fun SecurityGate(
     val viewModel: SecurityViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val activity = LocalFragmentActivity.current
-    var showEnrollmentSheet by remember {
-        mutableStateOf(true)
-    }
+
     LaunchedEffect(Unit) {
         Log.d("startup","Security Gate started ")
     }
@@ -63,10 +58,7 @@ fun SecurityGate(
                SecurityUiEventEffect.NavigateToMainShell -> {
                    onSecurityComplete()
                }
-               SecurityUiEventEffect.DismissBiometricSheet -> {
 
-                   showEnrollmentSheet = false
-               }
 
            }
        }
@@ -74,15 +66,17 @@ fun SecurityGate(
 
 
     when(state.step){
-        SecurityStep.SetPin -> {
+        SecurityStep.SetPin,
+             SecurityStep.ConfirmPin -> {
             SetPinScreen(
                 state = state,
                 onEvent = viewModel::onEvent
             )
         }
+
         SecurityStep.EnrollBiometric -> {
 
-            if (showEnrollmentSheet) {
+            if (state.showBiometricSheet) {
 
                 BiometricEnrollmentBottomSheet(
 
@@ -110,7 +104,7 @@ fun SecurityGate(
         }
 
 
-        else -> {}
+
     }
 
 }
