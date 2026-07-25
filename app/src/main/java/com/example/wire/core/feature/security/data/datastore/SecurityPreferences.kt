@@ -12,10 +12,11 @@ import javax.inject.Singleton
 
 
 @Singleton
-class SecurityPreferencesDataStore @Inject constructor(
+class SecurityPreferences @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ){
     companion object{
+        private val PENDING_SYNC = booleanPreferencesKey("pending_sync")
         private val USER_PIN_HASH = stringPreferencesKey("user_pin_hash")
         private val BIOMETRIC_ENABLED = booleanPreferencesKey("biometric_enabled")
     }
@@ -27,6 +28,17 @@ class SecurityPreferencesDataStore @Inject constructor(
         preferences[BIOMETRIC_ENABLED]?: false
 
     }
+    val pendingSync:  Flow<Boolean> = dataStore.data.map {
+        it[PENDING_SYNC] ?: false
+    }
+    suspend fun setPendingSync(
+        pending: Boolean
+   ){
+        dataStore.edit {
+            it[PENDING_SYNC] = pending
+        }
+    }
+
 
     suspend fun savePinHash(hash:String){
         dataStore.edit { preferences ->
