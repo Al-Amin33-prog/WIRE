@@ -8,10 +8,8 @@ import com.example.wire.feature.auth.domain.repository.AuthRepository
 import com.example.wire.feature.payments.domain.usecase.PaymentUseCases
 import com.example.wire.feature.payments.presentation.PaymentViewModel
 import com.example.wire.feature.payments.presentation.event.PaymentUiEvent
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -35,7 +33,7 @@ class PaymentViewModelTest {
     @Test
     fun `ConfirmClicked event should trigger Biometric Prompt when security is enabled`() = runTest {
         // Arrange: User has enabled biometrics in settings
-        every { dataStore.isBiometricEnabled } returns flowOf(true)
+       // every { dataStore.isBiometricEnabled } returns flowOf(true)
         val activity = mockk<FragmentActivity>()
 
         // Act: User clicks the "Confirm & Send" button

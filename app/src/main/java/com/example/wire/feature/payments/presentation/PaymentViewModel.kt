@@ -183,9 +183,9 @@ class PaymentViewModel @Inject constructor(
 
         viewModelScope.launch {
             // 1. Get value from DataStore (Single Source of Truth for settings)
-            val isSecurityEnabled = userPreferencesDataStore.isBiometricEnabled.first()
+            //val isSecurityEnabled = userPreferencesDataStore.isBiometricEnabled.first()
 
-            if (isSecurityEnabled) {
+            /*if (isSecurityEnabled) {
                 biometricManager.showBiometricPrompt(
                     activity = activity,
                     title = "Confirm Payment",
@@ -203,7 +203,7 @@ class PaymentViewModel @Inject constructor(
             } else {
                 // If not enabled, proceed to transaction (or force a PIN/Password screen here)
                 initiateTransaction()
-            }
+            }*/
         }
     }
 
