@@ -14,6 +14,10 @@ SecurityUiState(
     val isEnrollingBiometric: Boolean = false,
     val biometricLoading: Boolean = false,
     val pinError: String? = null,
-    val showBiometricSheet: Boolean = false
+    val showBiometricSheet: Boolean = false,
+    val verificationPin: String = "",
+    val verificationError: String? = null,
+    val onVerificationSuccess: (()-> Unit)? = null
+
 
 )

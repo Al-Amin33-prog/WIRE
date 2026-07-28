@@ -106,6 +106,26 @@ class SecurityViewModel @Inject constructor(
                     )
                 }
             }
+            is SecurityUiEvent.VerificationPinChanged -> {
+                _uiState.update {
+                    it.copy(
+                        verificationPin = event.value,
+                        verificationError = null
+                    )
+                }
+            }
+            is SecurityUiEvent.VerifyPinClicked -> {
+                verifyPin()
+            }
+            is SecurityUiEvent.CancelVerification -> {
+                _uiState.update {
+                    it.copy(
+                        verificationPin = "",
+                        verificationError = null,
+                        step = SecurityStep.Completed
+                    )
+                }
+            }
 
         }
     }
@@ -130,6 +150,31 @@ class SecurityViewModel @Inject constructor(
                 }
             } else {
                 skipBiometric()
+            }
+        }
+    }
+    private fun verifyPin(){
+        viewModelScope.launch {
+            val success = securityUseCases.verifyPin(
+                _uiState.value.verificationPin
+            )
+            if (success){
+                _uiState.update {
+                    it.copy(
+                        verificationPin = "",
+                        verificationError = null
+                    )
+                }
+                _events.emit(
+                    SecurityUiEventEffect.VerificationSucceeded
+                )
+            }else{
+                _uiState.update {
+                    it.copy(
+                        verificationPin = "",
+                        verificationError = "Incorrect PIN"
+                    )
+                }
             }
         }
     }

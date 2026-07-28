@@ -11,7 +11,7 @@ sealed interface SecurityStep {
     data object EnrollBiometric : SecurityStep
 
     data object RequestBiometricAuthentication : SecurityStep
-
-
+    data object  VerifyPin: SecurityStep
+    data object  Completed:SecurityStep
 
 }

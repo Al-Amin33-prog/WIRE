@@ -6,7 +6,7 @@ sealed interface SecurityUiEvent {
     ): SecurityUiEvent
     object   CreatePinClicked: SecurityUiEvent
      object EnableBiometricClicked: SecurityUiEvent
-   // object DisableBiometricClicked: SecurityUiEvent
+
     data class BiometricFailed(
         val message: String
     ): SecurityUiEvent
@@ -16,5 +16,10 @@ sealed interface SecurityUiEvent {
         val value: String
     ): SecurityUiEvent
     data object  BiometricSheetDismissed : SecurityUiEvent
+    data class VerificationPinChanged(
+        val value: String
+    ): SecurityUiEvent
+    data object VerifyPinClicked: SecurityUiEvent
+    data object  CancelVerification: SecurityUiEvent
 
 }

@@ -56,7 +56,9 @@ class SecurityViewModelTest {
 
     @Test
     fun `init sets SetPin step if no PIN exists`() = runTest {
-        coEvery { getSecuritySettingsUseCase() } returns SecuritySettings(
+        coEvery { getSecuritySettingsUseCase(
+
+        ) } returns SecuritySettings(
             hasPin = false,
             isBiometricEnabled = false
         )

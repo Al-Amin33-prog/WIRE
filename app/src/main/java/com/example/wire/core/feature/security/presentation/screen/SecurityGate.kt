@@ -10,6 +10,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.wire.core.feature.security.presentation.SecurityViewModel
 import com.example.wire.core.feature.security.presentation.component.BiometricEnrollmentBottomSheet
+import com.example.wire.core.feature.security.presentation.component.PinVerificationBottomSheet
 import com.example.wire.core.feature.security.presentation.effect.SecurityUiEventEffect
 import com.example.wire.core.feature.security.presentation.event.SecurityUiEvent
 import com.example.wire.core.feature.security.presentation.state.SecurityStep
@@ -58,6 +59,9 @@ fun SecurityGate(
                SecurityUiEventEffect.NavigateToMainShell -> {
                    onSecurityComplete()
                }
+               SecurityUiEventEffect.VerificationSucceeded -> {
+
+               }
 
 
            }
@@ -95,11 +99,47 @@ fun SecurityGate(
                 )
             }
         }
+        SecurityStep.VerifyPin ->{
+            PinVerificationBottomSheet(
+                pin = state.verificationPin,
+                error = state.verificationError,
+                onNumberClick = {number ->
+                    val newPin = state.verificationPin + number
+                    viewModel.onEvent(
+                        SecurityUiEvent.VerificationPinChanged(newPin)
+                    )
+                    if (newPin.length == 4){
+                        viewModel.onEvent(
+                            SecurityUiEvent.VerifyPinClicked
+                        )
+                    }
+                },
+                onDelete = {
+                    if (state.verificationPin.isNotEmpty()){
+                        viewModel.onEvent(
+                            SecurityUiEvent.VerificationPinChanged(
+                                state.verificationPin.dropLast(1)
+                            )
+                        )
+                    }
+                },
+                onDismiss = {
+                    viewModel.onEvent(
+                        SecurityUiEvent.CancelVerification
+                    )
+                }
+
+            )
+        }
+
 
         SecurityStep.Loading -> {
             CircularProgressIndicator()
         }
         SecurityStep.RequestBiometricAuthentication -> {
+
+        }
+        SecurityStep.Completed -> {
 
         }
 
