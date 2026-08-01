@@ -40,27 +40,34 @@ class SecurityViewModel @Inject constructor(
                 _uiState.update { it.copy(confirmPin = event.value, pinError = null) }
             }
             is SecurityUiEvent.CreatePinClicked -> {
-                val state = _uiState.value
-                if (state.step == SecurityStep.SetPin) {
-                    _uiState.update {
-                        it.copy(
-                            step = SecurityStep.ConfirmPin,
-                            confirmPin = "",
-                            pinError = null
-                        )
-                    }
-                } else if (state.step == SecurityStep.ConfirmPin) {
-                    if (state.pin == state.confirmPin) {
-                        createPin()
-                    } else {
+
+                when (_uiState.value.step) {
+
+                    SecurityStep.SetPin -> {
+
                         _uiState.update {
                             it.copy(
+                                step = SecurityStep.ConfirmPin,
                                 confirmPin = "",
-                                pinError = "PINs do not match"
+                                pinError = null
                             )
                         }
+
                     }
+
+                    SecurityStep.ConfirmPin -> {
+
+                        validateAndCreatePin()
+
+                    }
+                    SecurityStep.Completed -> Unit
+                    SecurityStep.Loading -> Unit
+                    SecurityStep.EnrollBiometric -> Unit
+                    SecurityStep.RequestBiometricAuthentication -> Unit
+                    SecurityStep.VerifyPin -> Unit
+
                 }
+
             }
             is SecurityUiEvent.EnableBiometricClicked -> {
                 viewModelScope.launch {
@@ -128,6 +135,26 @@ class SecurityViewModel @Inject constructor(
             }
 
         }
+    }
+    private fun validateAndCreatePin() {
+
+        val state = _uiState.value
+        if(state.isLoading) return
+
+        if (state.pin != state.confirmPin) {
+
+            _uiState.update {
+                it.copy(
+                    confirmPin = "",
+                    pinError = "PINs do not match"
+                )
+            }
+
+            return
+        }
+
+        createPin()
+
     }
 
     private fun createPin() {
