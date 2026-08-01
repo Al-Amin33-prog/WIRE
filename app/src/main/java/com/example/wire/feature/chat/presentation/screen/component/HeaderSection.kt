@@ -1,5 +1,6 @@
 package com.example.wire.feature.chat.presentation.screen.component
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,9 +24,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
 
 
 @Composable
@@ -45,15 +48,15 @@ fun HeaderSection(
         Column {
             Text(
                 text = "Good morning, $userName 👋",
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.background,
                 style = MaterialTheme.typography.labelMedium,
                 letterSpacing = 0.5.sp
             )
             Text(
-                text = "Messages",
+                text = stringResource(com.example.wire.R.string.section_messages_header),
                 fontSize = 34.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.background
             )
         }
 
