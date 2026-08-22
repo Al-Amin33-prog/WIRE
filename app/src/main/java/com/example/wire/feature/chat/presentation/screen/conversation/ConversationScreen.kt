@@ -21,7 +21,6 @@ fun ConversationScreen(
     chatId: String,
     navController: NavController,
     onBackClick: () -> Unit,
-    onLongClick: ()-> Unit,
     viewModel: ChatViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -29,7 +28,7 @@ fun ConversationScreen(
     // When the screen opens, load history and connect
     LaunchedEffect(chatId) {
         viewModel.onEvent(ChatUiEvent.LoadHistory(chatId))
-        viewModel.onEvent(ChatUiEvent.Connect) // Triggers ConnectToChat
+        viewModel.onEvent(ChatUiEvent.Connect(chatId)) // Triggers ConnectToChat
     }
 
     // This is where you call your existing ConversationContent
@@ -38,7 +37,10 @@ fun ConversationScreen(
             uiState = uiState,
             onEvent = viewModel::onEvent,
             onBackClick = onBackClick,
-            onLongClick = {
+            onLongClick = {messageId ->
+                viewModel.onEvent(
+                    ChatUiEvent.MessageLongClick(messageId)
+                )
 
             },
             onNavigateToSendMoney = {id, name ->
@@ -64,18 +66,25 @@ fun ConversationScreenPreviewLight() {
                 // Ensure 'me' and 'other' IDs are distinct for alignment
                 messages = listOf(
          Message(
-                        id = "1",
-                        senderId = "other", // Incoming (Left)
-                        content = "Hey! Did you get the money? 💰",
-                        timestamp = System.currentTimeMillis(),
-                        type = MessageType.TEXT
-                    ),
+             id = "1",
+             senderId = "other", // Incoming (Left)
+             content = "Hey! Did you get the money? 💰",
+             timestamp = System.currentTimeMillis(),
+             type = MessageType.TEXT,
+             receiverId = "me"
+         ),
                     Message(
                         id = "2",
                         senderId = "me",    // Outgoing (Right)
                         content = "Yes I did! Thanks so much 🙏",
                         timestamp = System.currentTimeMillis(),
-                        type = MessageType.TEXT
+                        type = MessageType.TEXT,
+                        receiverId = TODO(),
+                        isRead = TODO(),
+                        status = TODO(),
+                        isEdited = TODO(),
+                        isDeleted = TODO(),
+                        metadata = TODO()
                     )
                 )
             ),

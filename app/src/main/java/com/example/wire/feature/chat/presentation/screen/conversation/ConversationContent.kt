@@ -45,7 +45,9 @@ fun ConversationContent(
             ChatInputBar(
                 text = uiState.messageText,
                 onTextChange = { onEvent(ChatUiEvent.MessageChanged(it)) },
-                onSend = { onEvent(ChatUiEvent.SendMessage) },
+                onSend = { onEvent(
+                    ChatUiEvent.SendMessage(chatId = uiState.chatId)
+                ) },
                 onSendMoneyClick = {
                     onNavigateToSendMoney(uiState.chatId, uiState.chatName)
                 },

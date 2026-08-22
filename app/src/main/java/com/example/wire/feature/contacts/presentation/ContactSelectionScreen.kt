@@ -25,15 +25,18 @@ fun ContactSelectionScreen(
     ) { isGranted ->
         viewModel.syncContacts(hasPermission = isGranted)
     }
+    WireTheme {
+        ContactSelectionContent(
+            uiState = uiState,
+            onBackClick = onBackClick,
+            onContactSelected = onContactSelected,
+            onGrantPermissionClick = {
+                permissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+            }
+        )
+    }
 
-    ContactSelectionContent(
-        uiState = uiState,
-        onBackClick = onBackClick,
-        onContactSelected = onContactSelected,
-        onGrantPermissionClick = {
-            permissionLauncher.launch(Manifest.permission.READ_CONTACTS)
-        }
-    )
+
 }
 
 

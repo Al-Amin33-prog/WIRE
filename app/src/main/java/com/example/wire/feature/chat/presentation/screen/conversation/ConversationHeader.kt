@@ -42,7 +42,7 @@ fun ConversationHeader(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(32.dp)
                     .background(
-                        Color(0xFF2ECC71),
+                        MaterialTheme.colorScheme.scrim,
                         CircleShape),
                     contentAlignment = Alignment
                         .Center) {

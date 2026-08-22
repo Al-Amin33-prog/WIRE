@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -106,15 +107,23 @@ fun ForgotPasswordContent(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = { onEvent(AuthUiEvent.ForgotPasswordClicked) },
+                    onClick = {        // Force focus manager to clear focus so keyboard hides
+                        onEvent(AuthUiEvent.ForgotPasswordClicked)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp),
-                    enabled = !uiState.isLoading,
+                    // Ensure it's only disabled IF loading is strictly true
+                    enabled = !uiState.isLoading && uiState.email.isNotBlank(),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     if (uiState.isLoading) {
-                        CircularProgressIndicator()
+                        // Specify size so the button doesn't look "stuck" or empty
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
                     } else {
                         Text(stringResource(R.string.send_reset_link), fontWeight = FontWeight.Bold)
                     }

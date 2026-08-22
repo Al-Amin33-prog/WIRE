@@ -57,7 +57,7 @@ class SecurityViewModelTest {
     @Test
     fun `init sets SetPin step if no PIN exists`() = runTest {
         coEvery { getSecuritySettingsUseCase(
-
+            Unit
         ) } returns SecuritySettings(
             hasPin = false,
             isBiometricEnabled = false
@@ -74,7 +74,7 @@ class SecurityViewModelTest {
 
     @Test
     fun `Successful PIN confirmation transitions to Biometric Enrollment`() = runTest {
-        coEvery { getSecuritySettingsUseCase() } returnsMany listOf(
+        coEvery { getSecuritySettingsUseCase(Unit) } returnsMany listOf(
             SecuritySettings(
                 hasPin = false,
                 isBiometricEnabled = false
@@ -101,7 +101,7 @@ class SecurityViewModelTest {
 
     @Test
     fun `Mismatched PINs shows validation error`() = runTest {
-        coEvery { getSecuritySettingsUseCase() } returns SecuritySettings(
+        coEvery { getSecuritySettingsUseCase(Unit) } returns SecuritySettings(
             hasPin = false,
             isBiometricEnabled = false)
         viewModel = SecurityViewModel(useCases)

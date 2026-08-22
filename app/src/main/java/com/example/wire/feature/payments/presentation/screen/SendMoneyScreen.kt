@@ -1,7 +1,6 @@
 package com.example.wire.feature.payments.presentation.screen
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -92,9 +91,6 @@ fun SendMoneyScreen(
     }
 
     WireTheme{
-        Scaffold(
-            containerColor = MaterialTheme.colorScheme.background
-        ) { padding ->
             SendMoneyContent(
                 uiState = uiState,
                 onEvent = {event->
@@ -102,7 +98,6 @@ fun SendMoneyScreen(
                 },
                 onBackClick = onBackClick
             )
-        }
 
     }
 

@@ -9,15 +9,15 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 
 interface SecurityApiService {
-    @POST("security/pin")
+    @POST("api/security/pin")
     suspend fun uploadPin(
         @Body request: UploadPinRequest
     )
-    @PATCH("security/biometric")
+    @PATCH("api/security/biometric")
     suspend fun updateBiometric(
         @Body request: UpdateBiometricRequest
     )
-    @GET("security/settings")
+    @GET("api/security/settings")
     suspend fun getSecuritySettings(): RemoteSecuritySettings
 
 }

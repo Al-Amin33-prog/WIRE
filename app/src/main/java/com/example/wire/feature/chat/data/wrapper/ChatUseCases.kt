@@ -4,6 +4,7 @@ import com.example.wire.feature.chat.domain.usecase.ConnectToChatUseCase
 import com.example.wire.feature.chat.domain.usecase.DeleteMessageUseCase
 import com.example.wire.feature.chat.domain.usecase.DisconnectFromChatUseCase
 import com.example.wire.feature.chat.domain.usecase.EditMessageUseCase
+import com.example.wire.feature.chat.domain.usecase.GetRecentChatsUseCase
 import com.example.wire.feature.chat.domain.usecase.LoadChatHistoryUseCase
 import com.example.wire.feature.chat.domain.usecase.MarkChatAsReadUseCase
 import com.example.wire.feature.chat.domain.usecase.ObserveConnectionStateUseCase
@@ -22,5 +23,6 @@ data class ChatUseCases @Inject constructor(
     val markChatAsRead: MarkChatAsReadUseCase,
     val editMessage: EditMessageUseCase,
     val observeConnectionState: ObserveConnectionStateUseCase,
-    val observeTypingState: ObserveTypingStateUseCase
+    val observeTypingState: ObserveTypingStateUseCase,
+    val getRecentChats: GetRecentChatsUseCase
 )

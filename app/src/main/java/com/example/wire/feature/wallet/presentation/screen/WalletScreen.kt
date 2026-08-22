@@ -7,6 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.wire.core.ui.theme.WireTheme
 import com.example.wire.feature.wallet.presentation.WalletViewModel
 import com.example.wire.feature.wallet.presentation.state.SavingsGoal
 import com.example.wire.feature.wallet.presentation.state.WalletUiState
@@ -18,12 +19,15 @@ fun WalletScreen(
     viewModel: WalletViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    WireTheme {
+        WalletContent(
+            uiState = uiState,
+            onRefresh = { viewModel.onEvent(com.example.wire.feature.wallet.presentation.event.WalletUiEvent.Refresh) },
+            onBackClick = onBackClick
+        )
+    }
 
-    WalletContent(
-        uiState = uiState,
-        onRefresh = { viewModel.onEvent(com.example.wire.feature.wallet.presentation.event.WalletUiEvent.Refresh) },
-        onBackClick = onBackClick
-    )
+
 }
 
 

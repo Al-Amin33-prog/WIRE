@@ -6,9 +6,11 @@ sealed interface ChatUiEvent {
         val message: String
     ) : ChatUiEvent
 
-    object SendMessage : ChatUiEvent
+    data class SendMessage(
+        val chatId: String
+    ) : ChatUiEvent
 
-    object Connect : ChatUiEvent
+  data class Connect(val chatId: String) : ChatUiEvent
 
     object Disconnect : ChatUiEvent
     data class LoadHistory(val chatId: String) : ChatUiEvent
@@ -22,7 +24,6 @@ sealed interface ChatUiEvent {
     data object BiometricAuthenticationSucceeded:ChatUiEvent
     data class BiometricAuthenticationFailed(val reason: String):ChatUiEvent
     data object BiometricPromptShown:ChatUiEvent
-
-
+    data object LoadRecentChats: ChatUiEvent
 
 }

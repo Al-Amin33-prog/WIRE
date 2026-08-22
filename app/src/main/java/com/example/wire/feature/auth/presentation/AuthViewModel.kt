@@ -147,10 +147,11 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun sendPasswordReset() {
+        val cleanEmail = _uiState.value.email.trim().lowercase()
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             // FIX: Access through authUseCases
-            when (val result = authUseCases.forgotPassword(_uiState.value.email)) {
+            when (val result = authUseCases.forgotPassword(cleanEmail)) {
                 is Resource.Success -> {
                     _uiState.update { it.copy(isLoading = false, isPasswordResetEmailSent = true) }
                 }

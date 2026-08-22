@@ -2,6 +2,7 @@ package com.example.wire.feature.chat.presentation.component.state
 
 import com.example.wire.core.network.websocket.WebSocketState
 import com.example.wire.feature.chat.domain.model.Message
+import com.example.wire.feature.chat.presentation.screen.chat_list.ChatItemData
 
 data class ChatUiState(
     val chatId: String = "",
@@ -24,5 +25,6 @@ data class ChatUiState(
     val isTyping: Boolean = false,
     val showBiometricEnrollment: Boolean = false,
     val triggerBiometricPrompt: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val chats: List<ChatItemData> = emptyList()
 )

@@ -1,17 +1,19 @@
 package com.example.wire.feature.chat.presentation.component.viewmodel
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.wire.core.common.constants.WireAssistant
 import com.example.wire.core.common.util.AppError
 import com.example.wire.core.common.util.Resource
 import com.example.wire.core.data.repository.SyncRepository
-import com.example.wire.core.datastore.preferences.UserPreferencesDataStore
 import com.example.wire.core.network.websocket.WebSocketState
-import com.example.wire.core.ui.util.WireBiometricManager
 import com.example.wire.feature.auth.domain.repository.AuthRepository
+import com.example.wire.feature.chat.data.mapper.toChatItemData
 import com.example.wire.feature.chat.data.wrapper.ChatUseCases
 import com.example.wire.feature.chat.presentation.component.event.ChatUiEvent
 import com.example.wire.feature.chat.presentation.component.state.ChatUiState
+import com.example.wire.feature.chat.presentation.screen.chat_list.ChatItemData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.*
@@ -23,21 +25,20 @@ class ChatViewModel @Inject constructor(
     private val chatUseCases: ChatUseCases,
     private val authRepository: AuthRepository,
     private val syncRepository: SyncRepository,
-    private val userPreferencesDataStore: UserPreferencesDataStore,
-    private val biometricManager: WireBiometricManager
 ) : ViewModel() {
+    private val _chatItems = MutableStateFlow<List<ChatItemData>>(emptyList())
+    val chatItems = _chatItems.asStateFlow()
 
     private val _uiState = MutableStateFlow(ChatUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val currentChatId = "default_chat_id"
+
 
     init {
-        onEvent(ChatUiEvent.LoadHistory(currentChatId))
-        connectAndObserve()
+
         loadUserProfile()
         observeWebSocketStatus()
-        checkBiometricEnrollment()
+
     }
 
     fun onEvent(event: ChatUiEvent) {
@@ -45,9 +46,17 @@ class ChatViewModel @Inject constructor(
             is ChatUiEvent.MessageChanged -> {
                 _uiState.update { it.copy(messageText = event.message) }
             }
-            is ChatUiEvent.SendMessage -> sendMessage()
-            is ChatUiEvent.Connect -> connectAndObserve()
-            is ChatUiEvent.LoadHistory -> loadHistory(event.chatId)
+            is ChatUiEvent.SendMessage -> sendMessage(
+                event.chatId
+
+            )
+            is ChatUiEvent.Connect -> connectAndObserve(event.chatId)
+            is ChatUiEvent.LoadHistory -> {
+
+                loadHistory(
+                     event.chatId
+                )
+            }
             is ChatUiEvent.Disconnect -> {
                 viewModelScope.launch {
                     chatUseCases.disconnectFromChat()
@@ -76,7 +85,10 @@ class ChatViewModel @Inject constructor(
                 }
             }
             is ChatUiEvent.DeleteMessage -> {
-                deleteMessage(event.messageId)
+                deleteMessage(
+                    chatId = uiState.value.chatId,
+                    messageId = event.messageId
+                )
 
             }
             ChatUiEvent.DismissBiometricEnrollment -> {
@@ -103,6 +115,9 @@ class ChatViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(triggerBiometricPrompt = false)
                 }
+            }
+            is ChatUiEvent.LoadRecentChats -> {
+                loadRecentChats()
             }
 
 
@@ -138,13 +153,21 @@ class ChatViewModel @Inject constructor(
             val currentUserUid = user?.uid ?: ""
             _uiState.update { it.copy(
                 currentUserUid = currentUserUid,
-                displayName = name) }
+                displayName = name
+            )
+            }
+
         }
     }
 
-    private fun connectAndObserve() {
+    private fun connectAndObserve(
+        chatId: String
+    ) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(
+                chatId = chatId,
+                isLoading = true
+            ) }
 
             // 1. Handle Connection Resource
             when (val connectionResult = chatUseCases.connectToChat()) {
@@ -162,7 +185,7 @@ class ChatViewModel @Inject constructor(
             }
 
             // 2. Observe Messages (This remains a Flow)
-            chatUseCases.observeMessages(currentChatId)
+            chatUseCases.observeMessages(chatId)
                 .onEach { newMessageList ->
                     _uiState.update { state ->
                         state.copy(messages = newMessageList)
@@ -175,37 +198,59 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun loadHistory(chatId: String) {
+    private fun loadHistory(receiverId: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            chatUseCases.markChatAsRead(chatId)
 
-            // FIX: Handle the Resource result
-            when (val result = chatUseCases.loadChatHistory(chatId)) {
+            val currentUserId =
+                authRepository.getCurrentUser()?.uid ?: return@launch
+
+            _uiState.update {
+                it.copy(
+                    chatId = receiverId,
+                    isLoading = true,
+                    error = null
+                )
+            }
+
+            chatUseCases.markChatAsRead(receiverId)
+
+            when (val result =
+                chatUseCases.loadChatHistory(
+                    currentUserId,
+                    receiverId
+                )) {
+
                 is Resource.Success -> {
-                    _uiState.update { it.copy(
-                        messages = result.data, // Access .data to get the List<Message>
-                        isLoading = false
-                    )}
+                    _uiState.update {
+                        it.copy(
+                            messages = result.data,
+                            isLoading = false
+                        )
+                    }
                 }
-                is Resource.Error -> {
-                    _uiState.update { it.copy(
-                        error = mapError(result.error),
-                        isLoading = false
-                    )}
+
+                        is Resource.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            error = mapError(result.error),
+                            isLoading = false
+                        )
+                    }
                 }
-                is Resource.Loading -> { }
+
+                is Resource.Loading -> {}
             }
         }
     }
 
-    private fun sendMessage() {
+
+    private fun sendMessage(chatId: String) {
         val text = _uiState.value.messageText
         if (text.isBlank()) return
 
         viewModelScope.launch {
             // FIX: Handle the Resource result
-            when (val result = chatUseCases.sendMessage(currentChatId, text)) {
+            when (val result = chatUseCases.sendMessage(chatId, text)) {
                 is Resource.Success -> {
                     _uiState.update { it.copy(messageText = "", error = null) }
                 }
@@ -234,7 +279,10 @@ class ChatViewModel @Inject constructor(
             chatUseCases.disconnectFromChat()
         }
     }
-    private fun deleteMessage(messageId: String) {
+    private fun deleteMessage(
+        messageId: String,
+        chatId : String
+    ) {
         viewModelScope.launch {
             //1. Optimistic UI: Close the menu immediately
             _uiState.update {
@@ -246,7 +294,10 @@ class ChatViewModel @Inject constructor(
 
             // 2. Execute deletion logic via UseCase
             // We assume you will add 'deleteMessage' to your ChatUseCases bundle
-            when (val result = chatUseCases.deleteMessage(currentChatId, messageId)) {
+            when (val result = chatUseCases.deleteMessage
+                (
+                chatId = chatId,
+                messageId = messageId)) {
                 is Resource.Success -> {
                     // Database is updated, Flow observation handles the UI update
                 }
@@ -257,20 +308,48 @@ class ChatViewModel @Inject constructor(
             }
         }
     }
-    private fun checkBiometricEnrollment(){
+    private fun loadRecentChats() {
         viewModelScope.launch {
-            val hardWareAvailable = biometricManager.isBiometricAvailable()
-         //   val biometricEnabled = userPreferencesDataStore.isBiometricEnabled.first()
-            _uiState.update{
-                it.copy(
-                   // showBiometricEnrollment = hardWareAvailable && !biometricEnabled
-                )
+
+            val currentUserId =
+                authRepository.getCurrentUser()?.uid ?: return@launch
+
+            when (
+                val result = chatUseCases.getRecentChats(currentUserId)
+            ) {
+
+                is Resource.Success -> {
+
+                    val recentChats = result.data.map {
+                        it.toChatItemData()
+                    }
+
+                    val assistant = ChatItemData(
+                        id = WireAssistant.ID,
+                        name = WireAssistant.NAME,
+                        lastMessage = "Hi! I'm your Wire Assistant",
+                        time = "",
+                        unreadCount = 0,
+                        avatarColor = Color(0xFF6C63FF)
+                    )
+
+                    // Assistant is always first.
+                    _chatItems.value = listOf(assistant) + recentChats
+                }
+
+                is Resource.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            error = mapError(result.error)
+                        )
+                    }
+                }
+
+                is Resource.Loading -> {
+                    // Nothing for now
+                }
             }
         }
     }
-    fun dismissBiometricEnrollment(){
-        _uiState.update{
-            it.copy(showBiometricEnrollment = false)
-        }
-    }
+
 }

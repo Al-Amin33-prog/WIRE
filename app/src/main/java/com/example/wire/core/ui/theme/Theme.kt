@@ -4,6 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.example.wire.core.ui.theme.SuccessGreen
 
 private val DarkColorScheme = darkColorScheme(
     primary = BrandCyan,        // Cyan highlight for Dark Mode
@@ -14,6 +15,9 @@ private val DarkColorScheme = darkColorScheme(
     onBackground = TextWhite,
     onSurface = TextWhite,
     outlineVariant = Color(0xFF2C2C2E)
+
+
+
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -24,7 +28,8 @@ private val LightColorScheme = lightColorScheme(
     onPrimary = TextWhite,
     onBackground = TextBlack,
     onSurface = TextBlack,
-    outlineVariant = DividerLight
+    outlineVariant = DividerLight,
+    scrim = SuccessGreen
 )
 
 @Composable
