@@ -18,17 +18,48 @@ class AuthRepositoryImpl @Inject constructor(
     private val authApiService: AuthApiService
 ) : AuthRepository {
 
-    override suspend fun login(email: String, password: String): Resource<AuthUser> {
-        return try {
-            val user = firebaseAuthDataSource.login(email,password)
-            return  Resource.Success(user.toDomain())
+    override suspend fun login(
+        email: String,
+        password: String
+    ): Resource<AuthUser> {
 
+        return try {
+
+            val user = firebaseAuthDataSource.login(
+                email,
+                password
+            )
+
+            val response = authApiService.syncUser()
+
+            if (response.isSuccessful) {
+
+                Resource.Success(
+                    user.toDomain()
+                )
+
+            } else {
+
+                Resource.Error(
+                    AppError.Network.ServerError
+                )
+
+            }
 
         } catch (e: IOException) {
-            Resource.Error(AppError.Network.NoInternet)
+
+            Resource.Error(
+                AppError.Network.NoInternet
+            )
+
         } catch (e: Exception) {
-            Resource.Error(AppError.Network.Unknown(e.message))
+
+            Resource.Error(
+                AppError.Network.Unknown(e.message)
+            )
+
         }
+
     }
 
     override suspend fun register(
@@ -79,8 +110,10 @@ class AuthRepositoryImpl @Inject constructor(
             if (response.isSuccessful){
                 Resource.Success(Unit)
             }else{
+
+                val errorBody = response.errorBody()?.string() ?: "Unknown Server Error"
                 Resource.Error(
-                    AppError.Network.ServerError
+                    AppError.Network.Unknown(errorBody)
                 )
             }
         } catch (e: IOException) {
@@ -95,8 +128,17 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun loginWithGoogle(idToken: String): Resource<AuthUser> {
         return try {
             val userDto = firebaseAuthDataSource.loginWithGoogle(idToken)
-            authApiService.syncUser()
-            Resource.Success(userDto.toDomain())
+            val response = authApiService.syncUser()
+
+            if (response.isSuccessful) {
+
+                Resource.Success(userDto.toDomain())
+
+            } else {
+
+                Resource.Error(AppError.Network.ServerError)
+
+            }
         } catch (e: Exception) {
             Resource.Error(AppError.Network.Unknown(e.message))
         }
