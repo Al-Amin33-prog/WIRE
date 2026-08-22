@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ChatItem(
     name: String,
-    lastMessage: String,
+    lastMessage: String?,
     time: String,
     unreadCount: Int,
     avatarColor: Color,
@@ -68,7 +68,7 @@ fun ChatItem(
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
-            Text(text = lastMessage, color = Color.Gray, fontSize = 14.sp)
+            Text(text = lastMessage ?: "No messages yet", color = Color.Gray, fontSize = 14.sp)
         }
 
         Column(horizontalAlignment = Alignment.End) {

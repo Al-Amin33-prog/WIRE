@@ -11,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wire.feature.chat.presentation.component.event.ChatUiEvent
@@ -27,15 +26,16 @@ fun ChatContent(
     onEvent: (ChatUiEvent) -> Unit,
     onChatClick: (String) -> Unit,
     onNotificationClick: () -> Unit,
-    onFabClick: () -> Unit
+    onFabClick: () -> Unit,
+    chatItems: List<ChatItemData>
 ) {
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             HeaderSection(
                 userName = uiState.displayName,
                 onNotificationClick = onNotificationClick,
-              //  modifier = Modifier.systemBarsPadding()
 
                 )
         },
@@ -83,16 +83,21 @@ fun ChatContent(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // 4. Chat List
-            items(uiState.messages) { message ->
+            items(
+                items = chatItems,
+                key = {it.id}
+            ){chat->
                 ChatItem(
-                    name = "Shaba ", // Demo data for now
-                    lastMessage = "Sent you $50.00",
-                    time = "2m",
-                    unreadCount = 2,
-                    avatarColor = Color.Unspecified,
-                    onClick = { onChatClick("demo_id") }
+                    name = chat.name,
+                    lastMessage = chat.lastMessage,
+                    time = chat.time,
+                    unreadCount = chat.unreadCount,
+                    avatarColor = MaterialTheme.colorScheme.primary,
+                    onClick = {
+                        onChatClick(chat.id)
+                    }
                 )
+
             }
         }
     }
