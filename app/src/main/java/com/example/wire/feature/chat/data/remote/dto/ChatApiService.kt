@@ -7,9 +7,10 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ChatApiService {
-    @GET("chat/history/{chatId}")
+    @GET("chat/history/{senderId}/{receiverId}")
     suspend fun getChatHistory(
-        @Path("chatId") chatId: String
+        @Path("senderId") senderId: String,
+        @Path("receiverId") receiverId: String,
     ): List<MessageDto> //  map these to your domain Message
 
     @POST("chat/send")
@@ -17,7 +18,9 @@ interface ChatApiService {
         @Body request: ChatActionDto
     ): Response<Unit>
 
-    @GET("chat/recent")
-    suspend fun getRecentChats(): List<ChatDto>
+    @GET("chat/recent/{userId}")
+    suspend fun getRecentChats(
+        @Path("userId") userId:String
+    ): List<ChatDto>
 
 }
