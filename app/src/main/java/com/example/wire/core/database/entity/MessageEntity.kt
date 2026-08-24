@@ -15,5 +15,6 @@ data class MessageEntity(
     val isRead: Boolean,
     val isEdited: Boolean,
     val isDeleted: Boolean,
+    val receiverId: String
 
 )

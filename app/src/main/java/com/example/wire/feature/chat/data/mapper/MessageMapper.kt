@@ -16,7 +16,9 @@ fun MessageEntity.toDomain(): Message {
         status = MessageStatus.valueOf(this.status),
         isRead = this.isRead,
         isEdited = this.isEdited,
-        isDeleted = this.isDeleted
+        isDeleted = this.isDeleted,
+        receiverId = this.receiverId
+
     )
 }
 
@@ -32,6 +34,7 @@ fun Message.toEntity(chatId: String): MessageEntity {
         status = this.status.name,
         isRead = this.isRead,
         isEdited = this.isEdited,
-        isDeleted = this.isDeleted
+        isDeleted = this.isDeleted,
+        receiverId = this.receiverId
     )
 }

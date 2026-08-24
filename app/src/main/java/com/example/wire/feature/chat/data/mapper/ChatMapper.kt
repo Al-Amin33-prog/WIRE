@@ -9,6 +9,10 @@ import com.example.wire.feature.chat.domain.model.Message
 import com.example.wire.feature.chat.domain.model.MessageStatus
 import com.example.wire.feature.chat.domain.model.MessageType
 import com.example.wire.feature.chat.presentation.screen.chat_list.ChatItemData
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 fun MessageDto.toDomain(): Message {
     return Message(
@@ -17,7 +21,6 @@ fun MessageDto.toDomain(): Message {
         content = this.content,
         timestamp = this.timestamp,
         type = try {
-            // FIX: Use your local enum, not Firebase
             MessageType.valueOf(this.type)
         } catch (e: Exception) {
             MessageType.TEXT
@@ -40,11 +43,12 @@ fun MessageDto.toEntity(chatId: String): MessageEntity {
         timestamp = this.timestamp,
         status = MessageStatus.SENT.name,
         type = this.type,
-        isRead = true, // History messages are usually already read
+        isRead = true,
         isEdited = false,
         isDeleted = false
     )
 }
+
 fun ChatDto.toDomain(): Chat {
     return Chat(
         id = uid,
@@ -52,18 +56,41 @@ fun ChatDto.toDomain(): Chat {
         lastMessage = lastMessage,
         timestamp = timestamp
     )
-
 }
+
 fun Chat.toChatItemData(): ChatItemData {
     return ChatItemData(
         id = id,
         lastMessage = lastMessage,
-        name = displayName?: "Unknown",
-        time = formatChatTime(timestamp),
+        name = displayName ?: "Unknown",
+        time = formatChatTime(timestamp), // Now returns String
         unreadCount = 0,
         avatarColor = Color.Gray
     )
 }
-fun formatChatTime(timestamp:Long){
 
+fun formatChatTime(timestamp: Long): String { // FIXED: Added return type String
+    val now = Calendar.getInstance()
+    val msgTime = Calendar.getInstance().apply { timeInMillis = timestamp }
+
+    return when {
+        // Today
+        now.get(Calendar.YEAR) == msgTime.get(Calendar.YEAR) &&
+                now.get(Calendar.DAY_OF_YEAR) == msgTime.get(Calendar.DAY_OF_YEAR) -> {
+            SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date(timestamp))
+        }
+        // Yesterday
+        now.get(Calendar.YEAR) == msgTime.get(Calendar.YEAR) &&
+                now.get(Calendar.DAY_OF_YEAR) - msgTime.get(Calendar.DAY_OF_YEAR) == 1 -> {
+            "Yesterday"
+        }
+        // This week
+        now.get(Calendar.WEEK_OF_YEAR) == msgTime.get(Calendar.WEEK_OF_YEAR) -> {
+            SimpleDateFormat("EEE", Locale.getDefault()).format(Date(timestamp)) // Mon, Tue
+        }
+        // Older
+        else -> {
+            SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(Date(timestamp))
+        }
+    }
 }
