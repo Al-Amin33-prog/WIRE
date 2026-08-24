@@ -45,7 +45,8 @@ fun MessageDto.toEntity(chatId: String): MessageEntity {
         type = this.type,
         isRead = true,
         isEdited = false,
-        isDeleted = false
+        isDeleted = false,
+        receiverId = this.receiverId
     )
 }
 
