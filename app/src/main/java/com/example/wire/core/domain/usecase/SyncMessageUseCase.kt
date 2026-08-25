@@ -9,8 +9,17 @@ class SyncMessageUseCase  @Inject constructor(
     private  val chatApi: ChatApiService,
     private val messageDao: MessageDao
 ){
-    suspend operator fun invoke(chatId: String){
-        val messages = chatApi.getChatHistory(chatId)
+    suspend operator fun invoke(
+        senderId: String,
+        receiverId: String
+    ){
+        val messages = chatApi.getChatHistory(
+            senderId = senderId,
+            receiverId = receiverId
+        )
+        val chatId = listOf(senderId, receiverId)
+            .sorted()
+            .joinToString { "_" }
         messages.forEach {
             messageDao.insertMessage(
                 it.toEntity(chatId)

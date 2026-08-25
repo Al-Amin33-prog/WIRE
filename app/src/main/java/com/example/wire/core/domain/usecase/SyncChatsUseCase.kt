@@ -28,7 +28,10 @@ class SyncChatsUseCase @Inject constructor(
                     isContact = true
                 )
             )
-            syncMessages(chat.uid)
+            syncMessages(
+                senderId = userId,
+                receiverId = chat.uid
+            )
         }
     }
 }
