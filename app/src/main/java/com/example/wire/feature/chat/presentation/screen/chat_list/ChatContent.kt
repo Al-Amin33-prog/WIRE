@@ -92,7 +92,7 @@ fun ChatContent(
                     lastMessage = chat.lastMessage,
                     time = chat.time,
                     unreadCount = chat.unreadCount,
-                    avatarColor = MaterialTheme.colorScheme.primary,
+                    avatarColor = chat.avatarColor,
                     onClick = {
                         onChatClick(chat.id)
                     }

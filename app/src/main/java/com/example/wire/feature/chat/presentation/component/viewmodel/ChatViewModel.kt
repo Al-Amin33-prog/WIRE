@@ -26,7 +26,18 @@ class ChatViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val syncRepository: SyncRepository,
 ) : ViewModel() {
-    private val _chatItems = MutableStateFlow<List<ChatItemData>>(emptyList())
+    // Define a constant for the Assistant DTO/Data
+    private val assistantItem = ChatItemData(
+        id = WireAssistant.ID,
+        name = WireAssistant.NAME,
+        lastMessage = "Hi! I'm your Wire Assistant",
+        time = "",
+        unreadCount = 0,
+        avatarColor = Color(0xFF6C63FF)
+    )
+
+    // Initialize with the assistant already in the list
+    private val _chatItems = MutableStateFlow<List<ChatItemData>>(listOf(assistantItem))
     val chatItems = _chatItems.asStateFlow()
 
     private val _uiState = MutableStateFlow(ChatUiState())
@@ -308,48 +319,29 @@ class ChatViewModel @Inject constructor(
             }
         }
     }
-    private fun loadRecentChats() {
-        viewModelScope.launch {
+    private fun loadRecentChats() {viewModelScope.launch {
+        val currentUserId = authRepository.getCurrentUser()?.uid ?: return@launch
 
-            val currentUserId =
-                authRepository.getCurrentUser()?.uid ?: return@launch
+        // 1. Show loading if necessary or keep existing items
+        when (val result = chatUseCases.getRecentChats(currentUserId)) {
+            is Resource.Success -> {
+                // Map remote DTOs to UI Data
+                val recentChats = result.data.map { it.toChatItemData() }
 
-            when (
-                val result = chatUseCases.getRecentChats(currentUserId)
-            ) {
 
-                is Resource.Success -> {
 
-                    val recentChats = result.data.map {
-                        it.toChatItemData()
-                    }
-
-                    val assistant = ChatItemData(
-                        id = WireAssistant.ID,
-                        name = WireAssistant.NAME,
-                        lastMessage = "Hi! I'm your Wire Assistant",
-                        time = "",
-                        unreadCount = 0,
-                        avatarColor = Color(0xFF6C63FF)
-                    )
-
-                    // Assistant is always first.
-                    _chatItems.value = listOf(assistant) + recentChats
-                }
-
-                is Resource.Error -> {
-                    _uiState.update {
-                        it.copy(
-                            error = mapError(result.error)
-                        )
-                    }
-                }
-
-                is Resource.Loading -> {
-                    // Nothing for now
+                // CRITICAL: Update the StateFlow with the new list
+                // Using .update is safer than .value = ...
+                _chatItems.update {
+                    listOf(assistantItem) + recentChats
                 }
             }
+            is Resource.Error -> {
+                _uiState.update { it.copy(error = mapError(result.error)) }
+            }
+            is Resource.Loading -> { /* Handle loading state */ }
         }
+    }
     }
 
 }
