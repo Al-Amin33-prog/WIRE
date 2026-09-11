@@ -17,7 +17,7 @@ object WebSocketConfig {
 
 
     val BASE_URL: String
-        get() = "ws://$hostIp:8080/chat"
+        get() = "ws://$hostIp:8080/ws/chat"
 
 
     const val RECONNECT_INTERVAL = 5000L

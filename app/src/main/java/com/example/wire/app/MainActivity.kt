@@ -30,7 +30,7 @@ class MainActivity : FragmentActivity() {
     lateinit var navigatorImpl: NavigatorImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("Startup","MainActivity started  ")
+        Log.d("Startup","MainActivity started")
         installSplashScreen()
         super.onCreate(savedInstanceState)
         
