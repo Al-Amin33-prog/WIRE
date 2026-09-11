@@ -5,11 +5,15 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.util.Log
 import com.example.wire.core.di.ApplicationScope
 import com.example.wire.core.domain.dispatcher.CoroutineDispatchers
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.websocket.*
@@ -31,7 +35,17 @@ class WebSocketManagerImpl @Inject constructor(
 
     private val _state = MutableStateFlow<WebSocketState>(WebSocketState.Disconnected)
     private val incomingMessages = MutableSharedFlow<String>()
-    private val client = HttpClient(CIO) { install(WebSockets) }
+    private val client = HttpClient(CIO) {
+        install(WebSockets)
+        install(Logging) {
+            level = LogLevel.ALL
+            logger = object : Logger {
+                override fun log(message: String) {
+                    Log.d("WireWebSocket", message)
+                }
+            }
+        }
+    }
     private var session: DefaultClientWebSocketSession? = null
 
     private var reconnectionJob: Job? = null
@@ -45,47 +59,49 @@ class WebSocketManagerImpl @Inject constructor(
     override fun observeMessages(): Flow<String> = incomingMessages
 
     override suspend fun connect() {
-        // Don't restart if already connected or currently trying to connect
+        // If already connecting/connected, don't start another attempt
         if (_state.value is WebSocketState.Connected || _state.value is WebSocketState.Connecting) return
+        
+        // Cancel any existing retry loops to start fresh
+        reconnectionJob?.cancel()
         internalConnect()
     }
 
     private suspend fun internalConnect() {
         try {
-            _state.value = WebSocketState.Connecting // UI can now show "Connecting..."
+            _state.value = WebSocketState.Connecting
+            Log.d("WireWebSocket", "Attempting connection to ${WebSocketConfig.BASE_URL}")
             session = client.webSocketSession { url(WebSocketConfig.BASE_URL) }
             _state.value = WebSocketState.Connected
-            reconnectionJob?.cancel() // Success: kill any active retry loops
+            Log.d("WireWebSocket", "Connected successfully")
+            reconnectionJob?.cancel()
             listenForMessages()
         } catch (e: Exception) {
+            Log.e("WireWebSocket", "Connection failed: ${e.message}")
             handleDisconnection()
         }
     }
 
     private fun handleDisconnection() {
-        // Prevent multiple reconnection loops from running at once
         if (reconnectionJob?.isActive == true) return
 
         reconnectionJob = applicationScope.launch(dispatchers.io) {
-            val startTime = System.currentTimeMillis()
-            val maxRetryDuration = 30_000L // 30 seconds
-
-            while (isActive && (System.currentTimeMillis() - startTime < maxRetryDuration)) {
-                _state.value = WebSocketState.Connecting // Keep UI in "Connecting" mode
-
+            var retryDelay = 2000L // Start with 2 seconds
+            while (isActive) {
+                _state.value = WebSocketState.Connecting
                 try {
+                    Log.d("WireWebSocket", "Retrying connection...")
                     session = client.webSocketSession { url(WebSocketConfig.BASE_URL) }
                     _state.value = WebSocketState.Connected
                     listenForMessages()
-                    return@launch // Exit loop on success
+                    return@launch 
                 } catch (e: Exception) {
-                    // Plan: Reconnect every 1 second
-                    delay(1000)
+                    Log.w("WireWebSocket", "Retry failed, waiting ${retryDelay}ms")
+                    delay(retryDelay)
+                    // Exponential backoff up to 30 seconds
+                    retryDelay = (retryDelay * 2).coerceAtMost(30_000L)
                 }
             }
-
-            // 30 seconds passed with no internet: Fully go off
-            _state.value = WebSocketState.Disconnected
         }
     }
 
@@ -120,10 +136,17 @@ class WebSocketManagerImpl @Inject constructor(
     }
 
     override suspend fun sendMessage(message: String) {
+        if (session == null || _state.value !is WebSocketState.Connected) {
+            Log.d("WireWebSocket", "SendMessage: Not connected, triggering recovery")
+            connect()
+            throw Exception("Not connected to server")
+        }
         try {
             session?.send(Frame.Text(message))
         } catch (e: Exception) {
+            Log.e("WireWebSocket", "Send failed: ${e.message}")
             handleDisconnection()
+            throw e
         }
     }
 
