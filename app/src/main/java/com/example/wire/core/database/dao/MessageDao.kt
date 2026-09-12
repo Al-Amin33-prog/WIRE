@@ -28,10 +28,4 @@ interface MessageDao {
     @Query("UPDATE messages SET content = :newContent, isEdited = 1, timestamp = :timestamp WHERE id = :messageId")
     suspend fun updateMessageContent(messageId: String, newContent: String, timestamp: Long)
 
-
-
-
-
-
-
 }

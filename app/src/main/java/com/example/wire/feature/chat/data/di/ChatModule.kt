@@ -74,9 +74,10 @@ object ChatModule {
     fun provideChatMessageProcessor(
         messageDao: MessageDao,
         chatDao: ChatDao,
-        notificationHandler: NotificationHandler
+        notificationHandler: NotificationHandler,
+        authRepository: AuthRepository
     ): WebSocketProcessor {
-        return ChatMessageProcessor(messageDao, chatDao, notificationHandler)
+        return ChatMessageProcessor(messageDao, chatDao, notificationHandler, authRepository)
     }
 
     @Provides

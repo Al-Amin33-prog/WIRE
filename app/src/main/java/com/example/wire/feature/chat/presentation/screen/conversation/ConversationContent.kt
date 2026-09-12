@@ -77,12 +77,15 @@ fun ConversationContent(
                 }
 
                 items(uiState.messages) { message ->
-                    // THE FIX: Use your dynamic UID from AuthRepository
-                    val isMe = message.senderId == uiState.currentUserUid
+                    // Robust check: It's me if it matches my UID, or explicitly marked "me", 
+                    // or if we are chatting with an assistant and the sender is NOT that assistant.
+                    val isMe = message.senderId == uiState.currentUserUid || 
+                               message.senderId == "me" || 
+                               (message.senderId != uiState.chatId && uiState.chatId == "wire_assistant")
 
                     MessageBubble(
                         message = message,
-                        isMe = isMe, // FIXED: Removed hardcoded "me"
+                        isMe = isMe,
                         onLongClick = {
                             onEvent(ChatUiEvent.MessageLongClick(message.id))
                         },
@@ -106,14 +109,7 @@ fun ConversationContent(
                     }
                 }
 
-                // DEMO: Payment Receipt Bubble
-                item {
-                    PaymentMessageBubble(
-                        amount = "75.00",
-                        note = "For dinner last night",
-                        isMe = false
-                    )
-                }
+
             }
         }
     }
