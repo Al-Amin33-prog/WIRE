@@ -1,89 +1,57 @@
 package com.example.wire.feature.profile.data.mapper
 
-import com.example.wire.core.database.entity.UserEntity
 import com.example.wire.feature.profile.data.remote.dto.ProfileDto
-import com.example.wire.feature.profile.data.remote.dto.ProfileUpdateDto
 import com.example.wire.feature.profile.domain.model.Profile
+import com.google.firebase.auth.FirebaseUser
 
-// 1. Remote -> Domain (Logic Layer)
-fun ProfileDto.toDomain() = Profile(
-    id = id,
-
-    username = username,
+fun ProfileDto.toDomain(
+    isBiometricEnabled: Boolean = false,
+    isPaymentPinEnabled: Boolean = false,
+    isPushNotificationsEnabled: Boolean = true
+): Profile = Profile(
+    uid = uid,
+    displayName = displayName,
     email = email,
     phoneNumber = phoneNumber,
-    bio = bio,
+    wireId = wireId,
     avatarUrl = avatarUrl,
-    isVerified = isVerified,
+    bio = bio,
+    isKycVerified = isKycVerified,
+    totalSent = totalSent,
+    totalReceived = totalReceived,
+    totalTransfers = totalTransfers,
+    contactCount = contactCount,
+    isBiometricEnabled = isBiometricEnabled,
+    isPaymentPinEnabled = isPaymentPinEnabled,
+    isPushNotificationsEnabled = isPushNotificationsEnabled,
+    currency = "USD",
+    appVersion = appVersion,
+
     joinedAt = joinedAt,
-    displayName = TODO(),
-    wireId = TODO(),
-    totalSent = TODO(),
-    totalTransfers = TODO(),
-    contactCount = TODO(),
-    isBiometricEnabled = TODO(),
-    isPaymentPinEnabled = TODO(),
-    isPushNotificationEnabled = TODO(),
-    currency = TODO(),
-    appVersion = TODO()
+    username = userName
 )
 
-// 2. Domain -> Remote (Saving to Cloud)
-fun Profile.toDto() = ProfileDto(
-    id = id,
-
-    username = username,
-    email = email,
+// Maps Firebase user to a local Profile
+// Used when backend call fails but Firebase session exists
+fun FirebaseUser.toLocalProfile(): Profile = Profile(
+    uid = uid,
+    displayName = displayName ?: "Wire User",
+    email = email ?: "",
     phoneNumber = phoneNumber,
-    bio = bio,
-    avatarUrl = avatarUrl,
-    isVerified = isVerified,
-    joinedAt = joinedAt,
-    fullName = TODO()
-)
+    wireId = "WIRE·${uid.take(8).uppercase()}",
+    avatarUrl = photoUrl?.toString(),
+    bio = null,
+    isKycVerified = false,
+    totalSent = 0.0,
+    totalReceived = 0.0,
+    totalTransfers = 0,
+    contactCount = 0,
+    isBiometricEnabled = false,
+    isPaymentPinEnabled = false,
+    isPushNotificationsEnabled = true,
+    currency = "USD",
+    appVersion = "1.0.0",
+    joinedAt = 20,
+    username = ""
 
-// 3. Remote -> Entity (Anchoring in Room)
-fun ProfileDto.toEntity() = UserEntity(
-    id = id,
-    fullName = fullName,
-    username = username,
-    email = email,
-    phoneNumber = phoneNumber,
-    bio = bio,
-    avatarUrl = avatarUrl,
-    isVerified = isVerified,
-    joinedAt = joinedAt
-)
-
-// 4. Entity -> Domain (Loading from Room for the UI)
-fun UserEntity.toDomain() = Profile(
-    id = id,
-    //fullName = fullName,
-    username = username,
-    email = email,
-    phoneNumber = phoneNumber,
-    bio = bio,
-    avatarUrl = avatarUrl,
-    isVerified = isVerified,
-    joinedAt = joinedAt,
-    displayName = TODO(),
-    wireId = TODO(),
-    totalSent = TODO(),
-    totalTransfers = TODO(),
-    contactCount = TODO(),
-    isBiometricEnabled = TODO(),
-    isPaymentPinEnabled = TODO(),
-    isPushNotificationEnabled = TODO(),
-    currency = TODO(),
-    appVersion = TODO()
-)
-
-fun Profile.toUpdateDto() = ProfileUpdateDto(
-
-    username = username,
-    bio = bio,
-    phoneNumber = phoneNumber,
-    email = email,
-    fullName = TODO()
-    // Notice we EXCLUDE 'id' and 'joinedAt' as the API usually doesn't allow changing them
 )

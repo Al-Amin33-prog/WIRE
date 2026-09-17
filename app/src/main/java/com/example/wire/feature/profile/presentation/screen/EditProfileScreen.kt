@@ -18,30 +18,5 @@ fun EditProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
 ) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
 
-    // THE SYMPHONY MOVE: Handle the heavy lifting (URI -> Bytes) in the Screen
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        uri?.let {
-            try {
-                context.contentResolver.openInputStream(it)?.use { inputStream ->
-                    val bytes = inputStream.readBytes()
-                    viewModel.onEvent(ProfileUiEvent.AvatarSelected(bytes))
-                }
-            } catch (e: Exception) {
-                // You could emit a UI error state here if reading fails
-                e.printStackTrace()
-            }
-        }
-    }
-
-    EditProfileContent(
-        state = state,
-        onEvent = viewModel::onEvent,
-        onNavigateBack = onNavigateBack,
-        onPickImage = { launcher.launch("image/*") }
-    )
 }

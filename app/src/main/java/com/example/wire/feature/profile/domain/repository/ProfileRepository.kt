@@ -5,7 +5,7 @@ import com.example.wire.feature.profile.domain.model.Profile
 import kotlinx.coroutines.flow.Flow
 
 interface ProfileRepository {
-    suspend fun observeProfile(): Flow<Profile?>
+     fun observeProfile(): Flow<Profile?>
     suspend fun getProfile(): Resource<Profile>
     suspend fun updateProfile(profile: Profile): Resource<Profile>
     suspend fun uploadAvatar(avatar: ByteArray): Resource<String>
@@ -14,7 +14,7 @@ interface ProfileRepository {
     suspend fun updateBiometricEnabled(enabled: Boolean): Resource<Unit>
     suspend fun updatePaymentPinEnabled(enabled:Boolean):Resource<Unit>
     suspend fun updatePushNotificationsEnabled(enabled:Boolean):Resource<Unit>
-    suspend fun deleteAccount(): Resource<Unit>
+    suspend fun deleteAccount(): Result<Unit>
     suspend fun signOut()
 
 }

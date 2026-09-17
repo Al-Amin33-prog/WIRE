@@ -17,4 +17,6 @@ interface UserDao {
 
     @Query("DELETE FROM user_profile")
     suspend fun clearUserProfile()
+
+
 }

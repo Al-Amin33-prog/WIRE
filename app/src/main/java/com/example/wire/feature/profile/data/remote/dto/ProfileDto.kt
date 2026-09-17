@@ -3,24 +3,26 @@ package com.example.wire.feature.profile.data.remote.dto
 import kotlinx.serialization.Serializable
 
 
-@Serializable
+
+
 data class ProfileDto(
-    val id: String,
-    val fullName: String,
-    val username: String,
+    val uid: String,
+    val displayName: String,
+    val userName: String,
     val email: String,
     val phoneNumber: String?,
-    val bio: String?,
+    val wireId: String,
     val avatarUrl: String?,
-    val isVerified: Boolean,
-    val joinedAt: Long,
+    val bio: String?,
+    val isKycVerified: Boolean,
+    val totalSent: Double,
+    val totalReceived: Double,
+    val totalTransfers: Int,
+    val contactCount: Int,
+    val joinedAt:  Long,
+    val appVersion: String
 )
 
-@Serializable
-data class ProfileUpdateDto(
-    val fullName: String,
-    val username: String,
-    val email: String,
-    val phoneNumber: String?,
-    val bio: String?,
-)
+
+
+
