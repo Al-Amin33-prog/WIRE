@@ -163,9 +163,8 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
 
             composable(BottomNavItem.Profile.route) {
                 ProfileScreen(
-                    onEditProfile = { navController.navigate("edit_profile") },
-                    onNavigateToSettings = { navController.navigate("settings") }
-
+                    viewModel = TODO(),
+                    onNavigateToLogin = TODO()
                 )
             }
 

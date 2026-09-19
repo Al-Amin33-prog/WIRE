@@ -94,7 +94,7 @@ fun SettingsScreen(
                     }
                     Switch(
                         checked = uiState.isBiometricEnabled,
-                        onCheckedChange = { viewModel.onEvent(ProfileUiEvent.ToggleBiometrics(it)) }
+                        onCheckedChange = { }
                     )
                 }
             }
@@ -104,8 +104,7 @@ fun SettingsScreen(
             // Logout Section
             Button(
                 onClick = {
-                    viewModel.onEvent(ProfileUiEvent.Logout)
-                    onLogoutSuccess()
+
                 },
                 modifier = Modifier
                     .fillMaxWidth()

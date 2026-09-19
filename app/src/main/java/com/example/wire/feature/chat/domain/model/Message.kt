@@ -2,6 +2,7 @@ package com.example.wire.feature.chat.domain.model
 
 
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,8 +11,8 @@ data class Message(
     val senderId: String,
     val receiverId: String,
     val content: String,
-    val timestamp: Long,
-    val type: MessageType ,
+    @SerialName("createdAt") val timestamp: Long,
+    val type: MessageType,
     val isRead: Boolean = false,
     val status: MessageStatus = MessageStatus.SENT,
     val isEdited: Boolean = false,
