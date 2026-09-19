@@ -163,8 +163,11 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
 
             composable(BottomNavItem.Profile.route) {
                 ProfileScreen(
-                    viewModel = TODO(),
-                    onNavigateToLogin = TODO()
+                    onNavigateToLogin = {
+                        navigatorImpl.navController?.navigate(Routes.AuthGate.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
                 )
             }
 
