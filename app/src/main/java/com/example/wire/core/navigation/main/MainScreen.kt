@@ -90,7 +90,8 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
         NavHost(
             navController = navController,
             startDestination = BottomNavItem.Chat.route,
-            modifier = Modifier.padding(padding)
+            modifier = Modifier
+                .padding(padding)
         ) {
             // --- CHAT LIST ---
             composable(BottomNavItem.Chat.route) {
