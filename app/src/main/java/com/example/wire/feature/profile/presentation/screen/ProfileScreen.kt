@@ -2,6 +2,7 @@ package com.example.wire.feature.profile.presentation.screen
 
 import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.wire.core.ui.theme.WireTheme
 import com.example.wire.feature.profile.presentation.ProfileViewModel
 import com.example.wire.feature.profile.presentation.screen.content.ProfileContent
 
@@ -18,9 +19,12 @@ fun ProfileScreen(
             onNavigateToLogin()
         }
     }
+    WireTheme {
+        ProfileContent(
+            uiState = uiState,
+            onEvent = viewModel::onEvent
+        )
+    }
 
-    ProfileContent(
-        uiState = uiState,
-        onEvent = viewModel::onEvent
-    )
+
 }

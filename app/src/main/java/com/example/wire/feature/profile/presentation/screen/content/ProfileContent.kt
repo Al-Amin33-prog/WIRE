@@ -104,7 +104,7 @@ fun ProfileContent(
                             color = Color(0xFF0B1A3E)
                         )
                         Text(
-                            text = "@${profile.displayName.lowercase().replace(" ", ".")} · NovaPay",
+                            text = "@${profile.displayName.lowercase().replace(" ", ".")} · Wire",
                             fontSize = 13.sp,
                             color = Color(0xFF5A6480),
                             modifier = Modifier.padding(top = 3.dp)
