@@ -44,7 +44,7 @@ fun ContactSelectionScreen(
 @Preview(showBackground = true)
 @Composable
 fun ContactSelectionPreview() {
-    WireTheme(darkTheme = false) { // NovaPay Light Mode
+    WireTheme(darkTheme = true) { // NovaPay Light Mode
         ContactSelectionContent(
             uiState = ContactUiState(
                 contacts = listOf(
