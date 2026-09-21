@@ -5,6 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.wire.core.ui.theme.WireTheme
 import com.example.wire.feature.notifications.presentation.NotificationsViewModel
 import com.example.wire.feature.notifications.presentation.state.NotificationUIState
 
@@ -14,24 +15,30 @@ fun NotificationsScreen(
     viewModel: NotificationsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    WireTheme {
+        NotificationsContent(
+            uiState = uiState,
+            onEvent = viewModel::onEvent,
+            onBackClick = onBackClick
+        )
+    }
 
-    NotificationsContent(
-        uiState = uiState,
-        onEvent = viewModel::onEvent,
-        onBackClick = onBackClick
-    )
+
 }
 
 @Preview
 @Composable
 fun NotificationScreenPreview(){
-    NotificationsContent(
-        uiState = NotificationUIState(
-            isLoading = false,
-            error = ""
+    WireTheme(darkTheme = true) {
+        NotificationsContent(
+            uiState = NotificationUIState(
+                isLoading = false,
+                error = ""
 
-        ),
-        onEvent = {},
-        onBackClick = {}
-    )
+            ),
+            onEvent = {},
+            onBackClick = {}
+        )
+    }
+
 }

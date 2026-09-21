@@ -28,11 +28,14 @@ fun NotificationsContent(
     onBackClick: () -> Unit
 ) {
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text(
                     "Activity",
-                    fontWeight = FontWeight.Bold)
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                         },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
