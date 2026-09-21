@@ -49,6 +49,7 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.primary,
                 tonalElevation = 0.dp
             ) {
                 items.forEach { item ->

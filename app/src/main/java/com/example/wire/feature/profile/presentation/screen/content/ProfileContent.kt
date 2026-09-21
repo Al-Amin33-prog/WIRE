@@ -17,7 +17,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wire.feature.profile.domain.model.Profile
-
 import com.example.wire.feature.profile.presentation.component.ProfileDangerZone
 import com.example.wire.feature.profile.presentation.component.ProfileHeader
 import com.example.wire.feature.profile.presentation.component.ProfileInfoRow

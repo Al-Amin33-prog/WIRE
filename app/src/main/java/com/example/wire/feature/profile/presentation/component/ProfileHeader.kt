@@ -19,7 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.wire.core.ui.theme.BrandNavy
 import com.example.wire.feature.profile.domain.model.Profile
 
 @Composable
