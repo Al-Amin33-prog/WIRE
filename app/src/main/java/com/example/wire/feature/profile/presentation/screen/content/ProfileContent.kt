@@ -401,7 +401,10 @@ fun ProfileContent(
 private fun SectionLabel(text: String) {
     Text(
         text = text.uppercase(),
-        modifier = Modifier.padding(start = 22.dp, end = 22.dp, top = 20.dp, bottom = 8.dp),
+        modifier = Modifier.padding(
+            start = 22.dp,
+            end = 22.dp, top = 20.dp,
+            bottom = 8.dp),
         fontSize = 10.sp,
         fontWeight = FontWeight.Bold,
         color = Color(0xFF9AA0B4),
@@ -416,13 +419,13 @@ fun ProfileContentPreview() {
         uid = "12345",
         displayName = "Aminu Shaba",
         username = "aminu.shaba",
-        email = "alex@example.com",
+        email = "aminu@example.com",
         phoneNumber = "+1 234 567 8900",
         bio = "Fintech product developer & designer.",
         avatarUrl = null,
         isKycVerified = true,
         joinedAt = System.currentTimeMillis(),
-        wireId = "NP-ALEX99",
+        wireId = "WR-AMINU123",
         totalSent = 1250.0,
         totalReceived = 3400.0,
         totalTransfers = 42,

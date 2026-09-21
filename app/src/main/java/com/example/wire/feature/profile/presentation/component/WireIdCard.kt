@@ -87,7 +87,7 @@ fun NovaPayIdCard(
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(color = Color.White)) {
-                        append("NOVA · ")
+                        append("WIRE · ")
                     }
                     withStyle(SpanStyle(color = Color(0xFFFDD878))) {
                         append(novaPayId)
