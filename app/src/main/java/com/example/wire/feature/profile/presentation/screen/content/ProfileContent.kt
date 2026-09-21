@@ -414,8 +414,8 @@ private fun SectionLabel(text: String) {
 fun ProfileContentPreview() {
     val mockProfile = Profile(
         uid = "12345",
-        displayName = "Alex Morgan",
-        username = "alex.morgan",
+        displayName = "Aminu Shaba",
+        username = "aminu.shaba",
         email = "alex@example.com",
         phoneNumber = "+1 234 567 8900",
         bio = "Fintech product developer & designer.",
