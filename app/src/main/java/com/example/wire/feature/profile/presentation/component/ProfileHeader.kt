@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.wire.core.ui.theme.BrandNavy
 import com.example.wire.feature.profile.domain.model.Profile
 
 @Composable
@@ -40,6 +41,7 @@ fun ProfileHeader(
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
+                            //Color = CardDefaults.cardColors(containerColor = BrandNavy),
                             Color(0xFF0B1A3E),
                             Color(0xFF1E3068),
                             Color(0xFF2A4285)

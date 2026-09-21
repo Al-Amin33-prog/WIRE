@@ -12,16 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wire.feature.chat.presentation.component.event.ChatUiEvent
 import com.example.wire.feature.chat.presentation.component.state.ChatUiState
 import com.example.wire.feature.chat.presentation.screen.chat_list.ChatInputBar
 import com.example.wire.feature.chat.presentation.screen.component.ConnectivityBanner
-import com.example.wire.feature.payments.presentation.component.PaymentMessageBubble
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+
 @Composable
 
 fun ConversationContent(
@@ -72,7 +71,11 @@ fun ConversationContent(
                     Box(Modifier
                         .fillMaxWidth()
                         .padding(vertical = 16.dp), contentAlignment = Alignment.Center) {
-                        Text("Send", color = Color.Gray, fontSize = 12.sp)
+                        Text(
+                            "Send",
+                            color = Color.Gray,
+                            fontSize = 12.sp
+                        )
                     }
                 }
 

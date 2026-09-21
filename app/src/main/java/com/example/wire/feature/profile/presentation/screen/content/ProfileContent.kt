@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wire.feature.profile.domain.model.Profile
-import com.example.wire.feature.profile.presentation.component.NovaPayIdCard
+
 import com.example.wire.feature.profile.presentation.component.ProfileDangerZone
 import com.example.wire.feature.profile.presentation.component.ProfileHeader
 import com.example.wire.feature.profile.presentation.component.ProfileInfoRow
@@ -25,6 +25,7 @@ import com.example.wire.feature.profile.presentation.component.ProfileSectionCar
 import com.example.wire.feature.profile.presentation.component.ProfileSectionDivider
 import com.example.wire.feature.profile.presentation.component.ProfileStatsCard
 import com.example.wire.feature.profile.presentation.component.ProfileToggleRow
+import com.example.wire.feature.profile.presentation.component.WireIdCard
 import com.example.wire.feature.profile.presentation.event.ProfileUiEvent
 import com.example.wire.feature.profile.presentation.state.ProfileUiState
 
@@ -129,8 +130,8 @@ fun ProfileContent(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // NovaPay ID card
-                NovaPayIdCard(
-                    novaPayId = profile.wireId,
+                WireIdCard(
+                    wireId = profile.wireId,
                     onShareClicked = { /* share logic */ }
                 )
 

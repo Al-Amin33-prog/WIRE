@@ -48,7 +48,7 @@ fun HeaderSection(
         Column {
             Text(
                 text = "Good morning, $userName 👋",
-                color = MaterialTheme.colorScheme.background,
+                color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.labelMedium,
                 letterSpacing = 0.5.sp
             )
@@ -56,7 +56,7 @@ fun HeaderSection(
                 text = stringResource(com.example.wire.R.string.section_messages_header),
                 fontSize = 34.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.background
+                color = MaterialTheme.colorScheme.primary
             )
         }
 
@@ -73,8 +73,8 @@ fun HeaderSection(
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search",
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp)
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(30.dp)
                 )
             }
 
@@ -86,7 +86,7 @@ fun HeaderSection(
                 modifier = Modifier
                     .size(44.dp)
                     .background(
-                        MaterialTheme.colorScheme.background,
+                        MaterialTheme.colorScheme.primary,
                         CircleShape)
             ) {
                 BadgedBox(
@@ -106,7 +106,7 @@ fun HeaderSection(
                         imageVector = Icons.Default.Notifications,
                         contentDescription = "Activity",
                         tint = Color.White,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(30.dp)
                     )
                 }
             }

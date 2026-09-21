@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun NovaPayIdCard(
-    novaPayId: String,
+fun WireIdCard(
+    wireId: String,
     onShareClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -90,7 +90,7 @@ fun NovaPayIdCard(
                         append("WIRE · ")
                     }
                     withStyle(SpanStyle(color = Color(0xFFFDD878))) {
-                        append(novaPayId)
+                        append(wireId)
                     }
                 },
                 fontSize = 20.sp,
