@@ -26,7 +26,6 @@ import com.example.wire.feature.contacts.presentation.ContactSelectionScreen
 import com.example.wire.feature.notifications.presentation.screen.NotificationsScreen
 import com.example.wire.feature.payments.presentation.screen.PaymentSuccessScreen
 import com.example.wire.feature.payments.presentation.screen.SendMoneyScreen
-import com.example.wire.feature.profile.presentation.screen.EditProfileScreen
 import com.example.wire.feature.profile.presentation.screen.ProfileScreen
 import com.example.wire.feature.settings.presentation.SettingsScreen
 import com.example.wire.feature.wallet.presentation.screen.WalletScreen
@@ -173,11 +172,7 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
                 )
             }
 
-            composable("edit_profile") {
-                EditProfileScreen(
-                    onNavigateBack = { navController.popBackStack() }
-                )
-            }
+
             composable("settings") {
                 SettingsScreen(
                     onBackClick = { navController.popBackStack() },

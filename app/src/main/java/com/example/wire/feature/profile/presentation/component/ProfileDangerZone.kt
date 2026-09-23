@@ -7,9 +7,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +48,7 @@ fun ProfileDangerZone(
                 horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Logout,
+                    imageVector = Icons.AutoMirrored.Outlined.Logout,
                     contentDescription = "Sign out",
                     tint = Color(0xFFD94040),
                     modifier = Modifier.size(18.dp)
@@ -68,9 +69,10 @@ fun ProfileDangerZone(
                 }
             }
 
-            Divider(
-                color = Color(0xFFD94040).copy(alpha = 0.12f),
-                thickness = 1.dp
+            HorizontalDivider(
+                Modifier,
+                thickness = 1.dp,
+                color = Color(0xFFD94040).copy(alpha = 0.12f)
             )
 
             // Delete Account
