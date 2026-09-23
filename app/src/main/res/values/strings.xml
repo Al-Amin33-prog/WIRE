@@ -96,6 +96,8 @@
     <string name="phone">PHONE</string>
     <string name="by_joining_in_u_agree">By joining you agree to our Terms of Services Privacy Policy</string>
     <string name="section_messages_header">Messages</string>
+    <string name="display_name">Display Name</string>
+    <string name="bio">Bio</string>
 
 
 </resources>
