@@ -24,7 +24,7 @@ class MainActivity : FragmentActivity() {
 
     @Inject
     lateinit var wireBiometricManager: WireBiometricManager
-    
+
     @Inject
     lateinit var navigatorImpl: NavigatorImpl
 
@@ -32,7 +32,7 @@ class MainActivity : FragmentActivity() {
 
         installSplashScreen()
         super.onCreate(savedInstanceState)
-        
+
         // Note: WebSocket Listener is already started in WireApp.kt
 
         enableEdgeToEdge()
@@ -40,7 +40,7 @@ class MainActivity : FragmentActivity() {
             //& "C:\Users\Aminu\AppData\Local\Android\Sdk\platform-tools\adb.exe" reverse tcp:8080 tcp:8080
             // 1. Initialize the NavController for this Activity session
             val navController = rememberNavController()
-            
+
             // 2. Link it to your NavigatorImpl so the app can navigate via UseCases
             navigatorImpl.navController = navController
 
