@@ -20,7 +20,7 @@ class ChatMessageProcessor @Inject constructor(
     override suspend fun process(actionDto: ChatActionDto) {
         val msg = actionDto.message ?: return
         val currentUserId = authRepository.getCurrentUser()?.uid ?: ""
-        
+
         // Robust Chat ID resolution: the chat ID is always the ID of the OTHER party in the conversation
         val resolvedChatId = if (msg.senderId == currentUserId) msg.receiverId else msg.senderId
 

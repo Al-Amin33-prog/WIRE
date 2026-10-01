@@ -7,11 +7,15 @@ interface NotificationHandler {
     fun showSystemAlert(
         title: String,
         message: String,
-        type: NotificationType)
+        type: NotificationType
+    )
+
     fun showChatNotification(
         chatId: String,
         senderName: String,
-        message: String)
+        message: String
+    )
+
     fun showPaymentRequestNotification(
         requestId: String,
         senderName: String,

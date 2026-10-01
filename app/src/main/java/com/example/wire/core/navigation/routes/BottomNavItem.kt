@@ -18,17 +18,20 @@ sealed class BottomNavItem(
         "Messages",
         Icons.Default.ChatBubble
     )
+
     object Wallet : BottomNavItem(
 
         "wallet",
         "Wallet",
         Icons.Default.AccountBalanceWallet
     )
+
     object Send : BottomNavItem(
         "send",
         "Send",
         Icons.AutoMirrored.Filled.Send
     )
+
     object Profile : BottomNavItem(
         "profile",
         "Profile",
