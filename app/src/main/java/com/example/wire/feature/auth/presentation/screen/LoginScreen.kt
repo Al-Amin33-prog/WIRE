@@ -29,14 +29,13 @@ fun LoginScreen(
 ) {
 
 
-
     val context = LocalContext.current
     val activity = LocalFragmentActivity.current
     val webClientId = stringResource(R.string.default_web_client_id)
 
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(uiState.isLoggedIn) {
-        if (uiState.isLoggedIn){
+        if (uiState.isLoggedIn) {
             onLoginSuccess()
         }
     }
@@ -50,14 +49,17 @@ fun LoginScreen(
             val idToken = account?.idToken
             if (idToken != null) {
                 viewModel.onEvent(
-                    AuthUiEvent.GoogleSignInResult(idToken))
+                    AuthUiEvent.GoogleSignInResult(idToken)
+                )
             } else {
                 viewModel.onEvent(
-                    AuthUiEvent.GoogleSignInFailed("No ID token received"))
+                    AuthUiEvent.GoogleSignInFailed("No ID token received")
+                )
             }
         } catch (e: ApiException) {
             viewModel.onEvent(
-                AuthUiEvent.GoogleSignInFailed(e.message ?: "Google sign-in failed"))
+                AuthUiEvent.GoogleSignInFailed(e.message ?: "Google sign-in failed")
+            )
         }
     }
 
@@ -77,7 +79,7 @@ fun LoginScreen(
 
     LaunchedEffect(uiState.showBiometricPrompt) {
         if (uiState.showBiometricPrompt) {
-            activity?.let {
+            activity.let {
                 viewModel.showBiometricPrompt(it)
             }
         }
@@ -90,9 +92,6 @@ fun LoginScreen(
             onNavigateToForgotPassword = onNavigateToForgotPassword
         )
     }
-
-
-
 
 
 }

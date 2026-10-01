@@ -45,7 +45,7 @@ fun LoginContent(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets.safeDrawing
-    ) {padding ->
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -183,69 +183,69 @@ fun LoginContent(
             }
 
 
-                // --- BIOMETRIC OPTION ---
-                // Find where you have the Biometric Button and change the condition:
+            // --- BIOMETRIC OPTION ---
+            // Find where you have the Biometric Button and change the condition:
 
 // ONLY show this if hardware is available AND user previously opted-in
-                if (uiState.isBiometricButtonVisible) {
-                    Spacer(modifier = Modifier.height(12.dp))
-                    OutlinedButton(
-                        onClick = { onEvent(AuthUiEvent.BiometricLoginClicked) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Icon(Icons.Default.Fingerprint, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(R.string.login_biometric_button))
-                    }
+            if (uiState.isBiometricButtonVisible) {
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedButton(
+                    onClick = { onEvent(AuthUiEvent.BiometricLoginClicked) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Default.Fingerprint, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(stringResource(R.string.login_biometric_button))
                 }
+            }
 
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // --- FOOTER (Sign Up / Google) ---
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row {
+                    Text(stringResource(R.string.login_no_account), color = Color.Gray)
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        text = stringResource(R.string.login_create_one),
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable { onNavigateToSignUp() }
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // --- FOOTER (Sign Up / Google) ---
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                // Google Login
+                OutlinedButton(
+                    onClick = { onEvent(AuthUiEvent.GoogleSignInClicked) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Row {
-                        Text(stringResource(R.string.login_no_account), color = Color.Gray)
-                        Spacer(Modifier.width(4.dp))
-                        Text(
-                            text = stringResource(R.string.login_create_one),
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.clickable { onNavigateToSignUp() }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Google Login
-                    OutlinedButton(
-                        onClick = { onEvent(AuthUiEvent.GoogleSignInClicked) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Image(
-                            painterResource(R.drawable.google__g__logo),
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            stringResource(R.string.login_google_button),
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
+                    Image(
+                        painterResource(R.drawable.google__g__logo),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        stringResource(R.string.login_google_button),
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 }
             }
         }
     }
+}
 
 
 

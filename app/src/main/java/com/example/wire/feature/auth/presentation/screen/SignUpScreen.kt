@@ -36,7 +36,6 @@ fun SignUpScreen(
 }
 
 
-
 @Preview(showBackground = true)
 @Composable
 fun SignUpPreview() {

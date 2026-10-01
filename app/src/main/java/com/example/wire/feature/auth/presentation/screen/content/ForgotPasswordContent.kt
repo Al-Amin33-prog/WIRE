@@ -54,8 +54,10 @@ fun ForgotPasswordContent(
                 title = {},
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -137,7 +139,8 @@ fun ForgotPasswordContent(
 @Composable
 fun ForgotPasswordPreview() {
     WireTheme(darkTheme = false) {
-        ForgotPasswordContent(AuthUiState(),
+        ForgotPasswordContent(
+            AuthUiState(),
             {},
             {})
     }

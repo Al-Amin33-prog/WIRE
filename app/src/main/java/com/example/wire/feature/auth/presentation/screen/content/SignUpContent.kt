@@ -66,7 +66,8 @@ fun SignUpContent(
                 title = {},
                 navigationIcon = {
                     IconButton(onClick = onNavigateToLogin) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack,
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
@@ -263,7 +264,6 @@ fun SignUpContent(
                     stringResource(R.string.by_joining_in_u_agree),
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.labelSmall
-
 
 
                 )

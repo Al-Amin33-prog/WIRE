@@ -18,7 +18,7 @@ fun ForgotPasswordScreen(
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    WireTheme{
+    WireTheme {
         ForgotPasswordContent(
             uiState = uiState,
             onEvent = viewModel::onEvent,
