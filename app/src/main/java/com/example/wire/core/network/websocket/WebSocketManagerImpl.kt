@@ -49,7 +49,8 @@ class WebSocketManagerImpl @Inject constructor(
     private var session: DefaultClientWebSocketSession? = null
 
     private var reconnectionJob: Job? = null
-    private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     init {
         observeSystemNetwork()
@@ -61,7 +62,7 @@ class WebSocketManagerImpl @Inject constructor(
     override suspend fun connect() {
         // If already connecting/connected, don't start another attempt
         if (_state.value is WebSocketState.Connected || _state.value is WebSocketState.Connecting) return
-        
+
         // Cancel any existing retry loops to start fresh
         reconnectionJob?.cancel()
         internalConnect()
@@ -94,7 +95,7 @@ class WebSocketManagerImpl @Inject constructor(
                     session = client.webSocketSession { url(WebSocketConfig.BASE_URL) }
                     _state.value = WebSocketState.Connected
                     listenForMessages()
-                    return@launch 
+                    return@launch
                 } catch (e: Exception) {
                     Log.w("WireWebSocket", "Retry failed, waiting ${retryDelay}ms")
                     delay(retryDelay)
@@ -125,14 +126,16 @@ class WebSocketManagerImpl @Inject constructor(
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
 
-        connectivityManager.registerNetworkCallback(request, object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                // OS says Internet is back! Recovery trigger.
-                applicationScope.launch(dispatchers.io) {
-                    connect()
+        connectivityManager.registerNetworkCallback(
+            request,
+            object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    // OS says Internet is back! Recovery trigger.
+                    applicationScope.launch(dispatchers.io) {
+                        connect()
+                    }
                 }
-            }
-        })
+            })
     }
 
     override suspend fun sendMessage(message: String) {
@@ -154,7 +157,6 @@ class WebSocketManagerImpl @Inject constructor(
         reconnectionJob?.cancel()
         session?.close()
         _state.value = WebSocketState.Disconnected
-
 
 
         // 2. Close the actual Ktor session

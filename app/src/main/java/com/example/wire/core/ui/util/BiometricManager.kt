@@ -19,7 +19,8 @@ class WireBiometricManager @Inject constructor(
         val manager = BiometricManager.from(context)
         return manager.canAuthenticate(
             BIOMETRIC_STRONG or
-                    BiometricManager.Authenticators.DEVICE_CREDENTIAL) ==
+                    BiometricManager.Authenticators.DEVICE_CREDENTIAL
+        ) ==
                 BiometricManager.BIOMETRIC_SUCCESS
     }
 
@@ -70,12 +71,12 @@ class WireBiometricManager @Inject constructor(
         val builder = BiometricPrompt.PromptInfo.Builder()
             .setTitle(title)
             .setSubtitle(subtitle)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-          builder.setAllowedAuthenticators(
-              BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL
-          )
-        }else{
-          builder.setDeviceCredentialAllowed(true)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            builder.setAllowedAuthenticators(
+                BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+            )
+        } else {
+            builder.setDeviceCredentialAllowed(true)
         }
         val promptInfo = builder.build()
 
