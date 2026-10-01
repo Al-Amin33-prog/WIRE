@@ -10,7 +10,8 @@ import javax.inject.Inject
 @HiltAndroidApp
 class WireApp : Application(), Configuration.Provider {
 
-    @Inject lateinit var workerFactory: HiltWorkerFactory
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
 
     // FIX: Must be an override 'val' with a getter for the WorkManager Configuration
     override val workManagerConfiguration: Configuration

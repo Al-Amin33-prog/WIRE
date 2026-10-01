@@ -30,7 +30,7 @@ class AppNavHostTest {
     fun setupAppNavHost() {
         // Initialize navController on the correct thread before setContent
         navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-        
+
         composeTestRule.setContent {
             navController.navigatorProvider.addNavigator(ComposeNavigator())
             navigator.navController = navController
@@ -52,7 +52,9 @@ class AppNavHostTest {
             .onNodeWithText("Create one", substring = true)
             .performClick()
 
-        assertEquals(Routes.SignUp.route,
-            navController.currentBackStackEntry?.destination?.route)
+        assertEquals(
+            Routes.SignUp.route,
+            navController.currentBackStackEntry?.destination?.route
+        )
     }
 }

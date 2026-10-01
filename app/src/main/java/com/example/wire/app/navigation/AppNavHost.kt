@@ -61,7 +61,7 @@ fun AppNavHost(
                 onNavigateToSignUp = { navController.navigate(Routes.SignUp.route) },
                 onNavigateToForgotPassword = {
                     navController.navigate("forgot_password")
-                                             },
+                },
                 onLoginSuccess = {
                     // FIXED: Move forward to SecurityGate after login
                     navController.navigate(Routes.SecurityGate.route) {
