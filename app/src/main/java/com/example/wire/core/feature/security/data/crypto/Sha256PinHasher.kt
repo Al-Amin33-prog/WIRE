@@ -4,7 +4,7 @@ import com.example.wire.core.feature.security.domain.crypto.PinHasher
 import java.security.MessageDigest
 import javax.inject.Inject
 
-class Sha256PinHasher @Inject constructor(): PinHasher {
+class Sha256PinHasher @Inject constructor() : PinHasher {
     override fun hash(pin: String): String {
         val bytes = MessageDigest.getInstance("SHA-256")
             .digest(pin.toByteArray())

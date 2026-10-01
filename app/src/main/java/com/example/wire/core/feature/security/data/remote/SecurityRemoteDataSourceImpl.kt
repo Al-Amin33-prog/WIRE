@@ -7,27 +7,27 @@ import javax.inject.Inject
 
 class SecurityRemoteDataSourceImpl @Inject constructor(
     private val api: SecurityApiService,
-) : SecurityRemoteDataSource{
+) : SecurityRemoteDataSource {
 
     override suspend fun uploadPinHash(
         pinHash: String
     ) {
-       api.uploadPin(
-           UploadPinRequest(
-               pinHash = pinHash
-           )
-       )
+        api.uploadPin(
+            UploadPinRequest(
+                pinHash = pinHash
+            )
+        )
 
     }
 
     override suspend fun updateBiometricStatus(
         enabled: Boolean
     ) {
-      api.updateBiometric(
-          UpdateBiometricRequest(
-              biometricEnabled = enabled
-          )
-      )
+        api.updateBiometric(
+            UpdateBiometricRequest(
+                biometricEnabled = enabled
+            )
+        )
     }
 
     override suspend fun getSecuritySettings(): RemoteSecuritySettings {

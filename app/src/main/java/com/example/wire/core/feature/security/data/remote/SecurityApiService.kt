@@ -13,10 +13,12 @@ interface SecurityApiService {
     suspend fun uploadPin(
         @Body request: UploadPinRequest
     )
+
     @PATCH("api/security/biometric")
     suspend fun updateBiometric(
         @Body request: UpdateBiometricRequest
     )
+
     @GET("api/security/settings")
     suspend fun getSecuritySettings(): RemoteSecuritySettings
 

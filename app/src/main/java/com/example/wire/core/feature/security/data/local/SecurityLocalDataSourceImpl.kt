@@ -6,8 +6,8 @@ import javax.inject.Inject
 
 class SecurityLocalDataSourceImpl @Inject constructor(
     private val securityPreferenceDataStore: SecurityPreferences
-): SecurityLocalDataSource{
-    override suspend fun savePinHash(pinHash:String) {
+) : SecurityLocalDataSource {
+    override suspend fun savePinHash(pinHash: String) {
         securityPreferenceDataStore.savePinHash(pinHash)
     }
 
@@ -16,7 +16,7 @@ class SecurityLocalDataSourceImpl @Inject constructor(
     }
 
     override suspend fun hasPin(): Boolean {
-        return ! securityPreferenceDataStore.pinHash.first().isNullOrEmpty()
+        return !securityPreferenceDataStore.pinHash.first().isNullOrEmpty()
     }
 
     override suspend fun setBiometricEnabled(enabled: Boolean) {

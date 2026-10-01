@@ -29,7 +29,7 @@ abstract class SecurityBindingModule {
 
     @Binds
     @Singleton
-    abstract  fun bindSecurityRepository(
+    abstract fun bindSecurityRepository(
         impl: SecurityRepositoryImpl
     ): SecurityRepository
 }

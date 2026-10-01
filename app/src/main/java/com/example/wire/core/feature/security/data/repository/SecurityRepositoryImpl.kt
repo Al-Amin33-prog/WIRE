@@ -12,7 +12,7 @@ class SecurityRepositoryImpl @Inject constructor(
     private val localDataSource: SecurityLocalDataSource,
     private val pinHasher: Sha256PinHasher,
     private val remoteDataSource: SecurityRemoteDataSource
-): SecurityRepository {
+) : SecurityRepository {
 
     override suspend fun verifyPin(pin: String): Boolean {
         val storedHash = localDataSource.getPinHash() ?: return false

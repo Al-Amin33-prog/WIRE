@@ -20,8 +20,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object SecurityProvideModule  {
-
+object SecurityProvideModule {
 
 
     @Provides
@@ -34,7 +33,7 @@ object SecurityProvideModule  {
         disableBiometric: DisableBiometricUseCase,
         getSecuritySettings: GetSecuritySettingsUseCase,
 
-    ): SecurityUseCases{
+        ): SecurityUseCases {
         return SecurityUseCases(
             createPin,
             verifyPin,
@@ -44,6 +43,7 @@ object SecurityProvideModule  {
             getSecuritySettings
         )
     }
+
     @Provides
     @Singleton
     fun provideSecurityApiService(retrofit: Retrofit): SecurityApiService {
@@ -55,7 +55,6 @@ object SecurityProvideModule  {
     fun provideSecurityRemoteDataSource(apiService: SecurityApiService): SecurityRemoteDataSource {
         return SecurityRemoteDataSourceImpl(apiService)
     }
-
 
 
 }
