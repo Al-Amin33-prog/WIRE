@@ -1,7 +1,6 @@
 package com.example.wire.core.di
 
 
-
 import android.content.Context
 import androidx.room.Room
 import com.example.wire.core.database.WireDatabase
@@ -49,6 +48,7 @@ object DatabaseModule {
     fun provideChatDao(database: WireDatabase): ChatDao {
         return database.chatDao()
     }
+
     @Provides
     fun provideNotificationDao(database: WireDatabase): NotificationDao {
         return database.notificationDao()
@@ -56,7 +56,7 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideTransactionDao(database: WireDatabase): TransactionDao{
+    fun provideTransactionDao(database: WireDatabase): TransactionDao {
         return database.transactionDao()
     }
 }

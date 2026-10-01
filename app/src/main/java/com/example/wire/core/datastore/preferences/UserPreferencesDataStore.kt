@@ -14,7 +14,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 
-
 @Singleton
 class UserPreferencesDataStore @Inject constructor(
     private val dataStore: DataStore<Preferences>
@@ -31,17 +30,15 @@ class UserPreferencesDataStore @Inject constructor(
         .map { preferences -> preferences[IS_LOGGED_IN] ?: false }
 
 
-
     val savedUserEmail: Flow<String> = dataStore.data
         .map { preferences -> preferences[SAVED_USER_EMAIL] ?: "" }
 
     val selectedBiometricType: Flow<String> = dataStore.data
-        .map{preferences -> preferences[BIOMETRIC_TYPE] ?: "NONE"}
+        .map { preferences -> preferences[BIOMETRIC_TYPE] ?: "NONE" }
 
     suspend fun setLoggedIn(value: Boolean) {
-    dataStore.edit { preferences -> preferences[IS_LOGGED_IN] = value }
+        dataStore.edit { preferences -> preferences[IS_LOGGED_IN] = value }
     }
-
 
 
     suspend fun setSavedEmail(email: String) {
@@ -49,6 +46,6 @@ class UserPreferencesDataStore @Inject constructor(
     }
 
     suspend fun clearAll() {
-       dataStore.edit { it.clear() }
+        dataStore.edit { it.clear() }
     }
 }

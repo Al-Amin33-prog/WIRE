@@ -1,7 +1,6 @@
 package com.example.wire.core.di
 
 
-
 import com.example.wire.core.worker.WorkScheduler
 import com.example.wire.core.worker.WorkSchedulerImpl
 import dagger.Binds
