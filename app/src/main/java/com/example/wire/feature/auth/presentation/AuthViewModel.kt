@@ -59,8 +59,14 @@ class AuthViewModel @Inject constructor(
             AuthUiEvent.BiometricAuthSucceeded -> {
                 _uiState.update { it.copy(showBiometricPrompt = false) }
             }
+
             is AuthUiEvent.BiometricAuthFailed -> {
-                _uiState.update { it.copy(showBiometricPrompt = false, errorMessage = event.reason) }
+                _uiState.update {
+                    it.copy(
+                        showBiometricPrompt = false,
+                        errorMessage = event.reason
+                    )
+                }
             }
 
             AuthUiEvent.GoogleSignInClicked -> _uiState.update { it.copy(triggerGoogleSignIn = true) }
@@ -84,11 +90,17 @@ class AuthViewModel @Inject constructor(
                     val email = user?.email ?: ""
                     handleSuccessfulAuth(email)
                 }
+
                 is Resource.Error -> {
-                    _uiState.update { it.copy(isLoading = false,
-                        errorMessage = mapError(result.error)) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = mapError(result.error)
+                        )
+                    }
                 }
-                is Resource.Loading -> { }
+
+                is Resource.Loading -> {}
             }
         }
     }
@@ -96,24 +108,33 @@ class AuthViewModel @Inject constructor(
     private fun login() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val params = LoginUseCase.Params(_uiState.value.email,
-                _uiState.value.password)
+            val params = LoginUseCase.Params(
+                _uiState.value.email,
+                _uiState.value.password
+            )
 
             // FIX: Access through authUseCases
             when (val result = authUseCases.login(params)) {
                 is Resource.Success -> {
-                   // userPreferencesDataStore.setLoggedIn(true)
+                    // userPreferencesDataStore.setLoggedIn(true)
                     _uiState.update {
-                        it.copy(isLoading = false,
+                        it.copy(
+                            isLoading = false,
                         )
                     }
                     handleSuccessfulAuth(_uiState.value.email)
                 }
+
                 is Resource.Error -> {
-                    _uiState.update { it.copy(isLoading = false,
-                        errorMessage = mapError(result.error)) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = mapError(result.error)
+                        )
+                    }
                 }
-                is Resource.Loading -> { }
+
+                is Resource.Loading -> {}
             }
         }
     }
@@ -133,15 +154,23 @@ class AuthViewModel @Inject constructor(
             // FIX: Access through authUseCases
             when (val result = authUseCases.createAccount(params)) {
                 is Resource.Success -> {
-                  //  userPreferencesDataStore.setLoggedIn(true)
+                    //  userPreferencesDataStore.setLoggedIn(true)
                     _uiState.update {
-                        it.copy(isLoading = false) }
+                        it.copy(isLoading = false)
+                    }
                     handleSuccessfulAuth(_uiState.value.email)
                 }
+
                 is Resource.Error -> {
-                    _uiState.update { it.copy(isLoading = false, errorMessage = mapError(result.error)) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = mapError(result.error)
+                        )
+                    }
                 }
-                is Resource.Loading -> { }
+
+                is Resource.Loading -> {}
             }
         }
     }
@@ -155,10 +184,17 @@ class AuthViewModel @Inject constructor(
                 is Resource.Success -> {
                     _uiState.update { it.copy(isLoading = false, isPasswordResetEmailSent = true) }
                 }
+
                 is Resource.Error -> {
-                    _uiState.update { it.copy(isLoading = false, errorMessage = mapError(result.error)) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = mapError(result.error)
+                        )
+                    }
                 }
-                is Resource.Loading -> { }
+
+                is Resource.Loading -> {}
             }
         }
     }
@@ -202,26 +238,28 @@ class AuthViewModel @Inject constructor(
     }
 
 
-
     private fun handleSuccessfulAuth(email: String) {
-        viewModelScope.launch {userPreferencesDataStore.setSavedEmail(email)
+        viewModelScope.launch {
+            userPreferencesDataStore.setSavedEmail(email)
 
             // 1. Check if hardware supports Biometrics
             val isHardwareAvailable = biometricManager.isBiometricAvailable()
 
             // 2. Check if user already enabled it previously
-           // val isAlreadyEnabled = userPreferencesDataStore.isBiometricEnabled.first()
+            // val isAlreadyEnabled = userPreferencesDataStore.isBiometricEnabled.first()
 
             if (isHardwareAvailable /* && !isAlreadyEnabled*/) {
                 // STOP NAVIGATION: Show the Setup Screen instead
-                _uiState.update { it.copy(
+                _uiState.update {
+                    it.copy(
 
-                    isLoading = false
-                )}
+                        isLoading = false
+                    )
+                }
             } else {
                 // ALREADY SETUP: Go straight to Chat
                 //userPreferencesDataStore.setLoggedIn(true)
-                _uiState.update { it.copy( isLoading = false) }
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }

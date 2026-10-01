@@ -1,7 +1,6 @@
 package com.example.wire.feature.auth.presentation
 
 
-
 import androidx.lifecycle.ViewModel
 import com.example.wire.feature.auth.presentation.authgate.AuthGateUiState
 import com.google.firebase.auth.FirebaseAuth
