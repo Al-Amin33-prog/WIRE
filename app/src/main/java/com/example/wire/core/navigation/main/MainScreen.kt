@@ -42,7 +42,7 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
         BottomNavItem.Wallet,
         BottomNavItem.Profile,
 
-    )
+        )
 
     Scaffold(
         bottomBar = {
@@ -72,9 +72,9 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
                             Icon(
                                 imageVector = item.icon,
                                 contentDescription = item.title,
-                                modifier = if(item == BottomNavItem.Send){
+                                modifier = if (item == BottomNavItem.Send) {
                                     Modifier.rotate(-55f)
-                                }else{
+                                } else {
                                     Modifier
                                 },
                                 tint = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray
@@ -122,7 +122,9 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
                     navArgument("recipientId") { defaultValue = "" },
                     navArgument("recipientName") { defaultValue = "Recipient" },
                     navArgument("mode") { defaultValue = "SEND" },
-                    navArgument("amount") { defaultValue = "" } // THE FIX: Define amount as a navArgument
+                    navArgument("amount") {
+                        defaultValue = ""
+                    } // THE FIX: Define amount as a navArgument
                 )
             ) { backStackEntry ->
                 val recipientId = backStackEntry.arguments?.getString("recipientId") ?: ""
@@ -183,14 +185,14 @@ fun MainScreen(navigatorImpl: NavigatorImpl) {
                     }
                 )
             }
-            composable("contact_selection"){
+            composable("contact_selection") {
                 ContactSelectionScreen(
-                    onBackClick = {navController.popBackStack()},
+                    onBackClick = { navController.popBackStack() },
                     onContactSelected = { chatId ->
                         navigatorImpl.navController?.navigate(Routes.Conversation.createRoute(chatId))
                     }
                 )
             }
-            }
         }
     }
+}
