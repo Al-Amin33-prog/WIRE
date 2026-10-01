@@ -19,9 +19,9 @@ interface ChatDao {
 
     @Query("UPDATE chats SET lastMessage = :lastMessage, timestamp = :timestamp WHERE chatId = :chatId")
     suspend fun updateChatPreview(chatId: String, lastMessage: String, timestamp: Long)
+
     @Upsert
     suspend fun upsertChat(chat: ChatEntity)
-
 
 
     @Query("SELECT * FROM chats WHERE isContact = 1 ORDER BY contactName ASC")
