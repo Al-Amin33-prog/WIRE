@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class HasPinUseCase @Inject constructor(
     private val repository: SecurityRepository
-): BaseUseCase<Unit,Boolean?>(){
+) : BaseUseCase<Unit, Boolean?>() {
     override suspend fun invoke(params: Unit): Boolean? {
         return repository.hasPin()
     }

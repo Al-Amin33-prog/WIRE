@@ -6,9 +6,9 @@ import javax.inject.Inject
 
 class EnableBiometricUseCase @Inject constructor(
     private val repository: SecurityRepository
-): BaseUseCase<Unit, Unit?>(){
+) : BaseUseCase<Unit, Unit?>() {
     override suspend fun invoke(params: Unit) {
-     repository.enableBiometric()
+        repository.enableBiometric()
     }
 
 

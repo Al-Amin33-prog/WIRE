@@ -7,21 +7,26 @@ interface SecurityRepository {
 
     suspend fun verifyPin(
 
-        pin:String,
-        ): Boolean
+        pin: String,
+    ): Boolean
+
     suspend fun enableBiometric(
 
     )
+
     suspend fun disableBiometric(
 
     )
+
     suspend fun getSecuritySettings(
 
     ): SecuritySettings
+
     suspend fun createPin(
 
         pin: String
     )
+
     suspend fun hasPin(
 
     ): Boolean

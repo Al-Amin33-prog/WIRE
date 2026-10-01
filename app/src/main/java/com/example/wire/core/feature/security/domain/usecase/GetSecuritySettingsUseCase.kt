@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class GetSecuritySettingsUseCase @Inject constructor(
     private val repository: SecurityRepository
-): BaseUseCase<Unit, SecuritySettings>(){
+) : BaseUseCase<Unit, SecuritySettings>() {
     override suspend fun invoke(params: Unit): SecuritySettings {
         return repository.getSecuritySettings()
     }
