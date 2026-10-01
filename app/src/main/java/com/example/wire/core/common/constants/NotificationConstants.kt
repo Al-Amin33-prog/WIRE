@@ -1,7 +1,6 @@
 package com.example.wire.core.common.constants
 
 
-
 object NotificationConstants {
     const val CHANNEL_GENERAL = "wire_general_channel"
     const val CHANNEL_CHAT = "wire_chat_channel"
