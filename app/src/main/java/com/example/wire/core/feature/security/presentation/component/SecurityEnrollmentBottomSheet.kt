@@ -149,7 +149,7 @@ fun BiometricEnrollmentBottomSheet(
                 } else {
                     Text(
                         "Enable Biometric",
-                       // text = stringResource(R.string.enable_biometric),
+                        // text = stringResource(R.string.enable_biometric),
                         fontWeight = FontWeight.Bold
                     )
                 }

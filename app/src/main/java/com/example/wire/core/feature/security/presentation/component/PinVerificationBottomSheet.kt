@@ -22,13 +22,13 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun  PinVerificationBottomSheet(
-    pin:String,
-    error:String?,
-    onNumberClick: (String) ->Unit,
+fun PinVerificationBottomSheet(
+    pin: String,
+    error: String?,
+    onNumberClick: (String) -> Unit,
     onDelete: () -> Unit,
     onDismiss: () -> Unit
-){
+) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         dragHandle = {
@@ -67,14 +67,14 @@ fun  PinVerificationBottomSheet(
                 Spacer(Modifier.height(12.dp))
                 Text(
                     text = it,
-                    style  = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.error
                 )
             }
             Spacer(Modifier.height(40.dp))
             NumericKeypad(
-                onNumberClick = {number ->
-                    if (pin.length < 4){
+                onNumberClick = { number ->
+                    if (pin.length < 4) {
                         onNumberClick(number)
                     }
                 },
