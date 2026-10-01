@@ -18,9 +18,15 @@ class FirebaseAuthDataSource @Inject constructor(
         return user.toDto()
     }
 
-    suspend fun register(email: String, password: String, displayName: String, phone: String): AuthUserDto {
+    suspend fun register(
+        email: String,
+        password: String,
+        displayName: String,
+        phone: String
+    ): AuthUserDto {
         val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-        val user = result.user ?: throw IllegalStateException("Registration failed — no user returned")
+        val user =
+            result.user ?: throw IllegalStateException("Registration failed — no user returned")
 
         val profileUpdate = com.google.firebase.auth.UserProfileChangeRequest.Builder()
             .setDisplayName(displayName)
@@ -58,6 +64,7 @@ class FirebaseAuthDataSource @Inject constructor(
             isEmailVerified = isEmailVerified
         )
     }
+
     suspend fun loginWithGoogle(idToken: String): AuthUserDto {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         val result = firebaseAuth.signInWithCredential(credential).await()

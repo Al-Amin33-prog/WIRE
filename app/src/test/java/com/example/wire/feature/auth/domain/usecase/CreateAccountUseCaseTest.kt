@@ -18,14 +18,18 @@ class CreateAccountUseCaseTest {
 
     @Test
     fun `invoke with short password returns validation error`() = runBlocking {
-        val params = CreateAccountUseCase.Params("test@example.com", "1234567", "Test User", "123456789")
+        val params =
+            CreateAccountUseCase.Params("test@example.com", "1234567", "Test User", "123456789")
 
         val result = useCase(params)
 
         assertTrue(result is Resource.Error)
         val error = (result as Resource.Error).error
         assertTrue(error is AppError.Validation)
-        assertEquals("Password must be at least 8 characters", (error as AppError.Validation).message)
+        assertEquals(
+            "Password must be at least 8 characters",
+            (error as AppError.Validation).message
+        )
     }
 
     @Test
@@ -69,7 +73,8 @@ class CreateAccountUseCaseTest {
         coEvery { repository.register(any(), any(), any(), any()) } returns
                 Resource.Error(AppError.Network.Unknown(errorMessage))
 
-        val params = CreateAccountUseCase.Params("test@example.com", "password123", "Test User", "12345678")
+        val params =
+            CreateAccountUseCase.Params("test@example.com", "password123", "Test User", "12345678")
         val result = useCase(params)
 
         assertTrue(result is Resource.Error)

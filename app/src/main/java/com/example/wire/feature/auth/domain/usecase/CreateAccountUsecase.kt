@@ -8,7 +8,8 @@ import com.example.wire.feature.auth.domain.repository.AuthRepository
 import javax.inject.Inject
 
 class CreateAccountUseCase @Inject constructor(
-    private val authRepository: AuthRepository) : BaseUseCase<CreateAccountUseCase.Params, Resource<AuthUser>>() {
+    private val authRepository: AuthRepository
+) : BaseUseCase<CreateAccountUseCase.Params, Resource<AuthUser>>() {
 
     data class Params(
         val email: String,

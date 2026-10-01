@@ -33,7 +33,7 @@ class AuthViewModelTest {
 
         // Default hardware/pref states
         every { biometricManager.isBiometricAvailable() } returns true
-      //  every { dataStore.isBiometricEnabled } returns flowOf(false)
+        //  every { dataStore.isBiometricEnabled } returns flowOf(false)
 
         viewModel = AuthViewModel(
             authUseCases = authUseCases,
@@ -49,24 +49,28 @@ class AuthViewModelTest {
     }
 
     @Test
-    fun `successful login should trigger Enrollment Sheet if hardware exists and not enrolled`() = runTest {
-        // Arrange: Mock a successful login result
-        val email = "test@example.wire"
-       // coEvery { authUseCases.login(any()) } returns Resource<AuthUser>
+    fun `successful login should trigger Enrollment Sheet if hardware exists and not enrolled`() =
+        runTest {
+            // Arrange: Mock a successful login result
+            val email = "test@example.wire"
+            // coEvery { authUseCases.login(any()) } returns Resource<AuthUser>
 
-        // Act: Set email/password and click login
-        viewModel.onEvent(AuthUiEvent.EmailChanged(email))
-        viewModel.onEvent(AuthUiEvent.PasswordChanged("password123"))
-        viewModel.onEvent(AuthUiEvent.LoginClicked)
+            // Act: Set email/password and click login
+            viewModel.onEvent(AuthUiEvent.EmailChanged(email))
+            viewModel.onEvent(AuthUiEvent.PasswordChanged("password123"))
+            viewModel.onEvent(AuthUiEvent.LoginClicked)
 
-        // Wait for the coroutine inside ViewModel to finish
-        advanceUntilIdle()
+            // Wait for the coroutine inside ViewModel to finish
+            advanceUntilIdle()
 
-        // Assert: Use Turbine to check the resulting state
-        viewModel.uiState.test {
-            val state = awaitItem()
-           // assertTrue("Enrollment sheet should be visible", state.showBiometricEnrollment)
-            assertFalse("User should not be fully logged in until enrollment is handled", state.isLoggedIn)
+            // Assert: Use Turbine to check the resulting state
+            viewModel.uiState.test {
+                val state = awaitItem()
+                // assertTrue("Enrollment sheet should be visible", state.showBiometricEnrollment)
+                assertFalse(
+                    "User should not be fully logged in until enrollment is handled",
+                    state.isLoggedIn
+                )
+            }
         }
-    }
 }

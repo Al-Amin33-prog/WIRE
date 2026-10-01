@@ -78,8 +78,8 @@ class AuthRepositoryImpl @Inject constructor(
 
 
             val response = authApiService.syncUser()
-            if (response.isSuccessful){
-                 Resource.Success(userDto.toDomain())
+            if (response.isSuccessful) {
+                Resource.Success(userDto.toDomain())
 
             } else {
                 Resource.Error(AppError.Network.ServerError)
@@ -107,9 +107,9 @@ class AuthRepositoryImpl @Inject constructor(
             val response = authApiService.forgotPasswordRequest(
                 ForgotPasswordRequest(email)
             )
-            if (response.isSuccessful){
+            if (response.isSuccessful) {
                 Resource.Success(Unit)
-            }else{
+            } else {
 
                 val errorBody = response.errorBody()?.string() ?: "Unknown Server Error"
                 Resource.Error(
@@ -118,7 +118,7 @@ class AuthRepositoryImpl @Inject constructor(
             }
         } catch (e: IOException) {
             Resource.Error(AppError.Network.NoInternet)
-        }catch (e:Exception){
+        } catch (e: Exception) {
             Resource.Error(
                 AppError.Network.Unknown(e.message)
             )
@@ -145,10 +145,10 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun syncUser(): Resource<Unit> {
-        return try{
+        return try {
             authApiService.syncUser()
             Resource.Success(Unit)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Resource.Error(AppError.Network.Unknown(e.message))
         }
     }

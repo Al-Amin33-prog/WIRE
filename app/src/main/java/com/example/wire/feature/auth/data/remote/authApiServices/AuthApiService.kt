@@ -9,6 +9,7 @@ import retrofit2.http.POST
 interface AuthApiService {
     @POST("api/auth/sync-user")
     suspend fun syncUser(): Response<Unit>
+
     @POST("api/auth/forgot-password")
     suspend fun forgotPasswordRequest(
         @Body request: ForgotPasswordRequest

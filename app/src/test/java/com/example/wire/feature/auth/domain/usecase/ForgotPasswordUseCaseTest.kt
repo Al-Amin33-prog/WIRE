@@ -11,8 +11,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 
-
-
 class ForgotPasswordUseCaseTest {
 
     private val repository = mockk<AuthRepository>()

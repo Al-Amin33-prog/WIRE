@@ -1,7 +1,6 @@
 package com.example.wire.feature.auth.domain.usecase
 
 
-
 data class AuthUseCases(
     val login: LoginUseCase,
     val createAccount: CreateAccountUseCase,
@@ -11,4 +10,4 @@ data class AuthUseCases(
     val googleSignIn: GoogleSignInUseCase,
     val getCurrentUser: GetCurrentUserUseCase,
 
-)
+    )
