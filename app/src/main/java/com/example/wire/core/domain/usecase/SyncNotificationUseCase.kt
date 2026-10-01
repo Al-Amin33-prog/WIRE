@@ -8,8 +8,8 @@ import javax.inject.Inject
 class SyncNotificationUseCase @Inject constructor(
     private val notificationApi: NotificationApiService,
     private val notificationDao: NotificationDao
-){
-    suspend operator fun invoke(){
+) {
+    suspend operator fun invoke() {
         val notifications = notificationApi.getNotificationHistory()
         notifications.forEach {
             notificationDao.insertNotification(

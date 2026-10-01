@@ -5,14 +5,14 @@ import com.example.wire.feature.chat.data.mapper.toEntity
 import com.example.wire.feature.chat.data.remote.dto.ChatApiService
 import javax.inject.Inject
 
-class SyncMessageUseCase  @Inject constructor(
-    private  val chatApi: ChatApiService,
+class SyncMessageUseCase @Inject constructor(
+    private val chatApi: ChatApiService,
     private val messageDao: MessageDao
-){
+) {
     suspend operator fun invoke(
         senderId: String,
         receiverId: String
-    ){
+    ) {
         val messages = chatApi.getChatHistory(
             senderId = senderId,
             receiverId = receiverId

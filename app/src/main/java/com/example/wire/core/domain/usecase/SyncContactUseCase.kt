@@ -5,11 +5,11 @@ import com.example.wire.core.database.entity.ChatEntity
 import com.example.wire.feature.contacts.data.repository.remote.ContactApiService
 import javax.inject.Inject
 
-class SyncContactUseCase  @Inject constructor(
+class SyncContactUseCase @Inject constructor(
     private val contactApi: ContactApiService,
     private val chatDao: ChatDao
-){
-    suspend operator fun invoke(){
+) {
+    suspend operator fun invoke() {
         val contacts = contactApi.getMatchedContacts()
         contacts.forEach { contact ->
             chatDao.upsertChat(
@@ -20,7 +20,8 @@ class SyncContactUseCase  @Inject constructor(
                     timestamp = System.currentTimeMillis(),
                     unreadCount = 0,
                     avatarColor = -1,
-                    isContact = true                )
+                    isContact = true
+                )
             )
         }
     }

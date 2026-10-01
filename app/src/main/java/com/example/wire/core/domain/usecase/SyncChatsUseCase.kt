@@ -11,9 +11,9 @@ class SyncChatsUseCase @Inject constructor(
     private val chatDao: ChatDao,
     private val syncMessages: SyncMessageUseCase,
     private val authRepository: AuthRepository
-){
-    suspend operator fun invoke(){
-        val userId = authRepository.getCurrentUser()?.uid?:return
+) {
+    suspend operator fun invoke() {
+        val userId = authRepository.getCurrentUser()?.uid ?: return
         val chats = chatApi.getRecentChats(userId)
 
         chats.forEach { chat ->
