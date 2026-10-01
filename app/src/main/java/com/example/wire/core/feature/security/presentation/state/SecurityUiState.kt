@@ -17,7 +17,7 @@ SecurityUiState(
     val showBiometricSheet: Boolean = false,
     val verificationPin: String = "",
     val verificationError: String? = null,
-    val onVerificationSuccess: (()-> Unit)? = null
+    val onVerificationSuccess: (() -> Unit)? = null
 
 
 )

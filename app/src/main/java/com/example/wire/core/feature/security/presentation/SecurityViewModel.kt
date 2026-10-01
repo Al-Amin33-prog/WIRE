@@ -17,11 +17,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class SecurityViewModel @Inject constructor(
     private val securityUseCases: SecurityUseCases
-): ViewModel(){
+) : ViewModel() {
     private val _uiState = MutableStateFlow(SecurityUiState())
     val uiState = _uiState.asStateFlow()
     private val _events = MutableSharedFlow<SecurityUiEventEffect>()
@@ -31,14 +32,16 @@ class SecurityViewModel @Inject constructor(
         determineSecurityFlow()
     }
 
-    fun onEvent(event: SecurityUiEvent){
-        when(event){
+    fun onEvent(event: SecurityUiEvent) {
+        when (event) {
             is SecurityUiEvent.PinChanged -> {
                 _uiState.update { it.copy(pin = event.value) }
             }
+
             is SecurityUiEvent.ConfirmPinChanged -> {
                 _uiState.update { it.copy(confirmPin = event.value, pinError = null) }
             }
+
             is SecurityUiEvent.CreatePinClicked -> {
 
                 when (_uiState.value.step) {
@@ -60,6 +63,7 @@ class SecurityViewModel @Inject constructor(
                         validateAndCreatePin()
 
                     }
+
                     SecurityStep.Completed -> Unit
                     SecurityStep.Loading -> Unit
                     SecurityStep.EnrollBiometric -> Unit
@@ -69,42 +73,47 @@ class SecurityViewModel @Inject constructor(
                 }
 
             }
+
             is SecurityUiEvent.EnableBiometricClicked -> {
                 viewModelScope.launch {
-                   _uiState.update {
-                       it.copy(
-                           biometricLoading = true,
-                           showBiometricSheet = false
-                       )
-                   }
-                    delay(350)
+                    _uiState.update {
+                        it.copy(
+                            biometricLoading = true,
+                            showBiometricSheet = false
+                        )
+                    }
+                    delay(350.milliseconds)
                     _events.emit(
                         SecurityUiEventEffect.LaunchedBiometricPrompt
                     )
                 }
             }
+
             is SecurityUiEvent.BiometricAuthenticationSucceeded -> {
                 enableBiometric()
             }
+
             is SecurityUiEvent.BiometricFailed -> {
-                _uiState.update { 
+                _uiState.update {
                     it.copy(
                         biometricLoading = false,
                         showBiometricSheet = true,
                         errorMessage = if (event.message == "CANCELLED") null
                         else event.message
-                    ) 
+                    )
                 }
 
             }
+
             is SecurityUiEvent.DismissEnrollment -> {
                 _uiState.update {
                     it.copy(
                         showBiometricSheet = false
                     )
                 }
-              skipBiometric()
+                skipBiometric()
             }
+
             is SecurityUiEvent.BiometricSheetDismissed -> {
                 _uiState.update {
                     it.copy(
@@ -113,6 +122,7 @@ class SecurityViewModel @Inject constructor(
                     )
                 }
             }
+
             is SecurityUiEvent.VerificationPinChanged -> {
                 _uiState.update {
                     it.copy(
@@ -121,9 +131,11 @@ class SecurityViewModel @Inject constructor(
                     )
                 }
             }
+
             is SecurityUiEvent.VerifyPinClicked -> {
                 verifyPin()
             }
+
             is SecurityUiEvent.CancelVerification -> {
                 _uiState.update {
                     it.copy(
@@ -136,10 +148,11 @@ class SecurityViewModel @Inject constructor(
 
         }
     }
+
     private fun validateAndCreatePin() {
 
         val state = _uiState.value
-        if(state.isLoading) return
+        if (state.isLoading) return
 
         if (state.pin != state.confirmPin) {
 
@@ -161,13 +174,13 @@ class SecurityViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             securityUseCases.createPin(_uiState.value.pin)
-            
+
             // After PIN, check if we should enroll biometrics
             val settings = securityUseCases.getSecuritySettings(
                 params = Unit
             )
-            if ( !settings.isBiometricEnabled) {
-                _uiState.update { 
+            if (!settings.isBiometricEnabled) {
+                _uiState.update {
                     it.copy(
                         hasPin = true,
                         step = SecurityStep.EnrollBiometric,
@@ -180,12 +193,13 @@ class SecurityViewModel @Inject constructor(
             }
         }
     }
-    private fun verifyPin(){
+
+    private fun verifyPin() {
         viewModelScope.launch {
             val success = securityUseCases.verifyPin(
                 _uiState.value.verificationPin
             )
-            if (success){
+            if (success) {
                 _uiState.update {
                     it.copy(
                         verificationPin = "",
@@ -195,7 +209,7 @@ class SecurityViewModel @Inject constructor(
                 _events.emit(
                     SecurityUiEventEffect.VerificationSucceeded
                 )
-            }else{
+            } else {
                 _uiState.update {
                     it.copy(
                         verificationPin = "",
@@ -212,7 +226,7 @@ class SecurityViewModel @Inject constructor(
                 params = Unit
             )
             _uiState.update { it.copy(biometricLoading = false) }
-            delay(250)
+            delay(250.milliseconds)
             _events.emit(SecurityUiEventEffect.NavigateToMainShell)
         }
     }
@@ -229,7 +243,7 @@ class SecurityViewModel @Inject constructor(
             val settings = securityUseCases.getSecuritySettings(
                 params = Unit
             )
-            
+
             if (!settings.hasPin) {
                 _uiState.update {
                     it.copy(

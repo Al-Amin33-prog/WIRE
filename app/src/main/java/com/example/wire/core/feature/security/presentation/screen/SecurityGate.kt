@@ -23,55 +23,57 @@ fun SecurityGate(
     onSecurityComplete: () -> Unit,
     biometricManager: WireBiometricManager
 
-){
+) {
     val viewModel: SecurityViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val activity = LocalFragmentActivity.current
 
     LaunchedEffect(Unit) {
-        Log.d("startup","Security Gate started ")
+        Log.d("startup", "Security Gate started ")
     }
 
-   LaunchedEffect(Unit) {
-       viewModel.events.collect { effect->
-           when(effect){
-               SecurityUiEventEffect.LaunchedBiometricPrompt -> {
-                   biometricManager.showBiometricPrompt(
-                       activity = activity,
-                       onSuccess = {
-                           viewModel.onEvent(
-                               SecurityUiEvent.BiometricAuthenticationSucceeded
-                           )
-                       },
-                       onError = {
-                           viewModel.onEvent(
-                               SecurityUiEvent.BiometricFailed(it)
-                           )
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { effect ->
+            when (effect) {
+                SecurityUiEventEffect.LaunchedBiometricPrompt -> {
+                    biometricManager.showBiometricPrompt(
+                        activity = activity,
+                        onSuccess = {
+                            viewModel.onEvent(
+                                SecurityUiEvent.BiometricAuthenticationSucceeded
+                            )
+                        },
+                        onError = {
+                            viewModel.onEvent(
+                                SecurityUiEvent.BiometricFailed(it)
+                            )
 
-                       },
-                       onFailed = {
-                           viewModel.onEvent(
-                               SecurityUiEvent.BiometricFailed("Authentication Failed")
-                           )
-                       }
-                   )
-               }
-               SecurityUiEventEffect.NavigateToMainShell -> {
-                   onSecurityComplete()
-               }
-               SecurityUiEventEffect.VerificationSucceeded -> {
+                        },
+                        onFailed = {
+                            viewModel.onEvent(
+                                SecurityUiEvent.BiometricFailed("Authentication Failed")
+                            )
+                        }
+                    )
+                }
 
-               }
+                SecurityUiEventEffect.NavigateToMainShell -> {
+                    onSecurityComplete()
+                }
 
+                SecurityUiEventEffect.VerificationSucceeded -> {
 
-           }
-       }
-   }
+                }
 
 
-    when(state.step){
+            }
+        }
+    }
+
+
+    when (state.step) {
         SecurityStep.SetPin,
-             SecurityStep.ConfirmPin -> {
+        SecurityStep.ConfirmPin -> {
             SetPinScreen(
                 state = state,
                 onEvent = viewModel::onEvent
@@ -99,23 +101,24 @@ fun SecurityGate(
                 )
             }
         }
-        SecurityStep.VerifyPin ->{
+
+        SecurityStep.VerifyPin -> {
             PinVerificationBottomSheet(
                 pin = state.verificationPin,
                 error = state.verificationError,
-                onNumberClick = {number ->
+                onNumberClick = { number ->
                     val newPin = state.verificationPin + number
                     viewModel.onEvent(
                         SecurityUiEvent.VerificationPinChanged(newPin)
                     )
-                    if (newPin.length == 4){
+                    if (newPin.length == 4) {
                         viewModel.onEvent(
                             SecurityUiEvent.VerifyPinClicked
                         )
                     }
                 },
                 onDelete = {
-                    if (state.verificationPin.isNotEmpty()){
+                    if (state.verificationPin.isNotEmpty()) {
                         viewModel.onEvent(
                             SecurityUiEvent.VerificationPinChanged(
                                 state.verificationPin.dropLast(1)
@@ -136,13 +139,14 @@ fun SecurityGate(
         SecurityStep.Loading -> {
             CircularProgressIndicator()
         }
+
         SecurityStep.RequestBiometricAuthentication -> {
 
         }
+
         SecurityStep.Completed -> {
 
         }
-
 
 
     }
