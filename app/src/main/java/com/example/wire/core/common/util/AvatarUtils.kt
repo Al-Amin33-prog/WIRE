@@ -1,11 +1,11 @@
 package com.example.wire.core.common.util
 
 
-
 import kotlin.math.absoluteValue
 
-object AvatarUtils {// Premium Fintech Palette
-private val avatarColors = listOf(
+object AvatarUtils {
+    // Premium Fintech Palette
+    private val avatarColors = listOf(
         0xFF2ECC71, // Emerald Green
         0xFF3498DB, // Peter River Blue
         0xFF9B59B6, // Amethyst Purple

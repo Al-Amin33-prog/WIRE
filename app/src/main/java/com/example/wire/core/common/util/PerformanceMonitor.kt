@@ -1,7 +1,6 @@
 package com.example.wire.core.common.util
 
 
-
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.roundToInt
