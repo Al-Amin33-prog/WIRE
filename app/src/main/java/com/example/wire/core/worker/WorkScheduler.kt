@@ -27,7 +27,8 @@ class WorkSchedulerImpl @Inject constructor(
     override fun scheduleSync() {
         if (performanceMonitor.isSystemOverloaded()) {
             Log.w(
-                "WorkScheduler", "System is overloaded, skipping sync")
+                "WorkScheduler", "System is overloaded, skipping sync"
+            )
             return
         }
 
