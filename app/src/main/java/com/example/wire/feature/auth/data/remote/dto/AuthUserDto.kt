@@ -8,5 +8,6 @@ data class AuthUserDto(
     val email: String?,
     val displayName: String?,
     val isEmailVerified: Boolean,
-    val phone: String? = null
+    val phone: String? = null,
+    val username: String? = null
 )

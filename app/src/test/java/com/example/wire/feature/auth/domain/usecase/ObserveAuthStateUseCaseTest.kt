@@ -24,7 +24,8 @@ class ObserveAuthStateUseCaseTest {
             displayName = "Test",
             token = "token",
             isEmailVerified = false,
-            phone = "12345678"
+            phone = "12345678",
+            username = "test_123"
         )
         every { repository.observeAuthState() } returns flowOf(user)
 

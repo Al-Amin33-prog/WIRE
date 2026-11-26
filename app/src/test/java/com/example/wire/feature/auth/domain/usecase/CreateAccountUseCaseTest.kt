@@ -53,7 +53,8 @@ class CreateAccountUseCaseTest {
             displayName = "Test User",
             isEmailVerified = false,
             token = "token",
-            phone = "12345678"
+            phone = "12345678",
+            username = "test_user_123"
         )
 
         // FIX: Mocking the repository to return the new Resource type

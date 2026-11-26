@@ -2,6 +2,8 @@ package com.example.wire.feature.auth.data.repository
 
 import com.example.wire.core.common.util.AppError
 import com.example.wire.core.common.util.Resource
+import com.example.wire.core.database.dao.UserDao
+import com.example.wire.core.database.entity.UserEntity
 import com.example.wire.feature.auth.data.mapper.toDomain
 import com.example.wire.feature.auth.data.remote.FirebaseAuthDataSource
 import com.example.wire.feature.auth.data.remote.authApiServices.AuthApiService
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuthDataSource: FirebaseAuthDataSource,
-    private val authApiService: AuthApiService
+    private val authApiService: AuthApiService,
+    private val userDao: UserDao
 ) : AuthRepository {
 
     override suspend fun login(
@@ -33,10 +36,21 @@ class AuthRepositoryImpl @Inject constructor(
             val response = authApiService.syncUser()
 
             if (response.isSuccessful) {
-
-                Resource.Success(
-                    user.toDomain()
+                val authUser = user.toDomain()
+                userDao.upsertUserProfile(
+                    UserEntity(
+                        id = authUser.uid,
+                        fullName = authUser.displayName ?: "Wire User",
+                        username = authUser.username,
+                        email = authUser.email,
+                        phoneNumber = authUser.phone,
+                        bio = null,
+                        avatarUrl = null,
+                        isVerified = authUser.isEmailVerified,
+                        joinedAt = System.currentTimeMillis()
+                    )
                 )
+                Resource.Success(authUser)
 
             } else {
 
@@ -79,7 +93,21 @@ class AuthRepositoryImpl @Inject constructor(
 
             val response = authApiService.syncUser()
             if (response.isSuccessful) {
-                Resource.Success(userDto.toDomain())
+                val authUser = userDto.toDomain()
+                userDao.upsertUserProfile(
+                    UserEntity(
+                        id = authUser.uid,
+                        fullName = authUser.displayName ?: "Wire User",
+                        username = authUser.username,
+                        email = authUser.email,
+                        phoneNumber = authUser.phone,
+                        bio = null,
+                        avatarUrl = null,
+                        isVerified = authUser.isEmailVerified,
+                        joinedAt = System.currentTimeMillis()
+                    )
+                )
+                Resource.Success(authUser)
 
             } else {
                 Resource.Error(AppError.Network.ServerError)
@@ -131,8 +159,21 @@ class AuthRepositoryImpl @Inject constructor(
             val response = authApiService.syncUser()
 
             if (response.isSuccessful) {
-
-                Resource.Success(userDto.toDomain())
+                val authUser = userDto.toDomain()
+                userDao.upsertUserProfile(
+                    UserEntity(
+                        id = authUser.uid,
+                        fullName = authUser.displayName ?: "Wire User",
+                        username = authUser.username,
+                        email = authUser.email,
+                        phoneNumber = authUser.phone,
+                        bio = null,
+                        avatarUrl = null,
+                        isVerified = authUser.isEmailVerified,
+                        joinedAt = System.currentTimeMillis()
+                    )
+                )
+                Resource.Success(authUser)
 
             } else {
 
