@@ -22,7 +22,11 @@ class AuthInterceptor @Inject constructor(
 
         // Use the cached token first (false = don't force refresh)
         val token = runBlocking {
-            firebaseAuth.currentUser?.getIdToken(false)?.await()?.token
+            try {
+                firebaseAuth.currentUser?.getIdToken(false)?.await()?.token
+            } catch (e: Exception) {
+                null
+            }
         }
 
         val requestBuilder = originalRequest.newBuilder()
